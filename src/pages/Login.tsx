@@ -1,7 +1,7 @@
 export function Login() {
     return (
         <div className="flex min-h-screen justify-center items-center">
-            <main className="w-[457px] h-[468px] bg-gray-100 rounded-lg">
+            <main className="w-[457px] h-[468px] shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
                 <div className="w-[445px] h-[5px] m-auto mt-[10px] bg-green-500"></div>
                 <div className="px-[42px]">
                     <header className="flex justify-between pt-[14px]">
@@ -9,14 +9,14 @@ export function Login() {
                         <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="w-[170px] h-[176px]" />
                     </header>
 
-                    <form className="flex flex-col gap-4 w-full mt-6">
+                    <form className="flex flex-col gap-4 w-full mt-6 justify-center ">
                         <input
-                            className="bg-gray-300 font-light text-base text-black rounded px-2 h-9"
+                            className="px-2 h-9 bg-gray-300 font-light text-base text-black placeholder-black rounded"
                             type="text"
                             placeholder="Usuário"
                         />
                         <input
-                            className="bg-gray-300 font-light text-base text-black rounded px-2 h-9"
+                            className="px-2 h-9 bg-gray-300 font-light text-base text-black placeholder-black rounded"
                             type="password"
                             placeholder="Senha"
                         />
@@ -27,9 +27,6 @@ export function Login() {
                         >
                             Acessar
                         </button>
-
-
-
                     </form>
                 </div>
 
