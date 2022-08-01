@@ -1,4 +1,5 @@
 import { Header } from "../components/Header";
+import { Ordinance } from "../components/Ordinance";
 
 export function Home() {
 
@@ -20,6 +21,31 @@ export function Home() {
                     <span className="flex ml-[13px] mt-[10px] font-medium text-xl text-red-900">
                         Próximas da Data de Encerramento
                     </span>
+
+                    <div className="w-full mt-4 overflow-x-auto relative shadow-md border border-green-300 sm:rounded-lg">
+                        <table className="w-full font-light text-sm bg-green-300 dark:text-gray-400">
+                            <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
+                                <tr>
+                                    <th className="px-3">Número</th>
+                                    <th className="px-0">Data Início Vigência</th>
+                                    <th>Membro</th>
+                                    <th>Tipo de Portaria</th>
+                                    <th>Assunto</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
+                                <Ordinance
+                                    number="121/2022"
+                                    effectiveDate={new Date()}
+                                    member="Angelo Marcos de Oliveira"
+                                    type="progression"
+                                    subject="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                />
+                            </tbody>
+                        </table>
+
+                    </div>
+
 
                 </div>
             </main>
