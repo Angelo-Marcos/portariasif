@@ -1,7 +1,41 @@
+import { gql, useQuery } from "@apollo/client";
 import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
 
+const GET_ORDINANCES_QUERY = gql`
+    query MyQuery {
+        ordinances(orderBy: effectiveStartDate_ASC) {
+            id
+            number
+            effectiveStartDate
+            members {
+                name
+            }
+            ordinanceType
+            subject
+        }
+    }
+    
+`
+
+interface GetOrdinancesQueryResponse {
+    ordinances: {
+        id: string,
+        number: string,
+        effectiveStartDate: Date,
+        members: {
+            name: string,
+        },
+        ordinanceType: 'progression' | 'designation',
+        subject: string
+    }[]
+}
+
 export function Home() {
+
+    const { data } = useQuery<GetOrdinancesQueryResponse>(GET_ORDINANCES_QUERY)
+
+    console.log(data)
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -34,13 +68,18 @@ export function Home() {
                                 </tr>
                             </thead>
                             <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
-                                <Ordinance
-                                    number="121/2022"
-                                    effectiveDate={new Date()}
-                                    member="Angelo Marcos de Oliveira"
-                                    type="progression"
-                                    subject="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                                />
+                                {data?.ordinances.map(ordinance => {
+                                    return (
+                                        <Ordinance
+                                            key={ordinance.id}
+                                            number={ordinance.number}
+                                            effectiveStartDate={new Date(ordinance.effectiveStartDate)}
+                                            member={ordinance.members.name}
+                                            type={ordinance.ordinanceType}
+                                            subject={ordinance.subject}
+                                        />
+                                    )
+                                })}
                             </tbody>
                         </table>
 
