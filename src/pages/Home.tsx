@@ -20,22 +20,22 @@ const GET_ORDINANCES_QUERY = gql`
 
 interface GetOrdinancesQueryResponse {
     ordinances: {
-        id: string,
-        number: string,
-        effectiveStartDate: Date,
-        members: {
-            name: string,
-        },
-        ordinanceType: 'progression' | 'designation',
-        subject: string
+        id: string;
+        number: string;
+        effectiveStartDate: Date;
+        members: Member[];
+        ordinanceType: 'progression' | 'designation';
+        subject: string;
     }[]
+}
+
+interface Member {
+    name: string;
 }
 
 export function Home() {
 
     const { data } = useQuery<GetOrdinancesQueryResponse>(GET_ORDINANCES_QUERY)
-
-    console.log(data)
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -74,7 +74,7 @@ export function Home() {
                                             key={ordinance.id}
                                             number={ordinance.number}
                                             effectiveStartDate={new Date(ordinance.effectiveStartDate)}
-                                            member={ordinance.members.name}
+                                            members={ordinance.members}
                                             type={ordinance.ordinanceType}
                                             subject={ordinance.subject}
                                         />
