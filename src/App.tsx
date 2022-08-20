@@ -6,7 +6,7 @@ import { Search } from "./pages/Search";
 function App() {
 
   return (
-    <Home />
+    <Search/>
   );
 }
 
