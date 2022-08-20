@@ -1,6 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
+import { OrdinanceAside } from "../components/OrdinanceAside";
 
 const GET_ORDINANCES_QUERY = gql`
     query MyQuery {
@@ -46,8 +47,13 @@ export function Home() {
                     <span className="flex mt-[21px] font-light text-xl text-gray-500 justify-center">
                         Recentes
                     </span>
-                    <div className="flex-1 h-full border-t border-green-300">
-
+                    <div className="flex-1 h-full py-2 border-t border-green-300">
+                        <OrdinanceAside />
+                        <OrdinanceAside />
+                        <OrdinanceAside />
+                        <OrdinanceAside />
+                        <OrdinanceAside />
+                        <OrdinanceAside />
                     </div>
                 </aside>
 
