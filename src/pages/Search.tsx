@@ -10,20 +10,20 @@ export function Search() {
                     Preencha os campos abaixo
                 </span>
                 <form className="w-full max-w-7xl">
-                    <div className="flex flex-col gap-8 justify-start">
+                    <div className="justify-start">
                         <div className="flex">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Número:
                             </label>
                             <input className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </div>
-                        <div className="flex">
+                        <div className="flex mt-4">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Data de início da vigência:
                             </label>
                             <input type="date" className="appearance-none block w-[170px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" placeholder=" " />
                         </div>
-                        <div className="flex">
+                        <div className="flex mt-4">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Tipo:
                             </label>
@@ -36,27 +36,27 @@ export function Search() {
                         </div>
                     </div>
                     <div className="">
-                        <div className="flex ">
+                        <div className="flex mt-4 ">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Data de encerramento da vigência:
                             </label>
                             <input type="date" className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-green-500 border-spacing-1 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </div>
-                        <div className="flex">
+                        <div className="flex mt-4">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Assunto:
                             </label>
                             <input className="appearance-none block w-[300px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </div>
                     </div>
-                    <div className="flex flex-col gap-8 mt-[28px]">
+                    <div className="mt-4">
                         <div className="flex">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Membro:
                             </label>
                             <input className="appearance-none block w-[320px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </div>
-                        <div className="flex ml-[89px]">
+                        <div className="flex mt-4">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Função:
                             </label>
