@@ -1,42 +1,16 @@
 import { gql, useQuery } from "@apollo/client";
+import { getArgumentValues } from "graphql";
 import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
 import { OrdinanceAside } from "../components/OrdinanceAside";
+import { GetOrdinancesDocument, useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
 
-const GET_ORDINANCES_QUERY = gql`
-    query MyQuery {
-        ordinances(orderBy: effectiveStartDate_ASC) {
-            id
-            number
-            effectiveStartDate
-            members {
-                name
-            }
-            ordinanceType
-            subject
-        }
-    }
-    
-`
-
-interface GetOrdinancesQueryResponse {
-    ordinances: {
-        id: string;
-        number: string;
-        effectiveStartDate: Date;
-        members: Member[];
-        ordinanceType: 'progression' | 'designation';
-        subject: string;
-    }[]
-}
-
-interface Member {
-    name: string;
-}
 
 export function Home() {
 
-    const { data } = useQuery<GetOrdinancesQueryResponse>(GET_ORDINANCES_QUERY)
+    const { data: ordinances } = useGetOrdinancesQuery()
+
+    const { data: ordinancesAside } = useGetOrdinancesAsideQuery()
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -48,12 +22,19 @@ export function Home() {
                         Recentes
                     </span>
                     <div className="flex-1 h-full py-2 border-t border-green-300">
-                        <OrdinanceAside />
-                        <OrdinanceAside />
-                        <OrdinanceAside />
-                        <OrdinanceAside />
-                        <OrdinanceAside />
-                        <OrdinanceAside />
+
+
+
+                        {ordinancesAside?.ordinances.map(ordinance => {
+                            return (
+                                <OrdinanceAside
+                                    key={ordinance.id}
+                                    number={ordinance.number}
+                                    type={ordinance.ordinanceType}
+                                    members={ordinance.members}
+                                />
+                            )
+                        })}
                     </div>
                 </aside>
 
@@ -74,7 +55,7 @@ export function Home() {
                                 </tr>
                             </thead>
                             <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
-                                {data?.ordinances.map(ordinance => {
+                                {ordinances?.ordinances.map(ordinance => {
                                     return (
                                         <Ordinance
                                             key={ordinance.id}
