@@ -1,0 +1,12 @@
+query GetOrdinances {
+    ordinances(orderBy: effectiveStartDate_DESC) {
+        id
+        number
+        effectiveStartDate
+        members {
+            name
+        }
+        ordinanceType
+        subject
+    }
+}
