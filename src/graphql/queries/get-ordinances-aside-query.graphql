@@ -1,0 +1,10 @@
+query GetOrdinancesAside {
+  ordinances(orderBy: effectiveStartDate_ASC) {
+    id
+    number
+    ordinanceType
+    members {
+      name
+    }
+  }
+}
