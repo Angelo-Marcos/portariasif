@@ -11,7 +11,6 @@ function App() {
         <Router />
       </BrowserRouter>
     </ApolloProvider>
-
   );
 }
 
