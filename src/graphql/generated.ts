@@ -1820,6 +1820,7 @@ export type Ordinance = Node & {
   id: Scalars['ID'];
   members: Array<Member>;
   number: Scalars['String'];
+  ordinanceSituation?: Maybe<OrdinanceSituation>;
   ordinanceType: OrdinanceType;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
@@ -1911,6 +1912,7 @@ export type OrdinanceCreateInput = {
   effectiveStartDate: Scalars['Date'];
   members?: InputMaybe<MemberCreateManyInlineInput>;
   number: Scalars['String'];
+  ordinanceSituation?: InputMaybe<OrdinanceSituation>;
   ordinanceType: OrdinanceType;
   subject: Scalars['String'];
   updatedAt?: InputMaybe<Scalars['DateTime']>;
@@ -2036,6 +2038,13 @@ export type OrdinanceManyWhereInput = {
   number_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   number_starts_with?: InputMaybe<Scalars['String']>;
+  ordinanceSituation?: InputMaybe<OrdinanceSituation>;
+  /** All values that are contained in given list. */
+  ordinanceSituation_in?: InputMaybe<Array<InputMaybe<OrdinanceSituation>>>;
+  /** All values that are not equal to given value. */
+  ordinanceSituation_not?: InputMaybe<OrdinanceSituation>;
+  /** All values that are not contained in given list. */
+  ordinanceSituation_not_in?: InputMaybe<Array<InputMaybe<OrdinanceSituation>>>;
   ordinanceType?: InputMaybe<OrdinanceType>;
   /** All values that are contained in given list. */
   ordinanceType_in?: InputMaybe<Array<InputMaybe<OrdinanceType>>>;
@@ -2110,6 +2119,8 @@ export enum OrdinanceOrderByInput {
   IdDesc = 'id_DESC',
   NumberAsc = 'number_ASC',
   NumberDesc = 'number_DESC',
+  OrdinanceSituationAsc = 'ordinanceSituation_ASC',
+  OrdinanceSituationDesc = 'ordinanceSituation_DESC',
   OrdinanceTypeAsc = 'ordinanceType_ASC',
   OrdinanceTypeDesc = 'ordinanceType_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
@@ -2118,6 +2129,10 @@ export enum OrdinanceOrderByInput {
   SubjectDesc = 'subject_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
   UpdatedAtDesc = 'updatedAt_DESC'
+}
+
+export enum OrdinanceSituation {
+  Revoked = 'revoked'
 }
 
 export enum OrdinanceType {
@@ -2130,6 +2145,7 @@ export type OrdinanceUpdateInput = {
   effectiveStartDate?: InputMaybe<Scalars['Date']>;
   members?: InputMaybe<MemberUpdateManyInlineInput>;
   number?: InputMaybe<Scalars['String']>;
+  ordinanceSituation?: InputMaybe<OrdinanceSituation>;
   ordinanceType?: InputMaybe<OrdinanceType>;
   subject?: InputMaybe<Scalars['String']>;
 };
@@ -2154,7 +2170,7 @@ export type OrdinanceUpdateManyInlineInput = {
 export type OrdinanceUpdateManyInput = {
   effectiveEndDate?: InputMaybe<Scalars['Date']>;
   effectiveStartDate?: InputMaybe<Scalars['Date']>;
-  number?: InputMaybe<Scalars['String']>;
+  ordinanceSituation?: InputMaybe<OrdinanceSituation>;
   ordinanceType?: InputMaybe<OrdinanceType>;
   subject?: InputMaybe<Scalars['String']>;
 };
@@ -2299,6 +2315,13 @@ export type OrdinanceWhereInput = {
   number_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   number_starts_with?: InputMaybe<Scalars['String']>;
+  ordinanceSituation?: InputMaybe<OrdinanceSituation>;
+  /** All values that are contained in given list. */
+  ordinanceSituation_in?: InputMaybe<Array<InputMaybe<OrdinanceSituation>>>;
+  /** All values that are not equal to given value. */
+  ordinanceSituation_not?: InputMaybe<OrdinanceSituation>;
+  /** All values that are not contained in given list. */
+  ordinanceSituation_not_in?: InputMaybe<Array<InputMaybe<OrdinanceSituation>>>;
   ordinanceType?: InputMaybe<OrdinanceType>;
   /** All values that are contained in given list. */
   ordinanceType_in?: InputMaybe<Array<InputMaybe<OrdinanceType>>>;
@@ -2365,6 +2388,7 @@ export type OrdinanceWhereInput = {
 /** References Ordinance record uniquely */
 export type OrdinanceWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
+  number?: InputMaybe<Scalars['String']>;
 };
 
 /** Information about pagination in a connection. */
@@ -4154,6 +4178,26 @@ export enum _SystemDateTimeFieldVariation {
   Localization = 'localization'
 }
 
+export type CreateOrdinanceMutationVariables = Exact<{
+  number: Scalars['String'];
+  subject: Scalars['String'];
+  effectiveStartDate: Scalars['Date'];
+  ordinanceType: OrdinanceType;
+  effectiveEndDate?: InputMaybe<Scalars['Date']>;
+  name: Scalars['String'];
+  memberType: MemberType;
+}>;
+
+
+export type CreateOrdinanceMutation = { __typename?: 'Mutation', createOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+
+export type UpdateOrdinanceMutationVariables = Exact<{
+  number: Scalars['String'];
+}>;
+
+
+export type UpdateOrdinanceMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', ordinanceSituation?: OrdinanceSituation | null } | null };
+
 export type GetOrdinancesAsideQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4165,6 +4209,80 @@ export type GetOrdinancesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveStartDate: any, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', name: string }> }> };
 
 
+export const CreateOrdinanceDocument = gql`
+    mutation CreateOrdinance($number: String!, $subject: String!, $effectiveStartDate: Date!, $ordinanceType: OrdinanceType!, $effectiveEndDate: Date, $name: String!, $memberType: MemberType!) {
+  createOrdinance(
+    data: {number: $number, subject: $subject, effectiveStartDate: $effectiveStartDate, ordinanceType: $ordinanceType, effectiveEndDate: $effectiveEndDate, members: {create: {name: $name, memberType: $memberType}}}
+  ) {
+    id
+  }
+}
+    `;
+export type CreateOrdinanceMutationFn = Apollo.MutationFunction<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>;
+
+/**
+ * __useCreateOrdinanceMutation__
+ *
+ * To run a mutation, you first call `useCreateOrdinanceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOrdinanceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOrdinanceMutation, { data, loading, error }] = useCreateOrdinanceMutation({
+ *   variables: {
+ *      number: // value for 'number'
+ *      subject: // value for 'subject'
+ *      effectiveStartDate: // value for 'effectiveStartDate'
+ *      ordinanceType: // value for 'ordinanceType'
+ *      effectiveEndDate: // value for 'effectiveEndDate'
+ *      name: // value for 'name'
+ *      memberType: // value for 'memberType'
+ *   },
+ * });
+ */
+export function useCreateOrdinanceMutation(baseOptions?: Apollo.MutationHookOptions<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>(CreateOrdinanceDocument, options);
+      }
+export type CreateOrdinanceMutationHookResult = ReturnType<typeof useCreateOrdinanceMutation>;
+export type CreateOrdinanceMutationResult = Apollo.MutationResult<CreateOrdinanceMutation>;
+export type CreateOrdinanceMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>;
+export const UpdateOrdinanceDocument = gql`
+    mutation UpdateOrdinance($number: String!) {
+  updateOrdinance(data: {ordinanceSituation: revoked}, where: {number: $number}) {
+    ordinanceSituation
+  }
+}
+    `;
+export type UpdateOrdinanceMutationFn = Apollo.MutationFunction<UpdateOrdinanceMutation, UpdateOrdinanceMutationVariables>;
+
+/**
+ * __useUpdateOrdinanceMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrdinanceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrdinanceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrdinanceMutation, { data, loading, error }] = useUpdateOrdinanceMutation({
+ *   variables: {
+ *      number: // value for 'number'
+ *   },
+ * });
+ */
+export function useUpdateOrdinanceMutation(baseOptions?: Apollo.MutationHookOptions<UpdateOrdinanceMutation, UpdateOrdinanceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateOrdinanceMutation, UpdateOrdinanceMutationVariables>(UpdateOrdinanceDocument, options);
+      }
+export type UpdateOrdinanceMutationHookResult = ReturnType<typeof useUpdateOrdinanceMutation>;
+export type UpdateOrdinanceMutationResult = Apollo.MutationResult<UpdateOrdinanceMutation>;
+export type UpdateOrdinanceMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceMutation, UpdateOrdinanceMutationVariables>;
 export const GetOrdinancesAsideDocument = gql`
     query GetOrdinancesAside {
   ordinances(orderBy: effectiveStartDate_ASC) {
@@ -4206,7 +4324,7 @@ export type GetOrdinancesAsideLazyQueryHookResult = ReturnType<typeof useGetOrdi
 export type GetOrdinancesAsideQueryResult = Apollo.QueryResult<GetOrdinancesAsideQuery, GetOrdinancesAsideQueryVariables>;
 export const GetOrdinancesDocument = gql`
     query GetOrdinances {
-  ordinances(orderBy: effectiveStartDate_DESC) {
+  ordinances(orderBy: effectiveStartDate_DESC, stage: DRAFT) {
     id
     number
     effectiveStartDate

@@ -1,0 +1,5 @@
+mutation UpdateOrdinance($number: String!) {
+  updateOrdinance(data: {ordinanceSituation: revoked}, where: {number: $number}) {
+    ordinanceSituation
+  }
+}

@@ -1,10 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
-import { getArgumentValues } from "graphql";
 import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
 import { OrdinanceAside } from "../components/OrdinanceAside";
-import { GetOrdinancesDocument, useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
-
+import { useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
 
 export function Home() {
 
@@ -17,14 +14,11 @@ export function Home() {
             <Header />
 
             <main className="flex flex-1 px-48">
-                <aside className="flex flex-col w-[276px] px-[10px] bg-gray-200 mt-[54px] justify-center ">
+                <aside className="flex flex-col w-[276px] max-h-full px-[10px] bg-gray-200 mt-[54px] justify-center overflow-auto">
                     <span className="flex mt-[21px] font-light text-xl text-gray-500 justify-center">
                         Recentes
                     </span>
-                    <div className="flex-1 h-full py-2 border-t border-green-300">
-
-
-
+                    <div className="h-full py-2 border-t border-green-300">
                         {ordinancesAside?.ordinances.map(ordinance => {
                             return (
                                 <OrdinanceAside
