@@ -1,8 +1,8 @@
 query GetOrdinances {
-    ordinances(orderBy: effectiveStartDate_DESC, stage: DRAFT) {
+    ordinances(orderBy: effectiveEndDate_ASC, stage: DRAFT) {
         id
         number
-        effectiveStartDate
+        effectiveEndDate
         members {
             name
         }

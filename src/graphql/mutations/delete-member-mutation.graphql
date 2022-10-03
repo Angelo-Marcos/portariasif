@@ -1,0 +1,5 @@
+mutation DeleteMember($id: ID) {
+  deleteMember(where: {id: $id}) {
+    id
+  }
+}

@@ -1,0 +1,8 @@
+query GetMembers {
+  members (stage: DRAFT) {
+    id
+    name
+    memberType
+    matriculaSiape
+  }
+}

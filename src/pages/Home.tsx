@@ -42,10 +42,10 @@ export function Home() {
                             <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
                                 <tr>
                                     <th className="px-3">Número</th>
-                                    <th className="px-0">Data Início Vigência</th>
+                                    <th className="px-0">Data Fim Vigência</th>
                                     <th>Membro</th>
                                     <th>Tipo de Portaria</th>
-                                    <th>Assunto</th>
+                                    <th className="w-52">Assunto</th>
                                 </tr>
                             </thead>
                             <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
@@ -54,7 +54,7 @@ export function Home() {
                                         <Ordinance
                                             key={ordinance.id}
                                             number={ordinance.number}
-                                            effectiveStartDate={new Date(ordinance.effectiveStartDate)}
+                                            effectiveEndDate={new Date(ordinance.effectiveEndDate)}
                                             members={ordinance.members}
                                             type={ordinance.ordinanceType}
                                             subject={ordinance.subject}

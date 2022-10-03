@@ -250,6 +250,9 @@ export type AssetManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<AssetWhereStageInput>;
+  documentInStages_none?: InputMaybe<AssetWhereStageInput>;
+  documentInStages_some?: InputMaybe<AssetWhereStageInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -466,6 +469,12 @@ export type AssetUpsertWithNestedWhereUniqueInput = {
   where: AssetWhereUniqueInput;
 };
 
+/** This contains a set of filters that can be used to compare values internally */
+export type AssetWhereComparatorInput = {
+  /** This field can be used to request to check if the entry is outdated by internal comparison */
+  outdated_to?: InputMaybe<Scalars['Boolean']>;
+};
+
 /** Identifies documents */
 export type AssetWhereInput = {
   /** Logical AND on all given filters. */
@@ -492,6 +501,9 @@ export type AssetWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<AssetWhereStageInput>;
+  documentInStages_none?: InputMaybe<AssetWhereStageInput>;
+  documentInStages_some?: InputMaybe<AssetWhereStageInput>;
   fileName?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   fileName_contains?: InputMaybe<Scalars['String']>;
@@ -648,6 +660,20 @@ export type AssetWhereInput = {
   width_not?: InputMaybe<Scalars['Float']>;
   /** All values that are not contained in given list. */
   width_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']>>>;
+};
+
+/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
+export type AssetWhereStageInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<AssetWhereStageInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<AssetWhereStageInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<AssetWhereStageInput>>;
+  /** This field contains fields which can be set as true or false to specify an internal comparison */
+  compareWithParent?: InputMaybe<AssetWhereComparatorInput>;
+  /** Specify the stage to compare with */
+  stage?: InputMaybe<Stage>;
 };
 
 /** References Asset record uniquely */
@@ -814,9 +840,10 @@ export type Member = Node & {
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
+  matriculaSiape: Scalars['Int'];
   memberType: MemberType;
   name: Scalars['String'];
-  ordinances: Array<Ordinance>;
+  ordinances: Array<MemberOrdinances>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** User that last published this document */
@@ -856,9 +883,7 @@ export type MemberOrdinancesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   locales?: InputMaybe<Array<Locale>>;
-  orderBy?: InputMaybe<OrdinanceOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<OrdinanceWhereInput>;
 };
 
 
@@ -901,9 +926,10 @@ export type MemberConnection = {
 
 export type MemberCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  matriculaSiape: Scalars['Int'];
   memberType: MemberType;
   name: Scalars['String'];
-  ordinances?: InputMaybe<OrdinanceCreateManyInlineInput>;
+  ordinances?: InputMaybe<MemberOrdinancesCreateManyInlineInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
 
@@ -956,6 +982,9 @@ export type MemberManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<MemberWhereStageInput>;
+  documentInStages_none?: InputMaybe<MemberWhereStageInput>;
+  documentInStages_some?: InputMaybe<MemberWhereStageInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -975,6 +1004,21 @@ export type MemberManyWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  matriculaSiape?: InputMaybe<Scalars['Int']>;
+  /** All values greater than the given value. */
+  matriculaSiape_gt?: InputMaybe<Scalars['Int']>;
+  /** All values greater than or equal the given value. */
+  matriculaSiape_gte?: InputMaybe<Scalars['Int']>;
+  /** All values that are contained in given list. */
+  matriculaSiape_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** All values less than the given value. */
+  matriculaSiape_lt?: InputMaybe<Scalars['Int']>;
+  /** All values less than or equal the given value. */
+  matriculaSiape_lte?: InputMaybe<Scalars['Int']>;
+  /** All values that are not equal to given value. */
+  matriculaSiape_not?: InputMaybe<Scalars['Int']>;
+  /** All values that are not contained in given list. */
+  matriculaSiape_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   memberType?: InputMaybe<MemberType>;
   /** All values that are contained in given list. */
   memberType_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
@@ -1001,9 +1045,6 @@ export type MemberManyWhereInput = {
   name_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   name_starts_with?: InputMaybe<Scalars['String']>;
-  ordinances_every?: InputMaybe<OrdinanceWhereInput>;
-  ordinances_none?: InputMaybe<OrdinanceWhereInput>;
-  ordinances_some?: InputMaybe<OrdinanceWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1046,6 +1087,8 @@ export enum MemberOrderByInput {
   CreatedAtDesc = 'createdAt_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
+  MatriculaSiapeAsc = 'matriculaSiape_ASC',
+  MatriculaSiapeDesc = 'matriculaSiape_DESC',
   MemberTypeAsc = 'memberType_ASC',
   MemberTypeDesc = 'memberType_DESC',
   NameAsc = 'name_ASC',
@@ -1056,6 +1099,86 @@ export enum MemberOrderByInput {
   UpdatedAtDesc = 'updatedAt_DESC'
 }
 
+export type MemberOrdinances = Ordinance;
+
+export type MemberOrdinancesConnectInput = {
+  Ordinance?: InputMaybe<OrdinanceConnectInput>;
+};
+
+export type MemberOrdinancesCreateInput = {
+  Ordinance?: InputMaybe<OrdinanceCreateInput>;
+};
+
+export type MemberOrdinancesCreateManyInlineInput = {
+  /** Connect multiple existing MemberOrdinances documents */
+  connect?: InputMaybe<Array<MemberOrdinancesWhereUniqueInput>>;
+  /** Create and connect multiple existing MemberOrdinances documents */
+  create?: InputMaybe<Array<MemberOrdinancesCreateInput>>;
+};
+
+export type MemberOrdinancesCreateOneInlineInput = {
+  /** Connect one existing MemberOrdinances document */
+  connect?: InputMaybe<MemberOrdinancesWhereUniqueInput>;
+  /** Create and connect one MemberOrdinances document */
+  create?: InputMaybe<MemberOrdinancesCreateInput>;
+};
+
+export type MemberOrdinancesUpdateInput = {
+  Ordinance?: InputMaybe<OrdinanceUpdateInput>;
+};
+
+export type MemberOrdinancesUpdateManyInlineInput = {
+  /** Connect multiple existing MemberOrdinances documents */
+  connect?: InputMaybe<Array<MemberOrdinancesConnectInput>>;
+  /** Create and connect multiple MemberOrdinances documents */
+  create?: InputMaybe<Array<MemberOrdinancesCreateInput>>;
+  /** Delete multiple MemberOrdinances documents */
+  delete?: InputMaybe<Array<MemberOrdinancesWhereUniqueInput>>;
+  /** Disconnect multiple MemberOrdinances documents */
+  disconnect?: InputMaybe<Array<MemberOrdinancesWhereUniqueInput>>;
+  /** Override currently-connected documents with multiple existing MemberOrdinances documents */
+  set?: InputMaybe<Array<MemberOrdinancesWhereUniqueInput>>;
+  /** Update multiple MemberOrdinances documents */
+  update?: InputMaybe<Array<MemberOrdinancesUpdateWithNestedWhereUniqueInput>>;
+  /** Upsert multiple MemberOrdinances documents */
+  upsert?: InputMaybe<Array<MemberOrdinancesUpsertWithNestedWhereUniqueInput>>;
+};
+
+export type MemberOrdinancesUpdateManyWithNestedWhereInput = {
+  Ordinance?: InputMaybe<OrdinanceUpdateManyWithNestedWhereInput>;
+};
+
+export type MemberOrdinancesUpdateOneInlineInput = {
+  /** Connect existing MemberOrdinances document */
+  connect?: InputMaybe<MemberOrdinancesWhereUniqueInput>;
+  /** Create and connect one MemberOrdinances document */
+  create?: InputMaybe<MemberOrdinancesCreateInput>;
+  /** Delete currently connected MemberOrdinances document */
+  delete?: InputMaybe<Scalars['Boolean']>;
+  /** Disconnect currently connected MemberOrdinances document */
+  disconnect?: InputMaybe<Scalars['Boolean']>;
+  /** Update single MemberOrdinances document */
+  update?: InputMaybe<MemberOrdinancesUpdateWithNestedWhereUniqueInput>;
+  /** Upsert single MemberOrdinances document */
+  upsert?: InputMaybe<MemberOrdinancesUpsertWithNestedWhereUniqueInput>;
+};
+
+export type MemberOrdinancesUpdateWithNestedWhereUniqueInput = {
+  Ordinance?: InputMaybe<OrdinanceUpdateWithNestedWhereUniqueInput>;
+};
+
+export type MemberOrdinancesUpsertWithNestedWhereUniqueInput = {
+  Ordinance?: InputMaybe<OrdinanceUpsertWithNestedWhereUniqueInput>;
+};
+
+export type MemberOrdinancesWhereInput = {
+  Ordinance?: InputMaybe<OrdinanceWhereInput>;
+};
+
+export type MemberOrdinancesWhereUniqueInput = {
+  Ordinance?: InputMaybe<OrdinanceWhereUniqueInput>;
+};
+
 export enum MemberType {
   Tae = 'TAE',
   Student = 'student',
@@ -1063,9 +1186,10 @@ export enum MemberType {
 }
 
 export type MemberUpdateInput = {
+  matriculaSiape?: InputMaybe<Scalars['Int']>;
   memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
-  ordinances?: InputMaybe<OrdinanceUpdateManyInlineInput>;
+  ordinances?: InputMaybe<MemberOrdinancesUpdateManyInlineInput>;
 };
 
 export type MemberUpdateManyInlineInput = {
@@ -1133,6 +1257,12 @@ export type MemberUpsertWithNestedWhereUniqueInput = {
   where: MemberWhereUniqueInput;
 };
 
+/** This contains a set of filters that can be used to compare values internally */
+export type MemberWhereComparatorInput = {
+  /** This field can be used to request to check if the entry is outdated by internal comparison */
+  outdated_to?: InputMaybe<Scalars['Boolean']>;
+};
+
 /** Identifies documents */
 export type MemberWhereInput = {
   /** Logical AND on all given filters. */
@@ -1159,6 +1289,9 @@ export type MemberWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<MemberWhereStageInput>;
+  documentInStages_none?: InputMaybe<MemberWhereStageInput>;
+  documentInStages_some?: InputMaybe<MemberWhereStageInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -1178,6 +1311,21 @@ export type MemberWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  matriculaSiape?: InputMaybe<Scalars['Int']>;
+  /** All values greater than the given value. */
+  matriculaSiape_gt?: InputMaybe<Scalars['Int']>;
+  /** All values greater than or equal the given value. */
+  matriculaSiape_gte?: InputMaybe<Scalars['Int']>;
+  /** All values that are contained in given list. */
+  matriculaSiape_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** All values less than the given value. */
+  matriculaSiape_lt?: InputMaybe<Scalars['Int']>;
+  /** All values less than or equal the given value. */
+  matriculaSiape_lte?: InputMaybe<Scalars['Int']>;
+  /** All values that are not equal to given value. */
+  matriculaSiape_not?: InputMaybe<Scalars['Int']>;
+  /** All values that are not contained in given list. */
+  matriculaSiape_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   memberType?: InputMaybe<MemberType>;
   /** All values that are contained in given list. */
   memberType_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
@@ -1204,9 +1352,6 @@ export type MemberWhereInput = {
   name_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   name_starts_with?: InputMaybe<Scalars['String']>;
-  ordinances_every?: InputMaybe<OrdinanceWhereInput>;
-  ordinances_none?: InputMaybe<OrdinanceWhereInput>;
-  ordinances_some?: InputMaybe<OrdinanceWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1244,9 +1389,24 @@ export type MemberWhereInput = {
   updatedBy?: InputMaybe<UserWhereInput>;
 };
 
+/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
+export type MemberWhereStageInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<MemberWhereStageInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<MemberWhereStageInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<MemberWhereStageInput>>;
+  /** This field contains fields which can be set as true or false to specify an internal comparison */
+  compareWithParent?: InputMaybe<MemberWhereComparatorInput>;
+  /** Specify the stage to compare with */
+  stage?: InputMaybe<Stage>;
+};
+
 /** References Member record uniquely */
 export type MemberWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
+  matriculaSiape?: InputMaybe<Scalars['Int']>;
 };
 
 export type Mutation = {
@@ -1863,7 +2023,6 @@ export type OrdinanceMembersArgs = {
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   locales?: InputMaybe<Array<Locale>>;
-  orderBy?: InputMaybe<MemberOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<MemberWhereInput>;
 };
@@ -1967,6 +2126,9 @@ export type OrdinanceManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<OrdinanceWhereStageInput>;
+  documentInStages_none?: InputMaybe<OrdinanceWhereStageInput>;
+  documentInStages_some?: InputMaybe<OrdinanceWhereStageInput>;
   effectiveEndDate?: InputMaybe<Scalars['Date']>;
   /** All values greater than the given value. */
   effectiveEndDate_gt?: InputMaybe<Scalars['Date']>;
@@ -2218,6 +2380,12 @@ export type OrdinanceUpsertWithNestedWhereUniqueInput = {
   where: OrdinanceWhereUniqueInput;
 };
 
+/** This contains a set of filters that can be used to compare values internally */
+export type OrdinanceWhereComparatorInput = {
+  /** This field can be used to request to check if the entry is outdated by internal comparison */
+  outdated_to?: InputMaybe<Scalars['Boolean']>;
+};
+
 /** Identifies documents */
 export type OrdinanceWhereInput = {
   /** Logical AND on all given filters. */
@@ -2244,6 +2412,9 @@ export type OrdinanceWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<OrdinanceWhereStageInput>;
+  documentInStages_none?: InputMaybe<OrdinanceWhereStageInput>;
+  documentInStages_some?: InputMaybe<OrdinanceWhereStageInput>;
   effectiveEndDate?: InputMaybe<Scalars['Date']>;
   /** All values greater than the given value. */
   effectiveEndDate_gt?: InputMaybe<Scalars['Date']>;
@@ -2383,6 +2554,20 @@ export type OrdinanceWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+};
+
+/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
+export type OrdinanceWhereStageInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<OrdinanceWhereStageInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<OrdinanceWhereStageInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<OrdinanceWhereStageInput>>;
+  /** This field contains fields which can be set as true or false to specify an internal comparison */
+  compareWithParent?: InputMaybe<OrdinanceWhereComparatorInput>;
+  /** Specify the stage to compare with */
+  stage?: InputMaybe<Stage>;
 };
 
 /** References Ordinance record uniquely */
@@ -3822,6 +4007,9 @@ export type UserManyWhereInput = {
   createdAt_not?: InputMaybe<Scalars['DateTime']>;
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  documentInStages_every?: InputMaybe<UserWhereStageInput>;
+  documentInStages_none?: InputMaybe<UserWhereStageInput>;
+  documentInStages_some?: InputMaybe<UserWhereStageInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -3956,6 +4144,12 @@ export type UserUpdateOneInlineInput = {
   disconnect?: InputMaybe<Scalars['Boolean']>;
 };
 
+/** This contains a set of filters that can be used to compare values internally */
+export type UserWhereComparatorInput = {
+  /** This field can be used to request to check if the entry is outdated by internal comparison */
+  outdated_to?: InputMaybe<Scalars['Boolean']>;
+};
+
 /** Identifies documents */
 export type UserWhereInput = {
   /** Logical AND on all given filters. */
@@ -3981,6 +4175,9 @@ export type UserWhereInput = {
   createdAt_not?: InputMaybe<Scalars['DateTime']>;
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  documentInStages_every?: InputMaybe<UserWhereStageInput>;
+  documentInStages_none?: InputMaybe<UserWhereStageInput>;
+  documentInStages_some?: InputMaybe<UserWhereStageInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -4078,6 +4275,20 @@ export type UserWhereInput = {
   updatedAt_not?: InputMaybe<Scalars['DateTime']>;
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+};
+
+/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
+export type UserWhereStageInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<UserWhereStageInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<UserWhereStageInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<UserWhereStageInput>>;
+  /** This field contains fields which can be set as true or false to specify an internal comparison */
+  compareWithParent?: InputMaybe<UserWhereComparatorInput>;
+  /** Specify the stage to compare with */
+  stage?: InputMaybe<Stage>;
 };
 
 /** References User record uniquely */
@@ -4178,25 +4389,82 @@ export enum _SystemDateTimeFieldVariation {
   Localization = 'localization'
 }
 
+export type CreateMemberMutationVariables = Exact<{
+  name: Scalars['String'];
+  memberType: MemberType;
+  matriculaSiape: Scalars['Int'];
+}>;
+
+
+export type CreateMemberMutation = { __typename?: 'Mutation', createMember?: { __typename?: 'Member', id: string } | null };
+
 export type CreateOrdinanceMutationVariables = Exact<{
   number: Scalars['String'];
   subject: Scalars['String'];
   effectiveStartDate: Scalars['Date'];
   ordinanceType: OrdinanceType;
   effectiveEndDate?: InputMaybe<Scalars['Date']>;
-  name: Scalars['String'];
-  memberType: MemberType;
 }>;
 
 
-export type CreateOrdinanceMutation = { __typename?: 'Mutation', createOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+export type CreateOrdinanceMutation = { __typename?: 'Mutation', createOrdinance?: { __typename?: 'Ordinance', id: string, number: string } | null };
+
+export type DeleteMemberMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type DeleteMemberMutation = { __typename?: 'Mutation', deleteMember?: { __typename?: 'Member', id: string } | null };
+
+export type DeleteOrdinanceMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type DeleteOrdinanceMutation = { __typename?: 'Mutation', deleteOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+
+export type PublishMemberMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type PublishMemberMutation = { __typename?: 'Mutation', publishMember?: { __typename?: 'Member', id: string } | null };
+
+export type PublishOrdinanceMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+  number?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type PublishOrdinanceMutation = { __typename?: 'Mutation', publishOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+
+export type UpdateMemberMutationVariables = Exact<{
+  idMember: Scalars['ID'];
+  idOrdinance: Scalars['ID'];
+}>;
+
+
+export type UpdateMemberMutation = { __typename?: 'Mutation', updateMember?: { __typename?: 'Member', id: string } | null };
 
 export type UpdateOrdinanceMutationVariables = Exact<{
+  idMember: Scalars['ID'];
+  idOrdinance: Scalars['ID'];
+}>;
+
+
+export type UpdateOrdinanceMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+
+export type UpdateOrdinanceSituationMutationVariables = Exact<{
   number: Scalars['String'];
 }>;
 
 
-export type UpdateOrdinanceMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', ordinanceSituation?: OrdinanceSituation | null } | null };
+export type UpdateOrdinanceSituationMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', ordinanceSituation?: OrdinanceSituation | null } | null };
+
+export type GetMembersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, memberType: MemberType, matriculaSiape: number }> };
 
 export type GetOrdinancesAsideQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4206,15 +4474,53 @@ export type GetOrdinancesAsideQuery = { __typename?: 'Query', ordinances: Array<
 export type GetOrdinancesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveStartDate: any, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', name: string }> }> };
+export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveEndDate?: any | null, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', name: string }> }> };
 
 
-export const CreateOrdinanceDocument = gql`
-    mutation CreateOrdinance($number: String!, $subject: String!, $effectiveStartDate: Date!, $ordinanceType: OrdinanceType!, $effectiveEndDate: Date, $name: String!, $memberType: MemberType!) {
-  createOrdinance(
-    data: {number: $number, subject: $subject, effectiveStartDate: $effectiveStartDate, ordinanceType: $ordinanceType, effectiveEndDate: $effectiveEndDate, members: {create: {name: $name, memberType: $memberType}}}
+export const CreateMemberDocument = gql`
+    mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!) {
+  createMember(
+    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape}
   ) {
     id
+  }
+}
+    `;
+export type CreateMemberMutationFn = Apollo.MutationFunction<CreateMemberMutation, CreateMemberMutationVariables>;
+
+/**
+ * __useCreateMemberMutation__
+ *
+ * To run a mutation, you first call `useCreateMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMemberMutation, { data, loading, error }] = useCreateMemberMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      memberType: // value for 'memberType'
+ *      matriculaSiape: // value for 'matriculaSiape'
+ *   },
+ * });
+ */
+export function useCreateMemberMutation(baseOptions?: Apollo.MutationHookOptions<CreateMemberMutation, CreateMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMemberMutation, CreateMemberMutationVariables>(CreateMemberDocument, options);
+      }
+export type CreateMemberMutationHookResult = ReturnType<typeof useCreateMemberMutation>;
+export type CreateMemberMutationResult = Apollo.MutationResult<CreateMemberMutation>;
+export type CreateMemberMutationOptions = Apollo.BaseMutationOptions<CreateMemberMutation, CreateMemberMutationVariables>;
+export const CreateOrdinanceDocument = gql`
+    mutation CreateOrdinance($number: String!, $subject: String!, $effectiveStartDate: Date!, $ordinanceType: OrdinanceType!, $effectiveEndDate: Date) {
+  createOrdinance(
+    data: {number: $number, subject: $subject, effectiveStartDate: $effectiveStartDate, ordinanceType: $ordinanceType, effectiveEndDate: $effectiveEndDate}
+  ) {
+    id
+    number
   }
 }
     `;
@@ -4238,8 +4544,6 @@ export type CreateOrdinanceMutationFn = Apollo.MutationFunction<CreateOrdinanceM
  *      effectiveStartDate: // value for 'effectiveStartDate'
  *      ordinanceType: // value for 'ordinanceType'
  *      effectiveEndDate: // value for 'effectiveEndDate'
- *      name: // value for 'name'
- *      memberType: // value for 'memberType'
  *   },
  * });
  */
@@ -4250,10 +4554,183 @@ export function useCreateOrdinanceMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateOrdinanceMutationHookResult = ReturnType<typeof useCreateOrdinanceMutation>;
 export type CreateOrdinanceMutationResult = Apollo.MutationResult<CreateOrdinanceMutation>;
 export type CreateOrdinanceMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>;
+export const DeleteMemberDocument = gql`
+    mutation DeleteMember($id: ID) {
+  deleteMember(where: {id: $id}) {
+    id
+  }
+}
+    `;
+export type DeleteMemberMutationFn = Apollo.MutationFunction<DeleteMemberMutation, DeleteMemberMutationVariables>;
+
+/**
+ * __useDeleteMemberMutation__
+ *
+ * To run a mutation, you first call `useDeleteMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMemberMutation, { data, loading, error }] = useDeleteMemberMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteMemberMutation(baseOptions?: Apollo.MutationHookOptions<DeleteMemberMutation, DeleteMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteMemberMutation, DeleteMemberMutationVariables>(DeleteMemberDocument, options);
+      }
+export type DeleteMemberMutationHookResult = ReturnType<typeof useDeleteMemberMutation>;
+export type DeleteMemberMutationResult = Apollo.MutationResult<DeleteMemberMutation>;
+export type DeleteMemberMutationOptions = Apollo.BaseMutationOptions<DeleteMemberMutation, DeleteMemberMutationVariables>;
+export const DeleteOrdinanceDocument = gql`
+    mutation DeleteOrdinance($id: ID) {
+  deleteOrdinance(where: {id: $id}) {
+    id
+  }
+}
+    `;
+export type DeleteOrdinanceMutationFn = Apollo.MutationFunction<DeleteOrdinanceMutation, DeleteOrdinanceMutationVariables>;
+
+/**
+ * __useDeleteOrdinanceMutation__
+ *
+ * To run a mutation, you first call `useDeleteOrdinanceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteOrdinanceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteOrdinanceMutation, { data, loading, error }] = useDeleteOrdinanceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteOrdinanceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOrdinanceMutation, DeleteOrdinanceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteOrdinanceMutation, DeleteOrdinanceMutationVariables>(DeleteOrdinanceDocument, options);
+      }
+export type DeleteOrdinanceMutationHookResult = ReturnType<typeof useDeleteOrdinanceMutation>;
+export type DeleteOrdinanceMutationResult = Apollo.MutationResult<DeleteOrdinanceMutation>;
+export type DeleteOrdinanceMutationOptions = Apollo.BaseMutationOptions<DeleteOrdinanceMutation, DeleteOrdinanceMutationVariables>;
+export const PublishMemberDocument = gql`
+    mutation PublishMember($id: ID) {
+  publishMember(where: {id: $id}) {
+    id
+  }
+}
+    `;
+export type PublishMemberMutationFn = Apollo.MutationFunction<PublishMemberMutation, PublishMemberMutationVariables>;
+
+/**
+ * __usePublishMemberMutation__
+ *
+ * To run a mutation, you first call `usePublishMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePublishMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [publishMemberMutation, { data, loading, error }] = usePublishMemberMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePublishMemberMutation(baseOptions?: Apollo.MutationHookOptions<PublishMemberMutation, PublishMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PublishMemberMutation, PublishMemberMutationVariables>(PublishMemberDocument, options);
+      }
+export type PublishMemberMutationHookResult = ReturnType<typeof usePublishMemberMutation>;
+export type PublishMemberMutationResult = Apollo.MutationResult<PublishMemberMutation>;
+export type PublishMemberMutationOptions = Apollo.BaseMutationOptions<PublishMemberMutation, PublishMemberMutationVariables>;
+export const PublishOrdinanceDocument = gql`
+    mutation PublishOrdinance($id: ID, $number: String) {
+  publishOrdinance(where: {id: $id, number: $number}) {
+    id
+  }
+}
+    `;
+export type PublishOrdinanceMutationFn = Apollo.MutationFunction<PublishOrdinanceMutation, PublishOrdinanceMutationVariables>;
+
+/**
+ * __usePublishOrdinanceMutation__
+ *
+ * To run a mutation, you first call `usePublishOrdinanceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePublishOrdinanceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [publishOrdinanceMutation, { data, loading, error }] = usePublishOrdinanceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      number: // value for 'number'
+ *   },
+ * });
+ */
+export function usePublishOrdinanceMutation(baseOptions?: Apollo.MutationHookOptions<PublishOrdinanceMutation, PublishOrdinanceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PublishOrdinanceMutation, PublishOrdinanceMutationVariables>(PublishOrdinanceDocument, options);
+      }
+export type PublishOrdinanceMutationHookResult = ReturnType<typeof usePublishOrdinanceMutation>;
+export type PublishOrdinanceMutationResult = Apollo.MutationResult<PublishOrdinanceMutation>;
+export type PublishOrdinanceMutationOptions = Apollo.BaseMutationOptions<PublishOrdinanceMutation, PublishOrdinanceMutationVariables>;
+export const UpdateMemberDocument = gql`
+    mutation UpdateMember($idMember: ID!, $idOrdinance: ID!) {
+  updateMember(
+    data: {ordinances: {connect: {Ordinance: {where: {id: $idOrdinance}}}}}
+    where: {id: $idMember}
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateMemberMutationFn = Apollo.MutationFunction<UpdateMemberMutation, UpdateMemberMutationVariables>;
+
+/**
+ * __useUpdateMemberMutation__
+ *
+ * To run a mutation, you first call `useUpdateMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateMemberMutation, { data, loading, error }] = useUpdateMemberMutation({
+ *   variables: {
+ *      idMember: // value for 'idMember'
+ *      idOrdinance: // value for 'idOrdinance'
+ *   },
+ * });
+ */
+export function useUpdateMemberMutation(baseOptions?: Apollo.MutationHookOptions<UpdateMemberMutation, UpdateMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateMemberMutation, UpdateMemberMutationVariables>(UpdateMemberDocument, options);
+      }
+export type UpdateMemberMutationHookResult = ReturnType<typeof useUpdateMemberMutation>;
+export type UpdateMemberMutationResult = Apollo.MutationResult<UpdateMemberMutation>;
+export type UpdateMemberMutationOptions = Apollo.BaseMutationOptions<UpdateMemberMutation, UpdateMemberMutationVariables>;
 export const UpdateOrdinanceDocument = gql`
-    mutation UpdateOrdinance($number: String!) {
-  updateOrdinance(data: {ordinanceSituation: revoked}, where: {number: $number}) {
-    ordinanceSituation
+    mutation UpdateOrdinance($idMember: ID!, $idOrdinance: ID!) {
+  updateOrdinance(
+    data: {members: {connect: {where: {id: $idMember}}}}
+    where: {id: $idOrdinance}
+  ) {
+    id
   }
 }
     `;
@@ -4272,7 +4749,8 @@ export type UpdateOrdinanceMutationFn = Apollo.MutationFunction<UpdateOrdinanceM
  * @example
  * const [updateOrdinanceMutation, { data, loading, error }] = useUpdateOrdinanceMutation({
  *   variables: {
- *      number: // value for 'number'
+ *      idMember: // value for 'idMember'
+ *      idOrdinance: // value for 'idOrdinance'
  *   },
  * });
  */
@@ -4283,9 +4761,79 @@ export function useUpdateOrdinanceMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateOrdinanceMutationHookResult = ReturnType<typeof useUpdateOrdinanceMutation>;
 export type UpdateOrdinanceMutationResult = Apollo.MutationResult<UpdateOrdinanceMutation>;
 export type UpdateOrdinanceMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceMutation, UpdateOrdinanceMutationVariables>;
+export const UpdateOrdinanceSituationDocument = gql`
+    mutation UpdateOrdinanceSituation($number: String!) {
+  updateOrdinance(data: {ordinanceSituation: revoked}, where: {number: $number}) {
+    ordinanceSituation
+  }
+}
+    `;
+export type UpdateOrdinanceSituationMutationFn = Apollo.MutationFunction<UpdateOrdinanceSituationMutation, UpdateOrdinanceSituationMutationVariables>;
+
+/**
+ * __useUpdateOrdinanceSituationMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrdinanceSituationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrdinanceSituationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrdinanceSituationMutation, { data, loading, error }] = useUpdateOrdinanceSituationMutation({
+ *   variables: {
+ *      number: // value for 'number'
+ *   },
+ * });
+ */
+export function useUpdateOrdinanceSituationMutation(baseOptions?: Apollo.MutationHookOptions<UpdateOrdinanceSituationMutation, UpdateOrdinanceSituationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateOrdinanceSituationMutation, UpdateOrdinanceSituationMutationVariables>(UpdateOrdinanceSituationDocument, options);
+      }
+export type UpdateOrdinanceSituationMutationHookResult = ReturnType<typeof useUpdateOrdinanceSituationMutation>;
+export type UpdateOrdinanceSituationMutationResult = Apollo.MutationResult<UpdateOrdinanceSituationMutation>;
+export type UpdateOrdinanceSituationMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceSituationMutation, UpdateOrdinanceSituationMutationVariables>;
+export const GetMembersDocument = gql`
+    query GetMembers {
+  members(stage: DRAFT) {
+    id
+    name
+    memberType
+    matriculaSiape
+  }
+}
+    `;
+
+/**
+ * __useGetMembersQuery__
+ *
+ * To run a query within a React component, call `useGetMembersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMembersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMembersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMembersQuery(baseOptions?: Apollo.QueryHookOptions<GetMembersQuery, GetMembersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMembersQuery, GetMembersQueryVariables>(GetMembersDocument, options);
+      }
+export function useGetMembersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMembersQuery, GetMembersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMembersQuery, GetMembersQueryVariables>(GetMembersDocument, options);
+        }
+export type GetMembersQueryHookResult = ReturnType<typeof useGetMembersQuery>;
+export type GetMembersLazyQueryHookResult = ReturnType<typeof useGetMembersLazyQuery>;
+export type GetMembersQueryResult = Apollo.QueryResult<GetMembersQuery, GetMembersQueryVariables>;
 export const GetOrdinancesAsideDocument = gql`
     query GetOrdinancesAside {
-  ordinances(orderBy: effectiveStartDate_ASC) {
+  ordinances(orderBy: effectiveStartDate_ASC, stage: DRAFT) {
     id
     number
     ordinanceType
@@ -4324,10 +4872,10 @@ export type GetOrdinancesAsideLazyQueryHookResult = ReturnType<typeof useGetOrdi
 export type GetOrdinancesAsideQueryResult = Apollo.QueryResult<GetOrdinancesAsideQuery, GetOrdinancesAsideQueryVariables>;
 export const GetOrdinancesDocument = gql`
     query GetOrdinances {
-  ordinances(orderBy: effectiveStartDate_DESC, stage: DRAFT) {
+  ordinances(orderBy: effectiveEndDate_ASC, stage: DRAFT) {
     id
     number
-    effectiveStartDate
+    effectiveEndDate
     members {
       name
     }

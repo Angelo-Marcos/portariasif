@@ -1,5 +1,5 @@
 query GetOrdinancesAside {
-  ordinances(orderBy: effectiveStartDate_ASC) {
+  ordinances(orderBy: effectiveStartDate_ASC, stage: DRAFT) {
     id
     number
     ordinanceType

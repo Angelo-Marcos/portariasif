@@ -1,0 +1,5 @@
+mutation DeleteOrdinance($id: ID) {
+  deleteOrdinance(where: {id: $id}) {
+    id
+  }
+}
