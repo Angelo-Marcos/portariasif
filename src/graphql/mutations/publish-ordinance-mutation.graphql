@@ -1,0 +1,5 @@
+mutation PublishOrdinance($id: ID, $number: String) {
+  publishOrdinance(where: {id: $id, number: $number}) {
+    id
+  }
+}

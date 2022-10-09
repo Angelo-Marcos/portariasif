@@ -1,0 +1,7 @@
+mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!) {
+  createMember(
+    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape}
+  ) {
+    id
+  }
+}

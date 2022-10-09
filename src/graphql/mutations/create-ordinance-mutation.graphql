@@ -1,0 +1,14 @@
+mutation CreateOrdinance($number: String!, $subject: String!, $effectiveStartDate: Date!, $ordinanceType: OrdinanceType!, $effectiveEndDate: Date) {
+  createOrdinance(
+    data: {
+      number: $number, 
+      subject: $subject, 
+      effectiveStartDate: $effectiveStartDate, 
+      ordinanceType: $ordinanceType, 
+      effectiveEndDate: $effectiveEndDate, 
+    }
+  ) {
+    id
+    number
+  }
+}

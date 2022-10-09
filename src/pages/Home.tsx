@@ -1,10 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
-import { getArgumentValues } from "graphql";
 import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
 import { OrdinanceAside } from "../components/OrdinanceAside";
-import { GetOrdinancesDocument, useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
-
+import { useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
 
 export function Home() {
 
@@ -17,14 +14,11 @@ export function Home() {
             <Header />
 
             <main className="flex flex-1 px-48">
-                <aside className="flex flex-col w-[276px] px-[10px] bg-gray-200 mt-[54px] justify-center ">
+                <aside className="flex flex-col w-[276px] max-h-full px-[10px] bg-gray-200 mt-[54px] justify-center overflow-auto">
                     <span className="flex mt-[21px] font-light text-xl text-gray-500 justify-center">
                         Recentes
                     </span>
-                    <div className="flex-1 h-full py-2 border-t border-green-300">
-
-
-
+                    <div className="h-full py-2 border-t border-green-300">
                         {ordinancesAside?.ordinances.map(ordinance => {
                             return (
                                 <OrdinanceAside
@@ -48,10 +42,10 @@ export function Home() {
                             <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
                                 <tr>
                                     <th className="px-3">Número</th>
-                                    <th className="px-0">Data Início Vigência</th>
+                                    <th className="px-0">Data Fim Vigência</th>
                                     <th>Membro</th>
                                     <th>Tipo de Portaria</th>
-                                    <th>Assunto</th>
+                                    <th className="w-52">Assunto</th>
                                 </tr>
                             </thead>
                             <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
@@ -60,7 +54,7 @@ export function Home() {
                                         <Ordinance
                                             key={ordinance.id}
                                             number={ordinance.number}
-                                            effectiveStartDate={new Date(ordinance.effectiveStartDate)}
+                                            effectiveEndDate={new Date(ordinance.effectiveEndDate)}
                                             members={ordinance.members}
                                             type={ordinance.ordinanceType}
                                             subject={ordinance.subject}

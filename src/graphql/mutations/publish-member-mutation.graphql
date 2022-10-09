@@ -1,0 +1,5 @@
+mutation PublishMember($id: ID) {
+  publishMember(where: {id: $id}) {
+    id
+  }
+}

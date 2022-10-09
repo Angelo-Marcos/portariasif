@@ -14,7 +14,7 @@ export function Header() {
             <nav className="flex h-[33px] justify-center items-center px-48 bg-green-300">
                 <ul className="flex justify-center flex-col lg:flex-row list-none lg:ml-auto">
                     <li className="nav-item">
-                        <Link to={'/'} className="pr-4 flex items-center font-medium text-xl leading-relaxed hover:opacity-75">Home</Link>
+                        <a href="/" className="pr-4 flex items-center font-medium text-xl leading-relaxed hover:opacity-75">Home</a>
                     </li>
 
                     <li className="nav-item">
