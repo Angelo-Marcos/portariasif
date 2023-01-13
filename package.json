@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
+    "@hookform/resolvers": "^2.9.8",
     "@tailwindcss/forms": "^0.5.2",
     "date-fns": "^2.29.1",
     "graphql": "^16.6.0",
@@ -17,10 +18,12 @@
     "react": "^18.0.0",
     "react-debounce-input": "^3.3.0",
     "react-dom": "^18.0.0",
+    "react-hook-form": "^7.37.0",
     "react-input-mask": "^2.0.4",
     "react-modal": "^3.15.1",
     "react-router-dom": "^6.3.0",
-    "react-select": "^5.4.0"
+    "react-select": "^5.4.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.12.1",
