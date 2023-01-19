@@ -430,7 +430,7 @@ export function Register() {
                                 mask="999999"
                                 pattern="[0-9]{6,7}"
                                 title="6 to 7 numbers"
-                                className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md outline-none border-none  focus:outline-none focus:ring-1 focus:ring-green-500"
+                                className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500"
                                 onChange={event => setMatriculaSiape(event.target.value)}
                                 value={matriculaSiape}
                             />
