@@ -1,0 +1,17 @@
+query GetOrdinancesByMemberName($name: String!) {
+  membersConnection(where: {name_starts_with: $name}) {
+    edges {
+      node {
+        ordinances {
+          ... on Ordinance {
+            number
+            ordinanceType
+            effectiveEndDate
+            effectiveStartDate
+          }
+        }
+        name
+      }
+    }
+  }
+}

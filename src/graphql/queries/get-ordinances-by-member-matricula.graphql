@@ -1,0 +1,12 @@
+query GetOrdinancesByMemberMatricula($matriculaSiape: Int!) {
+  member(where: {matriculaSiape: $matriculaSiape}) {
+    ordinances {
+      ... on Ordinance {
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+      }
+    }
+  }
+}
