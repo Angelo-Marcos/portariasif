@@ -52,6 +52,7 @@ export function Register() {
     const { register: registerOrdinance, handleSubmit: handleSubmitOrdinance, getValues: getValuesOrdinance, formState: { errors: errorsOrdinance } } = useForm<IFormInputOrdinance>({
         resolver: yupResolver(validationsForm)
     });
+
     const onSubmitOrdinance = async (data: IFormInputOrdinance) => {
         if (members.length > 0) {
             String(data.effectiveEndDate) === '' ?
