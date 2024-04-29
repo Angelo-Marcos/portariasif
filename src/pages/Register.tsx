@@ -107,8 +107,6 @@ export function Register() {
 
     const { data: dataMembers } = useGetMembersQuery();
 
-    console.log(dataMembers)
-
     const membersFilters = dataMembers?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
     const handleClickAutoComplete = (member: MemberProps) => {

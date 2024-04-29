@@ -1,0 +1,16 @@
+query GetOrdinancesByType($ordinanceType: OrdinanceType!) {
+  ordinances(
+    where: {ordinanceType: $ordinanceType}, 
+    orderBy: effectiveStartDate_ASC
+    stage: DRAFT
+    ) {
+        id
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+        members {
+        name
+        }
+  }
+}

@@ -4574,6 +4574,14 @@ export type GetOrdinancesAsideQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetOrdinancesAsideQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, members: Array<{ __typename?: 'Member', name: string }> }> };
 
+export type GetOrdinancesByDateQueryVariables = Exact<{
+  dateStart: Scalars['Date'];
+  dateEnd: Scalars['Date'];
+}>;
+
+
+export type GetOrdinancesByDateQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', name: string }> }> };
+
 export type GetOrdinancesByMemberMatriculaQueryVariables = Exact<{
   matriculaSiape: Scalars['Int'];
 }>;
@@ -4587,6 +4595,13 @@ export type GetOrdinancesByMemberNameQueryVariables = Exact<{
 
 
 export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
+
+export type GetOrdinancesByTypeQueryVariables = Exact<{
+  ordinanceType: OrdinanceType;
+}>;
+
+
+export type GetOrdinancesByTypeQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', name: string }> }> };
 
 export type GetOrdinancesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5029,6 +5044,53 @@ export function useGetOrdinancesAsideLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetOrdinancesAsideQueryHookResult = ReturnType<typeof useGetOrdinancesAsideQuery>;
 export type GetOrdinancesAsideLazyQueryHookResult = ReturnType<typeof useGetOrdinancesAsideLazyQuery>;
 export type GetOrdinancesAsideQueryResult = Apollo.QueryResult<GetOrdinancesAsideQuery, GetOrdinancesAsideQueryVariables>;
+export const GetOrdinancesByDateDocument = gql`
+    query GetOrdinancesByDate($dateStart: Date!, $dateEnd: Date!) {
+  ordinances(
+    where: {effectiveStartDate_gte: $dateStart, effectiveStartDate_lte: $dateEnd}
+    orderBy: effectiveStartDate_ASC
+    stage: DRAFT
+  ) {
+    id
+    number
+    ordinanceType
+    effectiveStartDate
+    effectiveEndDate
+    members {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOrdinancesByDateQuery__
+ *
+ * To run a query within a React component, call `useGetOrdinancesByDateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrdinancesByDateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrdinancesByDateQuery({
+ *   variables: {
+ *      dateStart: // value for 'dateStart'
+ *      dateEnd: // value for 'dateEnd'
+ *   },
+ * });
+ */
+export function useGetOrdinancesByDateQuery(baseOptions: Apollo.QueryHookOptions<GetOrdinancesByDateQuery, GetOrdinancesByDateQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOrdinancesByDateQuery, GetOrdinancesByDateQueryVariables>(GetOrdinancesByDateDocument, options);
+      }
+export function useGetOrdinancesByDateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOrdinancesByDateQuery, GetOrdinancesByDateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOrdinancesByDateQuery, GetOrdinancesByDateQueryVariables>(GetOrdinancesByDateDocument, options);
+        }
+export type GetOrdinancesByDateQueryHookResult = ReturnType<typeof useGetOrdinancesByDateQuery>;
+export type GetOrdinancesByDateLazyQueryHookResult = ReturnType<typeof useGetOrdinancesByDateLazyQuery>;
+export type GetOrdinancesByDateQueryResult = Apollo.QueryResult<GetOrdinancesByDateQuery, GetOrdinancesByDateQueryVariables>;
 export const GetOrdinancesByMemberMatriculaDocument = gql`
     query GetOrdinancesByMemberMatricula($matriculaSiape: Int!) {
   member(where: {matriculaSiape: $matriculaSiape}, stage: DRAFT) {
@@ -5116,6 +5178,52 @@ export function useGetOrdinancesByMemberNameLazyQuery(baseOptions?: Apollo.LazyQ
 export type GetOrdinancesByMemberNameQueryHookResult = ReturnType<typeof useGetOrdinancesByMemberNameQuery>;
 export type GetOrdinancesByMemberNameLazyQueryHookResult = ReturnType<typeof useGetOrdinancesByMemberNameLazyQuery>;
 export type GetOrdinancesByMemberNameQueryResult = Apollo.QueryResult<GetOrdinancesByMemberNameQuery, GetOrdinancesByMemberNameQueryVariables>;
+export const GetOrdinancesByTypeDocument = gql`
+    query GetOrdinancesByType($ordinanceType: OrdinanceType!) {
+  ordinances(
+    where: {ordinanceType: $ordinanceType}
+    orderBy: effectiveStartDate_ASC
+    stage: DRAFT
+  ) {
+    id
+    number
+    ordinanceType
+    effectiveStartDate
+    effectiveEndDate
+    members {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOrdinancesByTypeQuery__
+ *
+ * To run a query within a React component, call `useGetOrdinancesByTypeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrdinancesByTypeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrdinancesByTypeQuery({
+ *   variables: {
+ *      ordinanceType: // value for 'ordinanceType'
+ *   },
+ * });
+ */
+export function useGetOrdinancesByTypeQuery(baseOptions: Apollo.QueryHookOptions<GetOrdinancesByTypeQuery, GetOrdinancesByTypeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOrdinancesByTypeQuery, GetOrdinancesByTypeQueryVariables>(GetOrdinancesByTypeDocument, options);
+      }
+export function useGetOrdinancesByTypeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOrdinancesByTypeQuery, GetOrdinancesByTypeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOrdinancesByTypeQuery, GetOrdinancesByTypeQueryVariables>(GetOrdinancesByTypeDocument, options);
+        }
+export type GetOrdinancesByTypeQueryHookResult = ReturnType<typeof useGetOrdinancesByTypeQuery>;
+export type GetOrdinancesByTypeLazyQueryHookResult = ReturnType<typeof useGetOrdinancesByTypeLazyQuery>;
+export type GetOrdinancesByTypeQueryResult = Apollo.QueryResult<GetOrdinancesByTypeQuery, GetOrdinancesByTypeQueryVariables>;
 export const GetOrdinancesDocument = gql`
     query GetOrdinances {
   ordinances(orderBy: effectiveEndDate_ASC, stage: DRAFT) {

@@ -1,12 +1,15 @@
 import { Header } from "../components/Header";
 import InputMask from "react-input-mask"
 import { FormEvent, useState } from "react";
-import { MemberType, OrdinanceType, useGetOrdinanceByNumberQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery } from "../graphql/generated";
+import { MemberType, OrdinanceType, useGetOrdinanceByNumberQuery, useGetOrdinancesByDateQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesByTypeQuery } from "../graphql/generated";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { get } from "react-hook-form/dist/utils";
 import { number } from "yup";
 import { Ordinance } from "../components/Ordinance";
 import { tr } from "date-fns/locale";
+import { format } from "date-fns";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 
 interface IFormInputSearch {
@@ -19,16 +22,36 @@ interface IFormInputSearch {
     memberType: MemberType
 }
 
-export function Search() {
-    // const [number, setNumber] = useState('');
-    // const [ordinanceType, setOrdinanceType] = useState<OrdinanceType>(OrdinanceType.Designation);
-    // const [effectiveStartDate, setEffectiveStartDate] = useState('');
-    // const [effectiveEndDate, setEffectiveEndDate] = useState('');
-    // const [name, setName] = useState('');
-    // const [matriculaSiape, setMatriculaSiape] = useState('');
-    // const [memberType, setMemberType] = useState<MemberType>(MemberType.Student);
+const validationsForm = yup.object({
+    number: yup.string().test('oneOfRequired',
+        'Pelo menos um campo deve ser preenchido!',
+        function (item) {
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+        }),
+    ordinanceType: yup.string().test('oneOfRequired',
+        'Pelo menos um campo deve ser preenchido!',
+        function (item) {
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+        }),
+    member: yup.string().test('oneOfRequired',
+        'Pelo menos um campo deve ser preenchido!',
+        function (item) {
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+        }),
+    matricula: yup.string().test('oneOfRequired',
+        'Pelo menos um campo deve ser preenchido!',
+        function (item) {
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+        }),
+});
 
-    const { register, handleSubmit: handleSubmitSearch, getValues, formState: { errors: errorsOrdinance } } = useForm<IFormInputSearch>();
+export function Search() {
+
+    const { register, handleSubmit: handleSubmitSearch, getValues, formState: { errors: errorsOrdinance, } } = useForm<IFormInputSearch>({
+        resolver: yupResolver(validationsForm)
+    });
+    // const effectiveStartDate = format(getValues('effectiveStartDate'), "yyyy/MM/dd")
+    // const effectiveEndtDate = format(getValues('effectiveEndDate'), "yyyy/MM/dd")
 
     async function onSubmit(data: IFormInputSearch) {
 
@@ -52,25 +75,18 @@ export function Search() {
         }
     })
 
-    console.log(
-        dataOrdincesByMemberName?.members.map(member => {
-            return (
-                member.ordinances.map(ordinance => {
+    const { data: dataOrdinancesByDate } = useGetOrdinancesByDateQuery({
+        variables: {
+            dateStart: getValues('effectiveStartDate'),
+            dateEnd: getValues('effectiveEndDate')
+        }
+    })
 
-
-                    ordinance.number
-                    ordinance.ordinanceType
-                    ordinance.effectiveStartDate
-                    ordinance.effectiveEndDate
-                    member.name
-
-                })
-
-            )
-        })
-    )
-
-    console.log(getValues('member'))
+    const { data: dataOrdinancesByType } = useGetOrdinancesByTypeQuery({
+        variables: {
+            ordinanceType: getValues('ordinanceType')
+        }
+    })
 
     return (
 
@@ -93,13 +109,14 @@ export function Search() {
                                 className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
 
                             />
+
                         </div>
                         <div className="flex mt-4">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Tipo:
                             </label>
                             <select
-                                // {...register("ordinanceType")}
+                                {...register("ordinanceType")}
                                 className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                             // onChange={event => setOrdinanceType(event.target.value as OrdinanceType)}
                             // value={ordinanceType}
@@ -114,7 +131,7 @@ export function Search() {
                                 Data de início da vigência:
                             </label>
                             <input
-                                // {...register("effectiveStartDate")}
+                                {...register("effectiveStartDate")}
                                 type="date"
                                 className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" placeholder=" "
                             // onChange={event => setEffectiveStartDate(event.target.value)}
@@ -128,7 +145,7 @@ export function Search() {
                                 Data de encerramento da vigência:
                             </label>
                             <input
-
+                                {...register("effectiveEndDate")}
                                 type="date"
                                 className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                             // onChange={event => setEffectiveEndDate(event.target.value)}
@@ -180,14 +197,17 @@ export function Search() {
                             <option value="student" className="text-gray-500 text-xl font-light">Discente</option>
                         </select>
                     </div>
-                    <div className="flex mb-4">
+                    <div className="flex mb-4 mt-14">
                         <button
                             // onClick={handleClickSearch}
                             type="submit"
-                            className="flex justify-center items-center w-[140px] h-[50px] mt-14 leading-none bg-green-300 rounded font-medium text-xl hover:bg-green-700 transition-colors disabled:opacity-50"
+                            className="flex justify-center items-center w-[140px] h-[50px] leading-none bg-green-300 rounded font-medium text-xl hover:bg-green-700 transition-colors disabled:opacity-50"
                         >
                             Pesquisar
                         </button>
+                        <p className="flex justify-center items-center my-auto ml-2 text-red-800 text-sm">
+                            {errorsOrdinance.number?.message}
+                        </p>
                     </div>
                     <div className="my-10">
                         {dataOrdinanceByNumber?.ordinance != null || dataOrdinancesByMemberMatricula != null || dataOrdincesByMemberName != null ?
@@ -206,7 +226,7 @@ export function Search() {
                                     {getValues('number').length == 8 &&
                                         <tr>
                                             <td>{dataOrdinanceByNumber?.ordinance?.number}</td>
-                                            <td>{dataOrdinanceByNumber?.ordinance?.ordinanceType}</td>
+                                            <td>{dataOrdinanceByNumber?.ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
                                             <td>{dataOrdinanceByNumber?.ordinance?.effectiveStartDate}</td>
                                             <td>{dataOrdinanceByNumber?.ordinance?.effectiveEndDate}</td>
                                             <td>
@@ -226,7 +246,7 @@ export function Search() {
                                             return (
                                                 <tr>
                                                     <td>{ordinance.number}</td>
-                                                    <td>{ordinance.ordinanceType}</td>
+                                                    <td>{ordinance.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
                                                     <td>{ordinance.effectiveStartDate}</td>
                                                     <td>{ordinance.effectiveEndDate}</td>
                                                     <td>{dataOrdinancesByMemberMatricula.member?.name}</td>
@@ -244,7 +264,7 @@ export function Search() {
                                                         <tr>
 
                                                             <td>{ordinance.number}</td>
-                                                            <td>{ordinance.ordinanceType}</td>
+                                                            <td>{ordinance.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
                                                             <td>{ordinance.effectiveStartDate}</td>
                                                             <td>{ordinance.effectiveEndDate}</td>
                                                             <td>
@@ -254,20 +274,78 @@ export function Search() {
                                                     )
 
                                                 })
-                                                // <tr>
-                                                //     <td>{member.name}</td>
-                                                // </tr>
-
                                             )
                                         })
                                     }
 
+                                    {getValues("effectiveStartDate") != undefined &&
+                                        dataOrdinancesByDate?.ordinances.map(ordinance => {
+                                            return (
+                                                <tr>
+                                                    <td>{ordinance?.number}</td>
+                                                    <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                    <td>{ordinance?.effectiveStartDate}</td>
+                                                    <td>{ordinance?.effectiveEndDate}</td>
+                                                    <td>
+                                                        {ordinance?.members.map(member => {
+                                                            return (
+                                                                <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
+                                                                    {member.name}
+                                                                </span>
+                                                            )
+                                                        })}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
 
+                                    }
+
+                                    {getValues("ordinanceType").length >= 3 &&
+                                        dataOrdinancesByType?.ordinances.map(ordinance => {
+                                            return (
+                                                <tr>
+                                                    <td>{ordinance?.number}</td>
+                                                    <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                    <td>{ordinance?.effectiveStartDate}</td>
+                                                    <td>{ordinance?.effectiveEndDate}</td>
+                                                    <td>
+                                                        {ordinance?.members.map(member => {
+                                                            return (
+                                                                <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
+                                                                    {member.name}
+                                                                </span>
+                                                            )
+                                                        })}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
                                 </tbody>
                             </table> :
-                            <span className="flex w-full mt-6 mb-7 font-medium justify-center text-x text-red-900 border-b border-green-300">
-                                Nenhuma portaria encontrada!
-                            </span>}
+                            <table>
+                                <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
+                                    <tr>
+                                        <th className="px-3">Número</th>
+                                        <th>Tipo de Portaria</th>
+                                        <th className="px-0">Data Início Vigência</th>
+                                        <th className="px-0">Data Fim Vigência</th>
+                                        <th>Membros</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
+                                    <tr>
+                                        <td>
+                                            <span className="flex w-full mt-6 mb-7 font-medium justify-center text-x text-red-900 border-b border-green-300">
+                                                Nenhuma portaria encontrada!
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
                     </div>
                 </form>
             </div >
