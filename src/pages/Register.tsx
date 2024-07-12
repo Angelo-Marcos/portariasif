@@ -27,7 +27,7 @@ import { format } from "date-fns";
 interface MemberProps {
     id: string;
     name: string;
-    memberType: 'student' | 'teacher' | 'TAE';
+    memberType: 'member' | 'president' | 'teacher';
     matriculaSiape: number;
 }
 
@@ -88,7 +88,7 @@ export function Register() {
 
 
     const [name, setName] = useState('');
-    const [memberType, setMemberType] = useState<MemberType>(MemberType.Student);
+    const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
     const [matriculaSiape, setMatriculaSiape] = useState('');
     const [radio, setRadio] = useState('');
 
@@ -210,7 +210,7 @@ export function Register() {
 
         setName('');
         setMatriculaSiape('')
-        setMemberType(MemberType.Student)
+        setMemberType(MemberType.Member)
     }
 
     const handleRemoveMember = (id: string) => {
@@ -394,7 +394,7 @@ export function Register() {
                                                         className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
                                                         onClick={() => handleClickAutoComplete(member)}
                                                     >
-                                                        {member.name} / {member.memberType === 'student' ? 'Discente' : member.memberType === 'teacher' ? 'Docente' : 'TAE'} / {member.matriculaSiape}
+                                                        {member.name} / {member.memberType === 'member' ? 'Membro' : member.memberType === 'president' ? 'Presidente' : 'TAE'} / {member.matriculaSiape}
                                                     </a>
                                                 )
                                             })}
@@ -535,7 +535,7 @@ export function Register() {
                         <label className="flex ml-2 text-black"><strong className="mr-2">Assunto:</strong>{getValuesOrdinance("subject")}</label>
                         <label className="flex flex-col ml-2 text-black"><strong className="mr-2">Membro(s):</strong>{members.map((member) => {
                             return (
-                                <span>{member.name} - {member.memberType === 'student' ? 'Discente' : member.memberType === 'teacher' ? 'Docente' : 'TAE'} - {member.matriculaSiape}</span>
+                                <span>{member.name} - {member.memberType === 'member' ? 'Membro' : member.memberType === 'president' ? 'Presidente' : 'teacher'} - {member.matriculaSiape}</span>
                             )
                         })}</label>
                         <label className="flex ml-2 text-black"><strong className="mr-2">Esta portaria revoga outra portaria?</strong>{radio === 'yes' ? 'Sim' : 'Não'}</label>

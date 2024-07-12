@@ -219,6 +219,7 @@ export function Search() {
                                         <th className="px-0">Data Início Vigência</th>
                                         <th className="px-0">Data Fim Vigência</th>
                                         <th>Membros</th>
+                                        <th>Carga Horária</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
@@ -238,6 +239,7 @@ export function Search() {
                                                     )
                                                 })}
                                             </td>
+                                            <td></td>
                                         </tr>
                                     }
 
@@ -250,6 +252,7 @@ export function Search() {
                                                     <td>{ordinance.effectiveStartDate}</td>
                                                     <td>{ordinance.effectiveEndDate}</td>
                                                     <td>{dataOrdinancesByMemberMatricula.member?.name}</td>
+                                                    <td></td>
                                                 </tr>
 
                                             )
@@ -270,6 +273,7 @@ export function Search() {
                                                             <td>
                                                                 {member.name}
                                                             </td>
+                                                            <td></td>
                                                         </tr>
                                                     )
 
@@ -295,6 +299,7 @@ export function Search() {
                                                             )
                                                         })}
                                                     </td>
+                                                    <td></td>
                                                 </tr>
                                             )
                                         })
@@ -318,6 +323,7 @@ export function Search() {
                                                             )
                                                         })}
                                                     </td>
+                                                    <td></td>
                                                 </tr>
                                             )
                                         })

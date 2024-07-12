@@ -1225,8 +1225,8 @@ export type MemberOrdinancesWhereUniqueInput = {
 };
 
 export enum MemberType {
-  Tae = 'TAE',
-  Student = 'student',
+  Member = 'member',
+  President = 'president',
   Teacher = 'teacher'
 }
 
