@@ -2,6 +2,7 @@ query GetOrdinancesByMemberMatricula($matriculaSiape: Int!) {
   member(where: {matriculaSiape: $matriculaSiape}, stage: DRAFT) {
     id
     name
+    memberType
     ordinances {
       ... on Ordinance {
         number

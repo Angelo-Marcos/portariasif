@@ -4587,14 +4587,14 @@ export type GetOrdinancesByMemberMatriculaQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> } | null };
+export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, memberType: MemberType, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> } | null };
 
 export type GetOrdinancesByMemberNameQueryVariables = Exact<{
   name: Scalars['String'];
 }>;
 
 
-export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
+export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, memberType: MemberType, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
 
 export type GetOrdinancesByTypeQueryVariables = Exact<{
   ordinanceType: OrdinanceType;
@@ -5096,6 +5096,7 @@ export const GetOrdinancesByMemberMatriculaDocument = gql`
   member(where: {matriculaSiape: $matriculaSiape}, stage: DRAFT) {
     id
     name
+    memberType
     ordinances {
       ... on Ordinance {
         number
@@ -5139,6 +5140,7 @@ export const GetOrdinancesByMemberNameDocument = gql`
     query GetOrdinancesByMemberName($name: String!) {
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
+    memberType
     ordinances {
       ... on Ordinance {
         number

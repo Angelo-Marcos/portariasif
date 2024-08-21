@@ -1,6 +1,7 @@
 query GetOrdinancesByMemberName($name: String!) {
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
+    memberType
     ordinances {
       ... on Ordinance {
         number

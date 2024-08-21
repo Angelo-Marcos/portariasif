@@ -88,6 +88,32 @@ export function Search() {
         }
     })
 
+    const calculateDateInterval = (end: any, start: any, ordinanceType: any, memberType: any) => {
+        end = new Date(end).valueOf()
+        start = new Date(start).valueOf()
+
+        let intervalInTime = Math.abs(end - start)
+        let intervalInDays = intervalInTime / 86400000
+
+        if (ordinanceType == "designation" && memberType == "president") {
+            if (intervalInDays >= 120) {
+                return 6
+            } else if (intervalInDays >= 60 && intervalInDays < 120) {
+                return 4
+            } else {
+                return 2
+            }
+        } else if (ordinanceType == "designation" && memberType == "member") {
+            if (intervalInDays >= 120) {
+                return 3
+            } else if (intervalInDays >= 60 && intervalInDays < 120) {
+                return 2
+            } else {
+                return 1
+            }
+        }
+    }
+
     return (
 
         <div className="flex flex-col min-h-screen">
@@ -273,7 +299,14 @@ export function Search() {
                                                             <td>
                                                                 {member.name}
                                                             </td>
-                                                            <td></td>
+                                                            <td>
+                                                                {
+                                                                    ordinance.ordinanceType === 'progression' && member.memberType === 'president' ? 6 : 
+                                                                    ordinance.ordinanceType === 'progression' && member.memberType === 'member' ? 3 : 
+                                                                    calculateDateInterval(ordinance.effectiveEndDate, ordinance.effectiveStartDate, ordinance.ordinanceType, member.memberType)
+                                                                    
+                                                                }
+                                                            </td>
                                                         </tr>
                                                     )
 
