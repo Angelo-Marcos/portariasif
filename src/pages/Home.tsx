@@ -13,7 +13,7 @@ export function Home() {
         <div className="flex flex-col min-h-screen">
             <Header />
 
-            <main className="flex flex-1 px-48">
+            <main className="flex flex-1 pt-[100px] px-48">
                 <aside className="flex flex-col w-[276px] max-h-full px-[10px] bg-gray-200 mt-[54px] justify-center overflow-auto">
                     <span className="flex mt-[21px] font-light text-xl text-gray-500 justify-center">
                         Recentes
@@ -37,7 +37,7 @@ export function Home() {
                         Próximas da Data de Encerramento
                     </span>
 
-                    <div className="w-full mt-4 overflow-x-auto relative shadow-md border border-green-300 sm:rounded-lg">
+                    <div className="w-full mt-4 overflow-x-auto shadow-md border border-green-300 sm:rounded-lg">
                         <table className="w-full font-light text-sm bg-green-300 dark:text-gray-400">
                             <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
                                 <tr>

@@ -285,7 +285,7 @@ export function Register() {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <div className="flex flex-col items-center justify-center px-48">
+            <div className="flex flex-col items-center justify-center pt-[130px] px-48">
                 <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-300">
                     Preencha os campos abaixo
                 </span>
@@ -380,11 +380,11 @@ export function Register() {
                                     onChange={event => setName(event.target.value)}
                                     value={name}
                                 />
-                                {members.length <= 0 &&
+                                {/* {members.length <= 0 &&
                                     <p className="absolute mt-8 ml-2 text-red-800 text-sm">
                                         Nenhum membro inserido!
                                     </p>
-                                }
+                                } */}
                                 <div className="absolute z-10 w-[320px] max-h-xs ml-2 mt-[34px] mt bg-white rounded-md">
                                     <div className="flex flex-col">
                                         {membersFilters?.length !== 0 && name !== '' &&

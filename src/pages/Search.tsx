@@ -118,7 +118,7 @@ export function Search() {
 
         <div className="flex flex-col min-h-screen">
             <Header />
-            <div className="flex flex-col items-center justify-center px-48">
+            <div className="flex flex-col items-center justify-center pt-[130px] px-48">
                 <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-300">
                     Insira pelo menos uma das informações abaixo
                 </span>
