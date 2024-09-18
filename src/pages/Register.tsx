@@ -29,6 +29,7 @@ interface MemberProps {
     name: string;
     memberType: 'member' | 'president' | 'teacher';
     matriculaSiape: number;
+    workload: number;
 }
 
 interface IFormInputOrdinance {
@@ -90,6 +91,7 @@ export function Register() {
     const [name, setName] = useState('');
     const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
     const [matriculaSiape, setMatriculaSiape] = useState('');
+    const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
 
     const [members, setMembers] = useState<MemberProps[]>([])
@@ -114,7 +116,8 @@ export function Register() {
             id: member.id,
             name: member.name,
             memberType: member.memberType,
-            matriculaSiape: member.matriculaSiape
+            matriculaSiape: member.matriculaSiape,
+            workload: member.workload
         }
 
         setMembers(oldState => [...oldState, dataMembers])
@@ -195,14 +198,16 @@ export function Register() {
             variables: {
                 name: name,
                 memberType: memberType,
-                matriculaSiape: Number(matriculaSiape)
+                matriculaSiape: Number(matriculaSiape),
+                workload: Number(workload)
             }
         }).then(res => {
             const dataMembers: MemberProps = {
                 id: String(res.data?.createMember?.id),
                 name: name,
                 memberType: memberType,
-                matriculaSiape: Number(matriculaSiape)
+                matriculaSiape: Number(matriculaSiape),
+                workload: Number(workload)
             }
 
             setMembers(oldState => [...oldState, dataMembers])
@@ -343,7 +348,7 @@ export function Register() {
                     <div className="flex flex-wrap justify-between mt-[28px]">
                         <div className="flex ">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
-                                Data de encerramento da vigência:
+                                Data de final de vigência:
                             </label>
                             <input
                                 {...registerOrdinance("effectiveEndDate")}
@@ -367,6 +372,7 @@ export function Register() {
                                 {errorsOrdinance.subject?.message}
                             </p>
                         </div>
+                        
                     </div>
                     <div className="flex flex-wrap mt-[28px]">
                         <div className="flex">
@@ -415,9 +421,9 @@ export function Register() {
                             // value={memberType}
                             >
                                 <option value="" className="text-gray-500 text-xl font-light"></option>
-                                <option value="teacher" className="text-gray-500 text-xl font-light">Docente</option>
-                                <option value="TAE" className="text-gray-500 text-xl font-light">TAES</option>
-                                <option value="student" className="text-gray-500 text-xl font-light">Discente</option>
+                                <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
+                                <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
+                            
                             </select>
                         </div>
                         <div className="flex ml-4">
@@ -439,6 +445,23 @@ export function Register() {
                                 <PlusCircle size={28} />
                             </span>
                         </div>
+                        <div className="flex mt-[28px]">
+                            <label className="block tracking-wide font-light text-gray-500 text-xl">
+                                Carga horária/semana:
+                            </label>
+                            <InputMask
+                                mask="9"
+                                pattern="[0-9]{1}"
+                                onChange={event => setworkload(event.target.value)}
+                                className="appearance-none block w-[100px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                
+                                // onChange={event => setSubject(event.target.value)}
+                            // value={subject}
+                            />
+                            {/* <p className="absolute mt-8 text-red-800 text-sm">
+                                {errorsOrdinance.subject?.message}
+                            </p> */}
+                        </div>
 
                     </div>
                     <div>
@@ -451,6 +474,8 @@ export function Register() {
                                             name={member.name}
                                             type={member.memberType}
                                             matriculaSiape={member.matriculaSiape}
+                                            workload={member.workload}
+                
                                         />
                                         <button
                                             onClick={() => handleRemoveMember(member.id)}

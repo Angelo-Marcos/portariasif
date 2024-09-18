@@ -891,6 +891,8 @@ export type Member = Entity & Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
+  /** Carga horária com base na portaria */
+  workload: Scalars['Int'];
 };
 
 
@@ -972,6 +974,7 @@ export type MemberCreateInput = {
   name: Scalars['String'];
   ordinances?: InputMaybe<MemberOrdinancesCreateManyInlineInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
+  workload: Scalars['Int'];
 };
 
 export type MemberCreateManyInlineInput = {
@@ -1125,6 +1128,21 @@ export type MemberManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  workload?: InputMaybe<Scalars['Int']>;
+  /** All values greater than the given value. */
+  workload_gt?: InputMaybe<Scalars['Int']>;
+  /** All values greater than or equal the given value. */
+  workload_gte?: InputMaybe<Scalars['Int']>;
+  /** All values that are contained in given list. */
+  workload_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** All values less than the given value. */
+  workload_lt?: InputMaybe<Scalars['Int']>;
+  /** All values less than or equal the given value. */
+  workload_lte?: InputMaybe<Scalars['Int']>;
+  /** Any other value that exists and is not equal to the given value. */
+  workload_not?: InputMaybe<Scalars['Int']>;
+  /** All values that are not contained in given list. */
+  workload_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export enum MemberOrderByInput {
@@ -1141,7 +1159,9 @@ export enum MemberOrderByInput {
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
-  UpdatedAtDesc = 'updatedAt_DESC'
+  UpdatedAtDesc = 'updatedAt_DESC',
+  WorkloadAsc = 'workload_ASC',
+  WorkloadDesc = 'workload_DESC'
 }
 
 export type MemberOrdinances = Ordinance;
@@ -1235,6 +1255,7 @@ export type MemberUpdateInput = {
   memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
   ordinances?: InputMaybe<MemberOrdinancesUpdateManyInlineInput>;
+  workload?: InputMaybe<Scalars['Int']>;
 };
 
 export type MemberUpdateManyInlineInput = {
@@ -1257,6 +1278,7 @@ export type MemberUpdateManyInlineInput = {
 export type MemberUpdateManyInput = {
   memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
+  workload?: InputMaybe<Scalars['Int']>;
 };
 
 export type MemberUpdateManyWithNestedWhereInput = {
@@ -1436,6 +1458,21 @@ export type MemberWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  workload?: InputMaybe<Scalars['Int']>;
+  /** All values greater than the given value. */
+  workload_gt?: InputMaybe<Scalars['Int']>;
+  /** All values greater than or equal the given value. */
+  workload_gte?: InputMaybe<Scalars['Int']>;
+  /** All values that are contained in given list. */
+  workload_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** All values less than the given value. */
+  workload_lt?: InputMaybe<Scalars['Int']>;
+  /** All values less than or equal the given value. */
+  workload_lte?: InputMaybe<Scalars['Int']>;
+  /** Any other value that exists and is not equal to the given value. */
+  workload_not?: InputMaybe<Scalars['Int']>;
+  /** All values that are not contained in given list. */
+  workload_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 /** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
@@ -4489,6 +4526,7 @@ export type CreateMemberMutationVariables = Exact<{
   name: Scalars['String'];
   memberType: MemberType;
   matriculaSiape: Scalars['Int'];
+  workload: Scalars['Int'];
 }>;
 
 
@@ -4560,7 +4598,7 @@ export type UpdateOrdinanceSituationMutation = { __typename?: 'Mutation', update
 export type GetMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, memberType: MemberType, matriculaSiape: number }> };
+export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, memberType: MemberType, matriculaSiape: number, workload: number }> };
 
 export type GetOrdinanceByNumberQueryVariables = Exact<{
   number: Scalars['String'];
@@ -4572,7 +4610,7 @@ export type GetOrdinanceByNumberQuery = { __typename?: 'Query', ordinance?: { __
 export type GetOrdinancesAsideQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetOrdinancesAsideQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, members: Array<{ __typename?: 'Member', name: string }> }> };
+export type GetOrdinancesAsideQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', name: string }> }> };
 
 export type GetOrdinancesByDateQueryVariables = Exact<{
   dateStart: Scalars['Date'];
@@ -4594,7 +4632,7 @@ export type GetOrdinancesByMemberNameQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, memberType: MemberType, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
+export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, memberType: MemberType, workload: number, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
 
 export type GetOrdinancesByTypeQueryVariables = Exact<{
   ordinanceType: OrdinanceType;
@@ -4610,9 +4648,9 @@ export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __t
 
 
 export const CreateMemberDocument = gql`
-    mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!) {
+    mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!, $workload: Int!) {
   createMember(
-    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape}
+    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape, workload: $workload}
   ) {
     id
   }
@@ -4636,6 +4674,7 @@ export type CreateMemberMutationFn = Apollo.MutationFunction<CreateMemberMutatio
  *      name: // value for 'name'
  *      memberType: // value for 'memberType'
  *      matriculaSiape: // value for 'matriculaSiape'
+ *      workload: // value for 'workload'
  *   },
  * });
  */
@@ -4933,6 +4972,7 @@ export const GetMembersDocument = gql`
     name
     memberType
     matriculaSiape
+    workload
   }
 }
     `;
@@ -5011,6 +5051,7 @@ export const GetOrdinancesAsideDocument = gql`
     id
     number
     ordinanceType
+    subject
     members {
       name
     }
@@ -5141,6 +5182,7 @@ export const GetOrdinancesByMemberNameDocument = gql`
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
     memberType
+    workload
     ordinances {
       ... on Ordinance {
         number

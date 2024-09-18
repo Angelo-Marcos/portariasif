@@ -1,6 +1,6 @@
-mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!) {
+mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!, $workload: Int!) {
   createMember(
-    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape}
+    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape, workload: $workload}
   ) {
     id
   }

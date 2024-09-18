@@ -3,6 +3,7 @@ query GetOrdinancesAside {
     id
     number
     ordinanceType
+    subject
     members {
       name
     }

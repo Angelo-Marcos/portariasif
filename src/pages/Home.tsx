@@ -25,7 +25,7 @@ export function Home() {
                                     key={ordinance.id}
                                     number={ordinance.number}
                                     type={ordinance.ordinanceType}
-                                    members={ordinance.members}
+                                    subject={ordinance.subject}
                                 />
                             )
                         })}
@@ -38,7 +38,7 @@ export function Home() {
                     </span>
 
                     <div className="w-full mt-4 overflow-x-auto shadow-md border border-green-300 sm:rounded-lg">
-                        <table className="w-full font-light text-sm bg-green-300 dark:text-gray-400">
+                        <table className="w-full font-light text-sm bg-gray-200 dark:text-gray-400">
                             <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
                                 <tr>
                                     <th className="px-3">Número</th>

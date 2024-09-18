@@ -300,12 +300,13 @@ export function Search() {
                                                                 {member.name}
                                                             </td>
                                                             <td>
-                                                                {
+                                                                {/* {
                                                                     ordinance.ordinanceType === 'progression' && member.memberType === 'president' ? 6 : 
                                                                     ordinance.ordinanceType === 'progression' && member.memberType === 'member' ? 3 : 
                                                                     calculateDateInterval(ordinance.effectiveEndDate, ordinance.effectiveStartDate, ordinance.ordinanceType, member.memberType)
                                                                     
-                                                                }
+                                                                } */}
+                                                                {member.workload}
                                                             </td>
                                                         </tr>
                                                     )
