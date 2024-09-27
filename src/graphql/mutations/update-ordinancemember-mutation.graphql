@@ -1,0 +1,8 @@
+mutation UpdateOrdinanceMember($ordinanceMemberId: ID, $ordinanceId: ID) {
+  updateOrdinanceMember(
+    where: {id: $ordinanceMemberId}
+    data: {ordinanceWorkload: {connect: {id: $ordinanceId}}}
+  ) {
+    id
+  }
+}

@@ -794,6 +794,7 @@ export enum EntityTypeName {
   Asset = 'Asset',
   Member = 'Member',
   Ordinance = 'Ordinance',
+  OrdinanceMember = 'OrdinanceMember',
   /** Scheduled Operation system model */
   ScheduledOperation = 'ScheduledOperation',
   /** Scheduled Release system model */
@@ -891,8 +892,6 @@ export type Member = Entity & Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
-  /** Carga horária com base na portaria */
-  workload: Scalars['Int'];
 };
 
 
@@ -968,13 +967,13 @@ export type MemberConnection = {
 };
 
 export type MemberCreateInput = {
+  cm19ud0gx02dq07j3e2js89c1?: InputMaybe<OrdinanceMemberCreateManyInlineInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   matriculaSiape: Scalars['Int'];
   memberType: MemberType;
   name: Scalars['String'];
   ordinances?: InputMaybe<MemberOrdinancesCreateManyInlineInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
-  workload: Scalars['Int'];
 };
 
 export type MemberCreateManyInlineInput = {
@@ -1128,21 +1127,6 @@ export type MemberManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
-  workload?: InputMaybe<Scalars['Int']>;
-  /** All values greater than the given value. */
-  workload_gt?: InputMaybe<Scalars['Int']>;
-  /** All values greater than or equal the given value. */
-  workload_gte?: InputMaybe<Scalars['Int']>;
-  /** All values that are contained in given list. */
-  workload_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  /** All values less than the given value. */
-  workload_lt?: InputMaybe<Scalars['Int']>;
-  /** All values less than or equal the given value. */
-  workload_lte?: InputMaybe<Scalars['Int']>;
-  /** Any other value that exists and is not equal to the given value. */
-  workload_not?: InputMaybe<Scalars['Int']>;
-  /** All values that are not contained in given list. */
-  workload_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export enum MemberOrderByInput {
@@ -1159,9 +1143,7 @@ export enum MemberOrderByInput {
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
-  UpdatedAtDesc = 'updatedAt_DESC',
-  WorkloadAsc = 'workload_ASC',
-  WorkloadDesc = 'workload_DESC'
+  UpdatedAtDesc = 'updatedAt_DESC'
 }
 
 export type MemberOrdinances = Ordinance;
@@ -1251,11 +1233,11 @@ export enum MemberType {
 }
 
 export type MemberUpdateInput = {
+  cm19ud0gx02dq07j3e2js89c1?: InputMaybe<OrdinanceMemberUpdateManyInlineInput>;
   matriculaSiape?: InputMaybe<Scalars['Int']>;
   memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
   ordinances?: InputMaybe<MemberOrdinancesUpdateManyInlineInput>;
-  workload?: InputMaybe<Scalars['Int']>;
 };
 
 export type MemberUpdateManyInlineInput = {
@@ -1278,7 +1260,6 @@ export type MemberUpdateManyInlineInput = {
 export type MemberUpdateManyInput = {
   memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
-  workload?: InputMaybe<Scalars['Int']>;
 };
 
 export type MemberUpdateManyWithNestedWhereInput = {
@@ -1458,21 +1439,6 @@ export type MemberWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
-  workload?: InputMaybe<Scalars['Int']>;
-  /** All values greater than the given value. */
-  workload_gt?: InputMaybe<Scalars['Int']>;
-  /** All values greater than or equal the given value. */
-  workload_gte?: InputMaybe<Scalars['Int']>;
-  /** All values that are contained in given list. */
-  workload_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  /** All values less than the given value. */
-  workload_lt?: InputMaybe<Scalars['Int']>;
-  /** All values less than or equal the given value. */
-  workload_lte?: InputMaybe<Scalars['Int']>;
-  /** Any other value that exists and is not equal to the given value. */
-  workload_not?: InputMaybe<Scalars['Int']>;
-  /** All values that are not contained in given list. */
-  workload_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 /** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
@@ -1506,6 +1472,8 @@ export type Mutation = {
   createMember?: Maybe<Member>;
   /** Create one ordinance */
   createOrdinance?: Maybe<Ordinance>;
+  /** Create one ordinanceMember */
+  createOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Create one scheduledRelease */
   createScheduledRelease?: Maybe<ScheduledRelease>;
   /** Delete one asset from _all_ existing stages. Returns deleted document. */
@@ -1525,6 +1493,13 @@ export type Mutation = {
   /** Delete many Member documents, return deleted documents */
   deleteManyMembersConnection: MemberConnection;
   /**
+   * Delete many OrdinanceMember documents
+   * @deprecated Please use the new paginated many mutation (deleteManyOrdinanceMembersConnection)
+   */
+  deleteManyOrdinanceMembers: BatchPayload;
+  /** Delete many OrdinanceMember documents, return deleted documents */
+  deleteManyOrdinanceMembersConnection: OrdinanceMemberConnection;
+  /**
    * Delete many Ordinance documents
    * @deprecated Please use the new paginated many mutation (deleteManyOrdinancesConnection)
    */
@@ -1535,6 +1510,8 @@ export type Mutation = {
   deleteMember?: Maybe<Member>;
   /** Delete one ordinance from _all_ existing stages. Returns deleted document. */
   deleteOrdinance?: Maybe<Ordinance>;
+  /** Delete one ordinanceMember from _all_ existing stages. Returns deleted document. */
+  deleteOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Delete and return scheduled operation */
   deleteScheduledOperation?: Maybe<ScheduledOperation>;
   /** Delete one scheduledRelease from _all_ existing stages. Returns deleted document. */
@@ -1556,6 +1533,13 @@ export type Mutation = {
   /** Publish many Member documents */
   publishManyMembersConnection: MemberConnection;
   /**
+   * Publish many OrdinanceMember documents
+   * @deprecated Please use the new paginated many mutation (publishManyOrdinanceMembersConnection)
+   */
+  publishManyOrdinanceMembers: BatchPayload;
+  /** Publish many OrdinanceMember documents */
+  publishManyOrdinanceMembersConnection: OrdinanceMemberConnection;
+  /**
    * Publish many Ordinance documents
    * @deprecated Please use the new paginated many mutation (publishManyOrdinancesConnection)
    */
@@ -1566,18 +1550,24 @@ export type Mutation = {
   publishMember?: Maybe<Member>;
   /** Publish one ordinance */
   publishOrdinance?: Maybe<Ordinance>;
+  /** Publish one ordinanceMember */
+  publishOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Schedule to publish one asset */
   schedulePublishAsset?: Maybe<Asset>;
   /** Schedule to publish one member */
   schedulePublishMember?: Maybe<Member>;
   /** Schedule to publish one ordinance */
   schedulePublishOrdinance?: Maybe<Ordinance>;
+  /** Schedule to publish one ordinanceMember */
+  schedulePublishOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Unpublish one asset from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishAsset?: Maybe<Asset>;
   /** Unpublish one member from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishMember?: Maybe<Member>;
   /** Unpublish one ordinance from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishOrdinance?: Maybe<Ordinance>;
+  /** Unpublish one ordinanceMember from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
+  scheduleUnpublishOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Unpublish one asset from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishAsset?: Maybe<Asset>;
   /**
@@ -1595,6 +1585,13 @@ export type Mutation = {
   /** Find many Member documents that match criteria in specified stage and unpublish from target stages */
   unpublishManyMembersConnection: MemberConnection;
   /**
+   * Unpublish many OrdinanceMember documents
+   * @deprecated Please use the new paginated many mutation (unpublishManyOrdinanceMembersConnection)
+   */
+  unpublishManyOrdinanceMembers: BatchPayload;
+  /** Find many OrdinanceMember documents that match criteria in specified stage and unpublish from target stages */
+  unpublishManyOrdinanceMembersConnection: OrdinanceMemberConnection;
+  /**
    * Unpublish many Ordinance documents
    * @deprecated Please use the new paginated many mutation (unpublishManyOrdinancesConnection)
    */
@@ -1605,6 +1602,8 @@ export type Mutation = {
   unpublishMember?: Maybe<Member>;
   /** Unpublish one ordinance from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishOrdinance?: Maybe<Ordinance>;
+  /** Unpublish one ordinanceMember from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
+  unpublishOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Update one asset */
   updateAsset?: Maybe<Asset>;
   /**
@@ -1622,6 +1621,13 @@ export type Mutation = {
   /** Update many Member documents */
   updateManyMembersConnection: MemberConnection;
   /**
+   * Update many ordinanceMembers
+   * @deprecated Please use the new paginated many mutation (updateManyOrdinanceMembersConnection)
+   */
+  updateManyOrdinanceMembers: BatchPayload;
+  /** Update many OrdinanceMember documents */
+  updateManyOrdinanceMembersConnection: OrdinanceMemberConnection;
+  /**
    * Update many ordinances
    * @deprecated Please use the new paginated many mutation (updateManyOrdinancesConnection)
    */
@@ -1632,6 +1638,8 @@ export type Mutation = {
   updateMember?: Maybe<Member>;
   /** Update one ordinance */
   updateOrdinance?: Maybe<Ordinance>;
+  /** Update one ordinanceMember */
+  updateOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Update one scheduledRelease */
   updateScheduledRelease?: Maybe<ScheduledRelease>;
   /** Upsert one asset */
@@ -1640,6 +1648,8 @@ export type Mutation = {
   upsertMember?: Maybe<Member>;
   /** Upsert one ordinance */
   upsertOrdinance?: Maybe<Ordinance>;
+  /** Upsert one ordinanceMember */
+  upsertOrdinanceMember?: Maybe<OrdinanceMember>;
 };
 
 
@@ -1655,6 +1665,11 @@ export type MutationCreateMemberArgs = {
 
 export type MutationCreateOrdinanceArgs = {
   data: OrdinanceCreateInput;
+};
+
+
+export type MutationCreateOrdinanceMemberArgs = {
+  data: OrdinanceMemberCreateInput;
 };
 
 
@@ -1698,6 +1713,21 @@ export type MutationDeleteManyMembersConnectionArgs = {
 };
 
 
+export type MutationDeleteManyOrdinanceMembersArgs = {
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
+export type MutationDeleteManyOrdinanceMembersConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
 export type MutationDeleteManyOrdinancesArgs = {
   where?: InputMaybe<OrdinanceManyWhereInput>;
 };
@@ -1720,6 +1750,11 @@ export type MutationDeleteMemberArgs = {
 
 export type MutationDeleteOrdinanceArgs = {
   where: OrdinanceWhereUniqueInput;
+};
+
+
+export type MutationDeleteOrdinanceMemberArgs = {
+  where: OrdinanceMemberWhereUniqueInput;
 };
 
 
@@ -1784,6 +1819,24 @@ export type MutationPublishManyMembersConnectionArgs = {
 };
 
 
+export type MutationPublishManyOrdinanceMembersArgs = {
+  to?: Array<Stage>;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
+export type MutationPublishManyOrdinanceMembersConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  first?: InputMaybe<Scalars['Int']>;
+  from?: InputMaybe<Stage>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  to?: Array<Stage>;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
 export type MutationPublishManyOrdinancesArgs = {
   to?: Array<Stage>;
   where?: InputMaybe<OrdinanceManyWhereInput>;
@@ -1814,6 +1867,12 @@ export type MutationPublishOrdinanceArgs = {
 };
 
 
+export type MutationPublishOrdinanceMemberArgs = {
+  to?: Array<Stage>;
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+
 export type MutationSchedulePublishAssetArgs = {
   locales?: InputMaybe<Array<Locale>>;
   publishBase?: InputMaybe<Scalars['Boolean']>;
@@ -1841,6 +1900,14 @@ export type MutationSchedulePublishOrdinanceArgs = {
 };
 
 
+export type MutationSchedulePublishOrdinanceMemberArgs = {
+  releaseAt?: InputMaybe<Scalars['DateTime']>;
+  releaseId?: InputMaybe<Scalars['String']>;
+  to?: Array<Stage>;
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+
 export type MutationScheduleUnpublishAssetArgs = {
   from?: Array<Stage>;
   locales?: InputMaybe<Array<Locale>>;
@@ -1864,6 +1931,14 @@ export type MutationScheduleUnpublishOrdinanceArgs = {
   releaseAt?: InputMaybe<Scalars['DateTime']>;
   releaseId?: InputMaybe<Scalars['String']>;
   where: OrdinanceWhereUniqueInput;
+};
+
+
+export type MutationScheduleUnpublishOrdinanceMemberArgs = {
+  from?: Array<Stage>;
+  releaseAt?: InputMaybe<Scalars['DateTime']>;
+  releaseId?: InputMaybe<Scalars['String']>;
+  where: OrdinanceMemberWhereUniqueInput;
 };
 
 
@@ -1915,6 +1990,24 @@ export type MutationUnpublishManyMembersConnectionArgs = {
 };
 
 
+export type MutationUnpublishManyOrdinanceMembersArgs = {
+  from?: Array<Stage>;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
+export type MutationUnpublishManyOrdinanceMembersConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  first?: InputMaybe<Scalars['Int']>;
+  from?: Array<Stage>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  stage?: InputMaybe<Stage>;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
 export type MutationUnpublishManyOrdinancesArgs = {
   from?: Array<Stage>;
   where?: InputMaybe<OrdinanceManyWhereInput>;
@@ -1942,6 +2035,12 @@ export type MutationUnpublishMemberArgs = {
 export type MutationUnpublishOrdinanceArgs = {
   from?: Array<Stage>;
   where: OrdinanceWhereUniqueInput;
+};
+
+
+export type MutationUnpublishOrdinanceMemberArgs = {
+  from?: Array<Stage>;
+  where: OrdinanceMemberWhereUniqueInput;
 };
 
 
@@ -1985,6 +2084,23 @@ export type MutationUpdateManyMembersConnectionArgs = {
 };
 
 
+export type MutationUpdateManyOrdinanceMembersArgs = {
+  data: OrdinanceMemberUpdateManyInput;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
+export type MutationUpdateManyOrdinanceMembersConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  data: OrdinanceMemberUpdateManyInput;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<OrdinanceMemberManyWhereInput>;
+};
+
+
 export type MutationUpdateManyOrdinancesArgs = {
   data: OrdinanceUpdateManyInput;
   where?: InputMaybe<OrdinanceManyWhereInput>;
@@ -2014,6 +2130,12 @@ export type MutationUpdateOrdinanceArgs = {
 };
 
 
+export type MutationUpdateOrdinanceMemberArgs = {
+  data: OrdinanceMemberUpdateInput;
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+
 export type MutationUpdateScheduledReleaseArgs = {
   data: ScheduledReleaseUpdateInput;
   where: ScheduledReleaseWhereUniqueInput;
@@ -2035,6 +2157,12 @@ export type MutationUpsertMemberArgs = {
 export type MutationUpsertOrdinanceArgs = {
   upsert: OrdinanceUpsertInput;
   where: OrdinanceWhereUniqueInput;
+};
+
+
+export type MutationUpsertOrdinanceMemberArgs = {
+  upsert: OrdinanceMemberUpsertInput;
+  where: OrdinanceMemberWhereUniqueInput;
 };
 
 /** An object with an ID */
@@ -2157,6 +2285,7 @@ export type OrdinanceConnection = {
 };
 
 export type OrdinanceCreateInput = {
+  cm19ubvd702d807j3e24w3yr0?: InputMaybe<OrdinanceMemberCreateManyInlineInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   effectiveEndDate?: InputMaybe<Scalars['Date']>;
   effectiveStartDate: Scalars['Date'];
@@ -2361,6 +2490,450 @@ export type OrdinanceManyWhereInput = {
   updatedBy?: InputMaybe<UserWhereInput>;
 };
 
+export type OrdinanceMember = Entity & Node & {
+  __typename?: 'OrdinanceMember';
+  /** The time the document was created */
+  createdAt: Scalars['DateTime'];
+  /** User that created this document */
+  createdBy?: Maybe<User>;
+  /** Get the document in other stages */
+  documentInStages: Array<OrdinanceMember>;
+  /** List of OrdinanceMember versions */
+  history: Array<Version>;
+  /** The unique identifier */
+  id: Scalars['ID'];
+  memberWorkload?: Maybe<Member>;
+  ordinanceWorkload?: Maybe<Ordinance>;
+  /** The time the document was published. Null on documents in draft stage. */
+  publishedAt?: Maybe<Scalars['DateTime']>;
+  /** User that last published this document */
+  publishedBy?: Maybe<User>;
+  scheduledIn: Array<ScheduledOperation>;
+  /** System stage field */
+  stage: Stage;
+  /** The time the document was updated */
+  updatedAt: Scalars['DateTime'];
+  /** User that last updated this document */
+  updatedBy?: Maybe<User>;
+  workload: Scalars['Int'];
+};
+
+
+export type OrdinanceMemberCreatedByArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type OrdinanceMemberDocumentInStagesArgs = {
+  includeCurrent?: Scalars['Boolean'];
+  inheritLocale?: Scalars['Boolean'];
+  stages?: Array<Stage>;
+};
+
+
+export type OrdinanceMemberHistoryArgs = {
+  limit?: Scalars['Int'];
+  skip?: Scalars['Int'];
+  stageOverride?: InputMaybe<Stage>;
+};
+
+
+export type OrdinanceMemberMemberWorkloadArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type OrdinanceMemberOrdinanceWorkloadArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type OrdinanceMemberPublishedByArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type OrdinanceMemberScheduledInArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ScheduledOperationWhereInput>;
+};
+
+
+export type OrdinanceMemberUpdatedByArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+export type OrdinanceMemberConnectInput = {
+  /** Allow to specify document position in list of connected documents, will default to appending at end of list */
+  position?: InputMaybe<ConnectPositionInput>;
+  /** Document to connect */
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+/** A connection to a list of items. */
+export type OrdinanceMemberConnection = {
+  __typename?: 'OrdinanceMemberConnection';
+  aggregate: Aggregate;
+  /** A list of edges. */
+  edges: Array<OrdinanceMemberEdge>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+};
+
+export type OrdinanceMemberCreateInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']>;
+  memberWorkload?: InputMaybe<MemberCreateOneInlineInput>;
+  ordinanceWorkload?: InputMaybe<OrdinanceCreateOneInlineInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']>;
+  workload: Scalars['Int'];
+};
+
+export type OrdinanceMemberCreateManyInlineInput = {
+  /** Connect multiple existing OrdinanceMember documents */
+  connect?: InputMaybe<Array<OrdinanceMemberWhereUniqueInput>>;
+  /** Create and connect multiple existing OrdinanceMember documents */
+  create?: InputMaybe<Array<OrdinanceMemberCreateInput>>;
+};
+
+export type OrdinanceMemberCreateOneInlineInput = {
+  /** Connect one existing OrdinanceMember document */
+  connect?: InputMaybe<OrdinanceMemberWhereUniqueInput>;
+  /** Create and connect one OrdinanceMember document */
+  create?: InputMaybe<OrdinanceMemberCreateInput>;
+};
+
+/** An edge in a connection. */
+export type OrdinanceMemberEdge = {
+  __typename?: 'OrdinanceMemberEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String'];
+  /** The item at the end of the edge. */
+  node: OrdinanceMember;
+};
+
+/** Identifies documents */
+export type OrdinanceMemberManyWhereInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<OrdinanceMemberWhereInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<OrdinanceMemberWhereInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<OrdinanceMemberWhereInput>>;
+  /** Contains search across all appropriate fields. */
+  _search?: InputMaybe<Scalars['String']>;
+  createdAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  createdAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  createdAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  createdAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  createdAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  createdAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  createdAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<OrdinanceMemberWhereStageInput>;
+  documentInStages_none?: InputMaybe<OrdinanceMemberWhereStageInput>;
+  documentInStages_some?: InputMaybe<OrdinanceMemberWhereStageInput>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** All values containing the given string. */
+  id_contains?: InputMaybe<Scalars['ID']>;
+  /** All values ending with the given string. */
+  id_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are contained in given list. */
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  id_not?: InputMaybe<Scalars['ID']>;
+  /** All values not containing the given string. */
+  id_not_contains?: InputMaybe<Scalars['ID']>;
+  /** All values not ending with the given string */
+  id_not_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are not contained in given list. */
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** All values not starting with the given string. */
+  id_not_starts_with?: InputMaybe<Scalars['ID']>;
+  /** All values starting with the given string. */
+  id_starts_with?: InputMaybe<Scalars['ID']>;
+  memberWorkload?: InputMaybe<MemberWhereInput>;
+  ordinanceWorkload?: InputMaybe<OrdinanceWhereInput>;
+  publishedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  publishedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  publishedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  publishedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  publishedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  publishedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  publishedBy?: InputMaybe<UserWhereInput>;
+  scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  updatedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  updatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  updatedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  updatedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  updatedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  updatedBy?: InputMaybe<UserWhereInput>;
+  workload?: InputMaybe<Scalars['Int']>;
+  /** All values greater than the given value. */
+  workload_gt?: InputMaybe<Scalars['Int']>;
+  /** All values greater than or equal the given value. */
+  workload_gte?: InputMaybe<Scalars['Int']>;
+  /** All values that are contained in given list. */
+  workload_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** All values less than the given value. */
+  workload_lt?: InputMaybe<Scalars['Int']>;
+  /** All values less than or equal the given value. */
+  workload_lte?: InputMaybe<Scalars['Int']>;
+  /** Any other value that exists and is not equal to the given value. */
+  workload_not?: InputMaybe<Scalars['Int']>;
+  /** All values that are not contained in given list. */
+  workload_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export enum OrdinanceMemberOrderByInput {
+  CreatedAtAsc = 'createdAt_ASC',
+  CreatedAtDesc = 'createdAt_DESC',
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC',
+  PublishedAtAsc = 'publishedAt_ASC',
+  PublishedAtDesc = 'publishedAt_DESC',
+  UpdatedAtAsc = 'updatedAt_ASC',
+  UpdatedAtDesc = 'updatedAt_DESC',
+  WorkloadAsc = 'workload_ASC',
+  WorkloadDesc = 'workload_DESC'
+}
+
+export type OrdinanceMemberUpdateInput = {
+  memberWorkload?: InputMaybe<MemberUpdateOneInlineInput>;
+  ordinanceWorkload?: InputMaybe<OrdinanceUpdateOneInlineInput>;
+  workload?: InputMaybe<Scalars['Int']>;
+};
+
+export type OrdinanceMemberUpdateManyInlineInput = {
+  /** Connect multiple existing OrdinanceMember documents */
+  connect?: InputMaybe<Array<OrdinanceMemberConnectInput>>;
+  /** Create and connect multiple OrdinanceMember documents */
+  create?: InputMaybe<Array<OrdinanceMemberCreateInput>>;
+  /** Delete multiple OrdinanceMember documents */
+  delete?: InputMaybe<Array<OrdinanceMemberWhereUniqueInput>>;
+  /** Disconnect multiple OrdinanceMember documents */
+  disconnect?: InputMaybe<Array<OrdinanceMemberWhereUniqueInput>>;
+  /** Override currently-connected documents with multiple existing OrdinanceMember documents */
+  set?: InputMaybe<Array<OrdinanceMemberWhereUniqueInput>>;
+  /** Update multiple OrdinanceMember documents */
+  update?: InputMaybe<Array<OrdinanceMemberUpdateWithNestedWhereUniqueInput>>;
+  /** Upsert multiple OrdinanceMember documents */
+  upsert?: InputMaybe<Array<OrdinanceMemberUpsertWithNestedWhereUniqueInput>>;
+};
+
+export type OrdinanceMemberUpdateManyInput = {
+  workload?: InputMaybe<Scalars['Int']>;
+};
+
+export type OrdinanceMemberUpdateManyWithNestedWhereInput = {
+  /** Update many input */
+  data: OrdinanceMemberUpdateManyInput;
+  /** Document search */
+  where: OrdinanceMemberWhereInput;
+};
+
+export type OrdinanceMemberUpdateOneInlineInput = {
+  /** Connect existing OrdinanceMember document */
+  connect?: InputMaybe<OrdinanceMemberWhereUniqueInput>;
+  /** Create and connect one OrdinanceMember document */
+  create?: InputMaybe<OrdinanceMemberCreateInput>;
+  /** Delete currently connected OrdinanceMember document */
+  delete?: InputMaybe<Scalars['Boolean']>;
+  /** Disconnect currently connected OrdinanceMember document */
+  disconnect?: InputMaybe<Scalars['Boolean']>;
+  /** Update single OrdinanceMember document */
+  update?: InputMaybe<OrdinanceMemberUpdateWithNestedWhereUniqueInput>;
+  /** Upsert single OrdinanceMember document */
+  upsert?: InputMaybe<OrdinanceMemberUpsertWithNestedWhereUniqueInput>;
+};
+
+export type OrdinanceMemberUpdateWithNestedWhereUniqueInput = {
+  /** Document to update */
+  data: OrdinanceMemberUpdateInput;
+  /** Unique document search */
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+export type OrdinanceMemberUpsertInput = {
+  /** Create document if it didn't exist */
+  create: OrdinanceMemberCreateInput;
+  /** Update document if it exists */
+  update: OrdinanceMemberUpdateInput;
+};
+
+export type OrdinanceMemberUpsertWithNestedWhereUniqueInput = {
+  /** Upsert data */
+  data: OrdinanceMemberUpsertInput;
+  /** Unique document search */
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+/** This contains a set of filters that can be used to compare values internally */
+export type OrdinanceMemberWhereComparatorInput = {
+  /** This field can be used to request to check if the entry is outdated by internal comparison */
+  outdated_to?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** Identifies documents */
+export type OrdinanceMemberWhereInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<OrdinanceMemberWhereInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<OrdinanceMemberWhereInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<OrdinanceMemberWhereInput>>;
+  /** Contains search across all appropriate fields. */
+  _search?: InputMaybe<Scalars['String']>;
+  createdAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  createdAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  createdAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  createdAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  createdAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  createdAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  createdAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<OrdinanceMemberWhereStageInput>;
+  documentInStages_none?: InputMaybe<OrdinanceMemberWhereStageInput>;
+  documentInStages_some?: InputMaybe<OrdinanceMemberWhereStageInput>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** All values containing the given string. */
+  id_contains?: InputMaybe<Scalars['ID']>;
+  /** All values ending with the given string. */
+  id_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are contained in given list. */
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  id_not?: InputMaybe<Scalars['ID']>;
+  /** All values not containing the given string. */
+  id_not_contains?: InputMaybe<Scalars['ID']>;
+  /** All values not ending with the given string */
+  id_not_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are not contained in given list. */
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** All values not starting with the given string. */
+  id_not_starts_with?: InputMaybe<Scalars['ID']>;
+  /** All values starting with the given string. */
+  id_starts_with?: InputMaybe<Scalars['ID']>;
+  memberWorkload?: InputMaybe<MemberWhereInput>;
+  ordinanceWorkload?: InputMaybe<OrdinanceWhereInput>;
+  publishedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  publishedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  publishedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  publishedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  publishedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  publishedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  publishedBy?: InputMaybe<UserWhereInput>;
+  scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  updatedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  updatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  updatedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  updatedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  updatedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  updatedBy?: InputMaybe<UserWhereInput>;
+  workload?: InputMaybe<Scalars['Int']>;
+  /** All values greater than the given value. */
+  workload_gt?: InputMaybe<Scalars['Int']>;
+  /** All values greater than or equal the given value. */
+  workload_gte?: InputMaybe<Scalars['Int']>;
+  /** All values that are contained in given list. */
+  workload_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** All values less than the given value. */
+  workload_lt?: InputMaybe<Scalars['Int']>;
+  /** All values less than or equal the given value. */
+  workload_lte?: InputMaybe<Scalars['Int']>;
+  /** Any other value that exists and is not equal to the given value. */
+  workload_not?: InputMaybe<Scalars['Int']>;
+  /** All values that are not contained in given list. */
+  workload_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
+export type OrdinanceMemberWhereStageInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<OrdinanceMemberWhereStageInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<OrdinanceMemberWhereStageInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<OrdinanceMemberWhereStageInput>>;
+  /** This field contains fields which can be set as true or false to specify an internal comparison */
+  compareWithParent?: InputMaybe<OrdinanceMemberWhereComparatorInput>;
+  /** Specify the stage to compare with */
+  stage?: InputMaybe<Stage>;
+};
+
+/** References OrdinanceMember record uniquely */
+export type OrdinanceMemberWhereUniqueInput = {
+  id?: InputMaybe<Scalars['ID']>;
+};
+
 export enum OrdinanceOrderByInput {
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
@@ -2394,6 +2967,7 @@ export enum OrdinanceType {
 }
 
 export type OrdinanceUpdateInput = {
+  cm19ubvd702d807j3e24w3yr0?: InputMaybe<OrdinanceMemberUpdateManyInlineInput>;
   effectiveEndDate?: InputMaybe<Scalars['Date']>;
   effectiveStartDate?: InputMaybe<Scalars['Date']>;
   members?: InputMaybe<MemberUpdateManyInlineInput>;
@@ -2713,6 +3287,14 @@ export type Query = {
   node?: Maybe<Node>;
   /** Retrieve a single ordinance */
   ordinance?: Maybe<Ordinance>;
+  /** Retrieve a single ordinanceMember */
+  ordinanceMember?: Maybe<OrdinanceMember>;
+  /** Retrieve document version */
+  ordinanceMemberVersion?: Maybe<DocumentVersion>;
+  /** Retrieve multiple ordinanceMembers */
+  ordinanceMembers: Array<OrdinanceMember>;
+  /** Retrieve multiple ordinanceMembers using the Relay connection interface */
+  ordinanceMembersConnection: OrdinanceMemberConnection;
   /** Retrieve document version */
   ordinanceVersion?: Maybe<DocumentVersion>;
   /** Retrieve multiple ordinances */
@@ -2833,6 +3415,44 @@ export type QueryOrdinanceArgs = {
   locales?: Array<Locale>;
   stage?: Stage;
   where: OrdinanceWhereUniqueInput;
+};
+
+
+export type QueryOrdinanceMemberArgs = {
+  locales?: Array<Locale>;
+  stage?: Stage;
+  where: OrdinanceMemberWhereUniqueInput;
+};
+
+
+export type QueryOrdinanceMemberVersionArgs = {
+  where: VersionWhereInput;
+};
+
+
+export type QueryOrdinanceMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: Array<Locale>;
+  orderBy?: InputMaybe<OrdinanceMemberOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  stage?: Stage;
+  where?: InputMaybe<OrdinanceMemberWhereInput>;
+};
+
+
+export type QueryOrdinanceMembersConnectionArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: Array<Locale>;
+  orderBy?: InputMaybe<OrdinanceMemberOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  stage?: Stage;
+  where?: InputMaybe<OrdinanceMemberWhereInput>;
 };
 
 
@@ -3077,7 +3697,7 @@ export type ScheduledOperationUpdatedByArgs = {
   locales?: InputMaybe<Array<Locale>>;
 };
 
-export type ScheduledOperationAffectedDocument = Asset | Member | Ordinance;
+export type ScheduledOperationAffectedDocument = Asset | Member | Ordinance | OrdinanceMember;
 
 export type ScheduledOperationConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
@@ -4526,7 +5146,6 @@ export type CreateMemberMutationVariables = Exact<{
   name: Scalars['String'];
   memberType: MemberType;
   matriculaSiape: Scalars['Int'];
-  workload: Scalars['Int'];
 }>;
 
 
@@ -4542,6 +5161,15 @@ export type CreateOrdinanceMutationVariables = Exact<{
 
 
 export type CreateOrdinanceMutation = { __typename?: 'Mutation', createOrdinance?: { __typename?: 'Ordinance', id: string, number: string } | null };
+
+export type CreateOrdinanceMemberMutationVariables = Exact<{
+  memberId?: InputMaybe<Scalars['ID']>;
+  ordinanceId?: InputMaybe<Scalars['ID']>;
+  workload: Scalars['Int'];
+}>;
+
+
+export type CreateOrdinanceMemberMutation = { __typename?: 'Mutation', createOrdinanceMember?: { __typename?: 'OrdinanceMember', id: string } | null };
 
 export type DeleteMemberMutationVariables = Exact<{
   id?: InputMaybe<Scalars['ID']>;
@@ -4595,10 +5223,18 @@ export type UpdateOrdinanceSituationMutationVariables = Exact<{
 
 export type UpdateOrdinanceSituationMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', ordinanceSituation?: OrdinanceSituation | null } | null };
 
+export type UpdateOrdinanceMemberMutationVariables = Exact<{
+  ordinanceMemberId?: InputMaybe<Scalars['ID']>;
+  ordinanceId?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type UpdateOrdinanceMemberMutation = { __typename?: 'Mutation', updateOrdinanceMember?: { __typename?: 'OrdinanceMember', id: string } | null };
+
 export type GetMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, memberType: MemberType, matriculaSiape: number, workload: number }> };
+export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, memberType: MemberType, matriculaSiape: number }> };
 
 export type GetOrdinanceByNumberQueryVariables = Exact<{
   number: Scalars['String'];
@@ -4632,7 +5268,7 @@ export type GetOrdinancesByMemberNameQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, memberType: MemberType, workload: number, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
+export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, memberType: MemberType, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
 
 export type GetOrdinancesByTypeQueryVariables = Exact<{
   ordinanceType: OrdinanceType;
@@ -4648,9 +5284,9 @@ export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __t
 
 
 export const CreateMemberDocument = gql`
-    mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!, $workload: Int!) {
+    mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!) {
   createMember(
-    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape, workload: $workload}
+    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape}
   ) {
     id
   }
@@ -4674,7 +5310,6 @@ export type CreateMemberMutationFn = Apollo.MutationFunction<CreateMemberMutatio
  *      name: // value for 'name'
  *      memberType: // value for 'memberType'
  *      matriculaSiape: // value for 'matriculaSiape'
- *      workload: // value for 'workload'
  *   },
  * });
  */
@@ -4725,6 +5360,43 @@ export function useCreateOrdinanceMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateOrdinanceMutationHookResult = ReturnType<typeof useCreateOrdinanceMutation>;
 export type CreateOrdinanceMutationResult = Apollo.MutationResult<CreateOrdinanceMutation>;
 export type CreateOrdinanceMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>;
+export const CreateOrdinanceMemberDocument = gql`
+    mutation CreateOrdinanceMember($memberId: ID, $ordinanceId: ID, $workload: Int!) {
+  createOrdinanceMember(
+    data: {workload: $workload, memberWorkload: {connect: {id: $memberId}}, ordinanceWorkload: {connect: {id: $ordinanceId}}}
+  ) {
+    id
+  }
+}
+    `;
+export type CreateOrdinanceMemberMutationFn = Apollo.MutationFunction<CreateOrdinanceMemberMutation, CreateOrdinanceMemberMutationVariables>;
+
+/**
+ * __useCreateOrdinanceMemberMutation__
+ *
+ * To run a mutation, you first call `useCreateOrdinanceMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOrdinanceMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOrdinanceMemberMutation, { data, loading, error }] = useCreateOrdinanceMemberMutation({
+ *   variables: {
+ *      memberId: // value for 'memberId'
+ *      ordinanceId: // value for 'ordinanceId'
+ *      workload: // value for 'workload'
+ *   },
+ * });
+ */
+export function useCreateOrdinanceMemberMutation(baseOptions?: Apollo.MutationHookOptions<CreateOrdinanceMemberMutation, CreateOrdinanceMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOrdinanceMemberMutation, CreateOrdinanceMemberMutationVariables>(CreateOrdinanceMemberDocument, options);
+      }
+export type CreateOrdinanceMemberMutationHookResult = ReturnType<typeof useCreateOrdinanceMemberMutation>;
+export type CreateOrdinanceMemberMutationResult = Apollo.MutationResult<CreateOrdinanceMemberMutation>;
+export type CreateOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMemberMutation, CreateOrdinanceMemberMutationVariables>;
 export const DeleteMemberDocument = gql`
     mutation DeleteMember($id: ID) {
   deleteMember(where: {id: $id}) {
@@ -4965,6 +5637,43 @@ export function useUpdateOrdinanceSituationMutation(baseOptions?: Apollo.Mutatio
 export type UpdateOrdinanceSituationMutationHookResult = ReturnType<typeof useUpdateOrdinanceSituationMutation>;
 export type UpdateOrdinanceSituationMutationResult = Apollo.MutationResult<UpdateOrdinanceSituationMutation>;
 export type UpdateOrdinanceSituationMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceSituationMutation, UpdateOrdinanceSituationMutationVariables>;
+export const UpdateOrdinanceMemberDocument = gql`
+    mutation UpdateOrdinanceMember($ordinanceMemberId: ID, $ordinanceId: ID) {
+  updateOrdinanceMember(
+    where: {id: $ordinanceMemberId}
+    data: {ordinanceWorkload: {connect: {id: $ordinanceId}}}
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateOrdinanceMemberMutationFn = Apollo.MutationFunction<UpdateOrdinanceMemberMutation, UpdateOrdinanceMemberMutationVariables>;
+
+/**
+ * __useUpdateOrdinanceMemberMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrdinanceMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrdinanceMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrdinanceMemberMutation, { data, loading, error }] = useUpdateOrdinanceMemberMutation({
+ *   variables: {
+ *      ordinanceMemberId: // value for 'ordinanceMemberId'
+ *      ordinanceId: // value for 'ordinanceId'
+ *   },
+ * });
+ */
+export function useUpdateOrdinanceMemberMutation(baseOptions?: Apollo.MutationHookOptions<UpdateOrdinanceMemberMutation, UpdateOrdinanceMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateOrdinanceMemberMutation, UpdateOrdinanceMemberMutationVariables>(UpdateOrdinanceMemberDocument, options);
+      }
+export type UpdateOrdinanceMemberMutationHookResult = ReturnType<typeof useUpdateOrdinanceMemberMutation>;
+export type UpdateOrdinanceMemberMutationResult = Apollo.MutationResult<UpdateOrdinanceMemberMutation>;
+export type UpdateOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceMemberMutation, UpdateOrdinanceMemberMutationVariables>;
 export const GetMembersDocument = gql`
     query GetMembers {
   members(stage: DRAFT) {
@@ -4972,7 +5681,6 @@ export const GetMembersDocument = gql`
     name
     memberType
     matriculaSiape
-    workload
   }
 }
     `;
@@ -5182,7 +5890,6 @@ export const GetOrdinancesByMemberNameDocument = gql`
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
     memberType
-    workload
     ordinances {
       ... on Ordinance {
         number

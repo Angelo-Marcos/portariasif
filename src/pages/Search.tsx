@@ -306,7 +306,7 @@ export function Search() {
                                                                     calculateDateInterval(ordinance.effectiveEndDate, ordinance.effectiveStartDate, ordinance.ordinanceType, member.memberType)
                                                                     
                                                                 } */}
-                                                                {member.workload}
+                                                                
                                                             </td>
                                                         </tr>
                                                     )

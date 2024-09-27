@@ -4,6 +4,5 @@ query GetMembers {
     name
     memberType
     matriculaSiape
-    workload
   }
 }

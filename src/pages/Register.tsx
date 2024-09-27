@@ -5,6 +5,7 @@ import {
     MemberType,
     OrdinanceType,
     useCreateMemberMutation,
+    useCreateOrdinanceMemberMutation,
     useCreateOrdinanceMutation,
     useDeleteMemberMutation,
     useDeleteOrdinanceMutation,
@@ -12,6 +13,7 @@ import {
     usePublishMemberMutation,
     usePublishOrdinanceMutation,
     useUpdateMemberMutation,
+    useUpdateOrdinanceMemberMutation,
     useUpdateOrdinanceMutation,
     useUpdateOrdinanceSituationMutation
 } from "../graphql/generated";
@@ -29,7 +31,11 @@ interface MemberProps {
     name: string;
     memberType: 'member' | 'president' | 'teacher';
     matriculaSiape: number;
-    workload: number;
+}
+
+interface WorkloadsProps {
+    memberId: string;
+    workload: string;
 }
 
 interface IFormInputOrdinance {
@@ -95,21 +101,24 @@ export function Register() {
     const [radio, setRadio] = useState('');
 
     const [members, setMembers] = useState<MemberProps[]>([])
+    const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
 
     // Mutations Graphql
     const [createOrdinance, { loading: loadingCreate, data: dataCreateOrdinance }] = useCreateOrdinanceMutation();
     const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
+    const [createOrdinanceMember, {loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember}] = useCreateOrdinanceMemberMutation();
     const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
     const [updateOrdinanceSituation] = useUpdateOrdinanceSituationMutation();
     const [updateMember, { loading: loadingMemberUpdate }] = useUpdateMemberMutation();
+    const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
     const [publishOrdinance, { loading: loadingPublishOrdinance }] = usePublishOrdinanceMutation();
     const [publishMember, { loading: loadingPublishMember }] = usePublishMemberMutation();
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
 
-    const { data: dataMembers } = useGetMembersQuery();
+    const { data: dataMembersQuery } = useGetMembersQuery();
 
-    const membersFilters = dataMembers?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
+    const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
     const handleClickAutoComplete = (member: MemberProps) => {
         const dataMembers: MemberProps = {
@@ -117,11 +126,19 @@ export function Register() {
             name: member.name,
             memberType: member.memberType,
             matriculaSiape: member.matriculaSiape,
-            workload: member.workload
         }
+
+        const dataWorkloads: WorkloadsProps = {
+            memberId: member.id,
+            workload: workload
+        }
+        
+
+        setWorkloads(oldState => [...oldState, dataWorkloads])
 
         setMembers(oldState => [...oldState, dataMembers])
         setName('')
+        setworkload('')
     }
 
     const [modalIsOpen, setIsOpen] = useState(false);
@@ -175,6 +192,16 @@ export function Register() {
                     }
                 })
             })
+        
+        workloads.map((workload) => {
+            createOrdinanceMember({
+                variables: {
+                    ordinanceId: dataCreateOrdinance?.createOrdinance?.id,
+                    memberId: workload.memberId,
+                    workload: Number(workload.workload)
+                }
+            })
+        })
 
         // setNumber('');
         // setEffectiveStartDate('');
@@ -198,8 +225,7 @@ export function Register() {
             variables: {
                 name: name,
                 memberType: memberType,
-                matriculaSiape: Number(matriculaSiape),
-                workload: Number(workload)
+                matriculaSiape: Number(matriculaSiape)
             }
         }).then(res => {
             const dataMembers: MemberProps = {
@@ -207,15 +233,25 @@ export function Register() {
                 name: name,
                 memberType: memberType,
                 matriculaSiape: Number(matriculaSiape),
-                workload: Number(workload)
+            }
+
+            const dataWorkloads: WorkloadsProps = {
+                memberId: dataMembers.id,
+                workload: workload
             }
 
             setMembers(oldState => [...oldState, dataMembers])
+            setWorkloads(oldState => [...oldState, dataWorkloads])
+            
         })
+
+        
+
 
         setName('');
         setMatriculaSiape('')
         setMemberType(MemberType.Member)
+        setworkload('')
     }
 
     const handleRemoveMember = (id: string) => {
@@ -439,11 +475,7 @@ export function Register() {
                                 onChange={event => setMatriculaSiape(event.target.value)}
                                 value={matriculaSiape}
                             />
-                            <span
-                                onClick={handleAddNewMember}
-                                className="h-[30px] items-center text-green-300 ml-2 rounded-lg hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
-                                <PlusCircle size={28} />
-                            </span>
+                            
                         </div>
                         <div className="flex mt-[28px]">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
@@ -461,12 +493,19 @@ export function Register() {
                             {/* <p className="absolute mt-8 text-red-800 text-sm">
                                 {errorsOrdinance.subject?.message}
                             </p> */}
+                            <span
+                                onClick={handleAddNewMember}
+                                className="h-[30px] items-center text-green-300 ml-2 rounded-lg hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
+                                <PlusCircle size={28} />
+                            </span>
                         </div>
 
                     </div>
                     <div>
                         <ul>
                             {members.map((member) => {
+                                // const workloadFilter = workloads.filter((i) => i.memberId === member.id)
+            
                                 return (
                                     <div className="flex flex-wrap">
                                         <Member
@@ -474,8 +513,7 @@ export function Register() {
                                             name={member.name}
                                             type={member.memberType}
                                             matriculaSiape={member.matriculaSiape}
-                                            workload={member.workload}
-                
+                                            workload={Number(workloads.filter((i) => i.memberId === member.id).at(0)?.workload)}
                                         />
                                         <button
                                             onClick={() => handleRemoveMember(member.id)}
