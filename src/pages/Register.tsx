@@ -11,6 +11,7 @@ import {
     useDeleteOrdinanceMutation,
     useGetMembersQuery,
     usePublishMemberMutation,
+    usePublishOrdinanceMemberMutation,
     usePublishOrdinanceMutation,
     useUpdateMemberMutation,
     useUpdateOrdinanceMemberMutation,
@@ -34,6 +35,7 @@ interface MemberProps {
 }
 
 interface WorkloadsProps {
+    id: string;
     memberId: string;
     workload: string;
 }
@@ -102,17 +104,19 @@ export function Register() {
 
     const [members, setMembers] = useState<MemberProps[]>([])
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
+    const workloadsId: string[] = [];
 
     // Mutations Graphql
     const [createOrdinance, { loading: loadingCreate, data: dataCreateOrdinance }] = useCreateOrdinanceMutation();
     const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
-    const [createOrdinanceMember, {loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember}] = useCreateOrdinanceMemberMutation();
+    const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
     const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
     const [updateOrdinanceSituation] = useUpdateOrdinanceSituationMutation();
     const [updateMember, { loading: loadingMemberUpdate }] = useUpdateMemberMutation();
     const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
     const [publishOrdinance, { loading: loadingPublishOrdinance }] = usePublishOrdinanceMutation();
     const [publishMember, { loading: loadingPublishMember }] = usePublishMemberMutation();
+    const [publishOrdinanceMember, { loading: loadingPublishOrdinceMember }] = usePublishOrdinanceMemberMutation();
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
 
@@ -129,10 +133,11 @@ export function Register() {
         }
 
         const dataWorkloads: WorkloadsProps = {
+            id: "",
             memberId: member.id,
             workload: workload
         }
-        
+
 
         setWorkloads(oldState => [...oldState, dataWorkloads])
 
@@ -144,37 +149,6 @@ export function Register() {
     const [modalIsOpen, setIsOpen] = useState(false);
     const handleOpenModal = () => { setIsOpen(true) };
     const handleCloseModal = () => { setIsOpen(false) };
-
-    // async function handleCreateOrdinance(event: FormEvent) {
-    //     event.preventDefault();
-
-    //     getValuesOrdinance("effectiveEndDate") === null ?
-    //         await createOrdinance({
-    //             variables: {
-    //                 number: getValuesOrdinance("number"),
-    //                 effectiveStartDate: getValuesOrdinance("effectiveStartDate"),
-    //                 ordinanceType: getValuesOrdinance("ordinanceType"),
-    //                 subject: getValuesOrdinance("subject")
-    //             },
-
-    //         }) : await createOrdinance({
-    //             variables: {
-    //                 number: getValuesOrdinance("number"),
-    //                 effectiveStartDate: getValuesOrdinance("effectiveStartDate"),
-    //                 ordinanceType: getValuesOrdinance("ordinanceType"),
-    //                 effectiveEndDate: getValuesOrdinance("effectiveEndDate"),
-    //                 subject: getValuesOrdinance("subject")
-    //             },
-
-    //         })
-
-    //     radio === 'yes'
-    //         && await updateOrdinanceSituation({
-    //             variables: {
-    //                 number: getValuesOrdinance("numberRevoked")
-    //             }
-    //         })
-    // }
 
     const handleUpdateMemberOrdinance = () => {
         members.length > 0 &&
@@ -192,30 +166,18 @@ export function Register() {
                     }
                 })
             })
-        
+
         workloads.map((workload) => {
-            createOrdinanceMember({
+            updateOrdinanceMember({
                 variables: {
-                    ordinanceId: dataCreateOrdinance?.createOrdinance?.id,
-                    memberId: workload.memberId,
-                    workload: Number(workload.workload)
+                    id: workload.id,
+                    ordinanceId: dataCreateOrdinance?.createOrdinance?.id as string
                 }
             })
         })
 
-        // setNumber('');
-        // setEffectiveStartDate('');
-        // setOrdinanceType(OrdinanceType.Designation);
-        // setEffectiveEndDate('');
-        // setSubject('');
-        // setRadio('');
-        // setNumberRevoked('');
-
-        // setName('');
-        // setMatriculaSiape(0)
-        // setMemberType(MemberType.Student)
-
-        setMembers([])
+        setMembers([]);
+        setWorkloads([]);
 
         handleCloseModal();
     }
@@ -235,18 +197,24 @@ export function Register() {
                 matriculaSiape: Number(matriculaSiape),
             }
 
-            const dataWorkloads: WorkloadsProps = {
-                memberId: dataMembers.id,
-                workload: workload
-            }
+            createOrdinanceMember({
+                variables: {
+                    memberId: dataMembers.id,
+                    workload: Number(workload)
+                }
+            }).then(res => {
+                const dataWorkloads: WorkloadsProps = {
+                    id: String(res.data?.createOrdinanceMember?.id),
+                    memberId: dataMembers.id,
+                    workload: workload
+                }
+
+                setWorkloads(oldState => [...oldState, dataWorkloads])
+            })
 
             setMembers(oldState => [...oldState, dataMembers])
-            setWorkloads(oldState => [...oldState, dataWorkloads])
             
         })
-
-        
-
 
         setName('');
         setMatriculaSiape('')
@@ -286,7 +254,18 @@ export function Register() {
             })
         }
 
+        const publishOrdinanceMembers = () => {
+            workloads.map((workload) => {
+                publishOrdinanceMember({
+                    variables: {
+                        id: workload.id
+                    }
+                })
+            })
+        }
+
         publishMembers();
+        publishOrdinanceMembers();
 
         // setNumber('');
         // setEffectiveStartDate('');
@@ -408,7 +387,7 @@ export function Register() {
                                 {errorsOrdinance.subject?.message}
                             </p>
                         </div>
-                        
+
                     </div>
                     <div className="flex flex-wrap mt-[28px]">
                         <div className="flex">
@@ -418,7 +397,7 @@ export function Register() {
                             <div className="flex flex-col">
                                 <input
                                     // {...registerMember("name")}
-                                    className="appearance-none block w-[320px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[420px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                     onChange={event => setName(event.target.value)}
                                     value={name}
                                 />
@@ -452,17 +431,17 @@ export function Register() {
                             </label>
                             <select
                                 // {...registerMember("memberType")}
-                                className="appearance-none block w-[120px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                 onChange={event => setMemberType(event.target.value as MemberType)}
                             // value={memberType}
                             >
                                 <option value="" className="text-gray-500 text-xl font-light"></option>
                                 <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
                                 <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
-                            
+
                             </select>
                         </div>
-                        <div className="flex ml-4">
+                        <div className="flex mt-[28px]">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Matrícula/Siape:
                             </label>
@@ -471,13 +450,13 @@ export function Register() {
                                 mask="999999"
                                 pattern="[0-9]{6,7}"
                                 title="6 to 7 numbers"
-                                className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500"
+                                className="appearance-none block w-[180px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500"
                                 onChange={event => setMatriculaSiape(event.target.value)}
                                 value={matriculaSiape}
                             />
-                            
+
                         </div>
-                        <div className="flex mt-[28px]">
+                        <div className="flex ml-4 mt-[28px]">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Carga horária/semana:
                             </label>
@@ -486,8 +465,8 @@ export function Register() {
                                 pattern="[0-9]{1}"
                                 onChange={event => setworkload(event.target.value)}
                                 className="appearance-none block w-[100px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                
-                                // onChange={event => setSubject(event.target.value)}
+
+                            // onChange={event => setSubject(event.target.value)}
                             // value={subject}
                             />
                             {/* <p className="absolute mt-8 text-red-800 text-sm">
@@ -505,7 +484,7 @@ export function Register() {
                         <ul>
                             {members.map((member) => {
                                 // const workloadFilter = workloads.filter((i) => i.memberId === member.id)
-            
+
                                 return (
                                     <div className="flex flex-wrap">
                                         <Member
@@ -517,7 +496,7 @@ export function Register() {
                                         />
                                         <button
                                             onClick={() => handleRemoveMember(member.id)}
-                                            className="flex justify-center items-center mt-[10px] ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
+                                            className="flex justify-center items-center h-[30px] mt-[28px] ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
                                             <XCircle size={28} />
                                         </button>
                                     </div>
@@ -573,7 +552,7 @@ export function Register() {
                         <button
                             type="submit"
                             disabled={loadingCreate}
-                            className="flex justify-center items-center w-[140px] h-[50px] mt-14 leading-none bg-green-300 rounded font-medium text-xl hover:bg-green-700 transition-colors disabled:opacity-50"
+                            className="flex justify-center items-center w-[140px] h-[50px] mt-10 leading-none bg-green-300 rounded font-medium text-xl hover:bg-green-700 transition-colors disabled:opacity-50"
                         // onClick={handleOpenModal}
                         >
                             Cadastrar Portaria

@@ -1,0 +1,5 @@
+mutation PublishOrdinanceMember($id: ID) {
+  publishOrdinanceMember(where: {id: $id}) {
+    id
+  }
+}
