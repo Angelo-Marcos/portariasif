@@ -1,7 +1,15 @@
 import { Header } from "../components/Header";
 import InputMask from "react-input-mask"
 import { FormEvent, useState } from "react";
-import { MemberType, OrdinanceType, useGetOrdinanceByNumberQuery, useGetOrdinancesByDateQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesByTypeQuery } from "../graphql/generated";
+import { 
+    MemberType, 
+    OrdinanceType, 
+    useGetOrdinanceByNumberQuery, 
+    useGetOrdinancesByDateQuery, 
+    useGetOrdinancesByMemberMatriculaQuery, 
+    useGetOrdinancesByMemberNameQuery, 
+    useGetOrdinancesByTypeQuery 
+} from "../graphql/generated";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { get } from "react-hook-form/dist/utils";
 import { number } from "yup";

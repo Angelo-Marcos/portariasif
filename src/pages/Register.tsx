@@ -10,6 +10,7 @@ import {
     useDeleteMemberMutation,
     useDeleteOrdinanceMutation,
     useGetMembersQuery,
+    useGetOrdinancesByMemberMatriculaQuery,
     usePublishMemberMutation,
     usePublishOrdinanceMemberMutation,
     usePublishOrdinanceMutation,
@@ -122,6 +123,12 @@ export function Register() {
 
     const { data: dataMembersQuery } = useGetMembersQuery();
 
+    const { data: dataOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
+        variables: {
+            matriculaSiape: Number(matriculaSiape)
+        }
+    })
+
     const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
     const handleClickAutoComplete = (member: MemberProps) => {
@@ -183,18 +190,13 @@ export function Register() {
     }
 
     const handleAddNewMember = async () => {
-        await createMember({
-            variables: {
-                name: name,
-                memberType: memberType,
-                matriculaSiape: Number(matriculaSiape)
-            }
-        }).then(res => {
+        
+        if (dataOrdinancesByMemberMatricula?.member?.id.length != null) {
             const dataMembers: MemberProps = {
-                id: String(res.data?.createMember?.id),
-                name: name,
-                memberType: memberType,
+                id: dataOrdinancesByMemberMatricula.member?.id as string,
+                name: dataOrdinancesByMemberMatricula.member?.name as string,
                 matriculaSiape: Number(matriculaSiape),
+                memberType: dataOrdinancesByMemberMatricula.member?.memberType as MemberType
             }
 
             createOrdinanceMember({
@@ -213,8 +215,40 @@ export function Register() {
             })
 
             setMembers(oldState => [...oldState, dataMembers])
-            
-        })
+        } else {
+            await createMember({
+                variables: {
+                    name: name,
+                    memberType: memberType,
+                    matriculaSiape: Number(matriculaSiape)
+                }
+            }).then(res => {
+                const dataMembers: MemberProps = {
+                    id: String(res.data?.createMember?.id),
+                    name: name,
+                    memberType: memberType,
+                    matriculaSiape: Number(matriculaSiape),
+                }
+    
+                createOrdinanceMember({
+                    variables: {
+                        memberId: dataMembers.id,
+                        workload: Number(workload)
+                    }
+                }).then(res => {
+                    const dataWorkloads: WorkloadsProps = {
+                        id: String(res.data?.createOrdinanceMember?.id),
+                        memberId: dataMembers.id,
+                        workload: workload
+                    }
+    
+                    setWorkloads(oldState => [...oldState, dataWorkloads])
+                })
+    
+                setMembers(oldState => [...oldState, dataMembers])
+    
+            })
+        }
 
         setName('');
         setMatriculaSiape('')
