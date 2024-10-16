@@ -105,7 +105,6 @@ export function Register() {
 
     const [members, setMembers] = useState<MemberProps[]>([])
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
-    const workloadsId: string[] = [];
 
     // Mutations Graphql
     const [createOrdinance, { loading: loadingCreate, data: dataCreateOrdinance }] = useCreateOrdinanceMutation();
@@ -153,6 +152,7 @@ export function Register() {
         setworkload('')
     }
 
+    // Modal
     const [modalIsOpen, setIsOpen] = useState(false);
     const handleOpenModal = () => { setIsOpen(true) };
     const handleCloseModal = () => { setIsOpen(false) };
@@ -256,16 +256,38 @@ export function Register() {
         setworkload('')
     }
 
-    const handleRemoveMember = (id: string) => {
-        // deleteMember({
-        //     variables: {
-        //         id: id,
-        //     }
-        // }).then(res => {
+    // const handleRemoveMember = (id: string) => {
+    //     // deleteMember({
+    //     //     variables: {
+    //     //         id: id,
+    //     //     }
+    //     // }).then(res => {
+    //     setMembers(oldState => oldState.filter(
+    //         member => member.id != id
+    //     ))
+    //     // })
+    // }
+
+    // const handleRemoveWorkload = (id: string) => {
+    //     // deleteMember({
+    //     //     variables: {
+    //     //         id: id,
+    //     //     }
+    //     // }).then(res => {
+    //     setWorkloads(oldState => oldState.filter(
+    //         workload => workload.id != id
+    //     ))
+    //     // })
+    // }
+
+    const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
         setMembers(oldState => oldState.filter(
-            member => member.id != id
+            member => member.id != idMember
         ))
-        // })
+
+        setWorkloads(oldState => oldState.filter(
+            workload => workload.id != idWorkload
+        ))
     }
 
     const handlePublishOrdinance = () => {
@@ -529,7 +551,7 @@ export function Register() {
                                             workload={Number(workloads.filter((i) => i.memberId === member.id).at(0)?.workload)}
                                         />
                                         <button
-                                            onClick={() => handleRemoveMember(member.id)}
+                                            onClick={() => handleRemoveMemberWorkload(member.id, workloads.filter((i) => i.memberId === member.id).at(0)?.id as string)}
                                             className="flex justify-center items-center h-[30px] mt-[28px] ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
                                             <XCircle size={28} />
                                         </button>
