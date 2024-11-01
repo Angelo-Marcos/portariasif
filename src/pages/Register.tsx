@@ -31,7 +31,6 @@ import { format } from "date-fns";
 interface MemberProps {
     id: string;
     name: string;
-    memberType: 'member' | 'president' | 'teacher';
     matriculaSiape: number;
 }
 
@@ -39,6 +38,7 @@ interface WorkloadsProps {
     id: string;
     memberId: string;
     workload: string;
+    memberType: 'vicePresident' | 'president' | 'member';
 }
 
 interface IFormInputOrdinance {
@@ -98,7 +98,7 @@ export function Register() {
 
 
     const [name, setName] = useState('');
-    const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
+    const [memberType, setMemberType] = useState<MemberType>(MemberType.President);
     const [matriculaSiape, setMatriculaSiape] = useState('');
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
@@ -134,14 +134,14 @@ export function Register() {
         const dataMembers: MemberProps = {
             id: member.id,
             name: member.name,
-            memberType: member.memberType,
             matriculaSiape: member.matriculaSiape,
         }
 
         const dataWorkloads: WorkloadsProps = {
             id: "",
             memberId: member.id,
-            workload: workload
+            workload: workload,
+            memberType: memberType,
         }
 
 
@@ -196,19 +196,20 @@ export function Register() {
                 id: dataOrdinancesByMemberMatricula.member?.id as string,
                 name: dataOrdinancesByMemberMatricula.member?.name as string,
                 matriculaSiape: Number(matriculaSiape),
-                memberType: dataOrdinancesByMemberMatricula.member?.memberType as MemberType
             }
 
             createOrdinanceMember({
                 variables: {
                     memberId: dataMembers.id,
-                    workload: Number(workload)
+                    workload: Number(workload),
+                    memberType: memberType
                 }
             }).then(res => {
                 const dataWorkloads: WorkloadsProps = {
                     id: String(res.data?.createOrdinanceMember?.id),
                     memberId: dataMembers.id,
-                    workload: workload
+                    workload: workload,
+                    memberType: memberType
                 }
 
                 setWorkloads(oldState => [...oldState, dataWorkloads])
@@ -219,27 +220,27 @@ export function Register() {
             await createMember({
                 variables: {
                     name: name,
-                    memberType: memberType,
                     matriculaSiape: Number(matriculaSiape)
                 }
             }).then(res => {
                 const dataMembers: MemberProps = {
                     id: String(res.data?.createMember?.id),
                     name: name,
-                    memberType: memberType,
                     matriculaSiape: Number(matriculaSiape),
                 }
     
                 createOrdinanceMember({
                     variables: {
                         memberId: dataMembers.id,
-                        workload: Number(workload)
+                        workload: Number(workload),
+                        memberType: memberType
                     }
                 }).then(res => {
                     const dataWorkloads: WorkloadsProps = {
                         id: String(res.data?.createOrdinanceMember?.id),
                         memberId: dataMembers.id,
-                        workload: workload
+                        workload: workload,
+                        memberType: memberType
                     }
     
                     setWorkloads(oldState => [...oldState, dataWorkloads])
@@ -252,7 +253,7 @@ export function Register() {
 
         setName('');
         setMatriculaSiape('')
-        setMemberType(MemberType.Member)
+        setMemberType(MemberType.President)
         setworkload('')
     }
 
@@ -471,7 +472,7 @@ export function Register() {
                                                         className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
                                                         onClick={() => handleClickAutoComplete(member)}
                                                     >
-                                                        {member.name} / {member.memberType === 'member' ? 'Membro' : member.memberType === 'president' ? 'Presidente' : 'TAE'} / {member.matriculaSiape}
+                                                        {member.name} / {member.matriculaSiape}
                                                     </a>
                                                 )
                                             })}
@@ -482,22 +483,6 @@ export function Register() {
                             </div>
                         </div>
                         <div className="flex ml-4">
-                            <label className="block tracking-wide font-light text-gray-500 text-xl">
-                                Tipo:
-                            </label>
-                            <select
-                                // {...registerMember("memberType")}
-                                className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                onChange={event => setMemberType(event.target.value as MemberType)}
-                            // value={memberType}
-                            >
-                                <option value="" className="text-gray-500 text-xl font-light"></option>
-                                <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
-                                <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
-
-                            </select>
-                        </div>
-                        <div className="flex mt-[28px]">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
                                 Matrícula/Siape:
                             </label>
@@ -511,6 +496,22 @@ export function Register() {
                                 value={matriculaSiape}
                             />
 
+                        </div>
+                        <div className="flex mt-[28px]">
+                            <label className="block tracking-wide font-light text-gray-500 text-xl">
+                                Tipo:
+                            </label>
+                            <select
+                                // {...registerMember("memberType")}
+                                className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                onChange={event => setMemberType(event.target.value as MemberType)}
+                            // value={memberType}
+                            >
+                                <option value="" className="text-gray-500 text-xl font-light"></option>
+                                <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
+                                <option value="vice-president" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
+                                
+                            </select>
                         </div>
                         <div className="flex ml-4 mt-[28px]">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
@@ -546,9 +547,9 @@ export function Register() {
                                         <Member
                                             key={member.id}
                                             name={member.name}
-                                            type={member.memberType}
                                             matriculaSiape={member.matriculaSiape}
                                             workload={Number(workloads.filter((i) => i.memberId === member.id).at(0)?.workload)}
+                                            type={workloads.filter((i) => i.memberId === member.id).at(0)?.memberType as MemberType}
                                         />
                                         <button
                                             onClick={() => handleRemoveMemberWorkload(member.id, workloads.filter((i) => i.memberId === member.id).at(0)?.id as string)}
@@ -633,7 +634,7 @@ export function Register() {
                         <label className="flex ml-2 text-black"><strong className="mr-2">Assunto:</strong>{getValuesOrdinance("subject")}</label>
                         <label className="flex flex-col ml-2 text-black"><strong className="mr-2">Membro(s):</strong>{members.map((member) => {
                             return (
-                                <span>{member.name} - {member.memberType === 'member' ? 'Membro' : member.memberType === 'president' ? 'Presidente' : 'teacher'} - {member.matriculaSiape}</span>
+                                <span>{member.name} - {member.matriculaSiape}</span>
                             )
                         })}</label>
                         <label className="flex ml-2 text-black"><strong className="mr-2">Esta portaria revoga outra portaria?</strong>{radio === 'yes' ? 'Sim' : 'Não'}</label>

@@ -221,14 +221,14 @@ export function Search() {
                         </label>
                         <select
                             // {...register("memberType")}
-                            className="appearance-none block w-[120px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                            className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                         // onChange={event => setMemberType(event.target.value as MemberType)}
                         // value={memberType}
                         >
                             <option value="" className="text-gray-500 text-xl font-light"></option>
-                            <option value="teacher" className="text-gray-500 text-xl font-light">Docente</option>
-                            <option value="TAE" className="text-gray-500 text-xl font-light">TAES</option>
-                            <option value="student" className="text-gray-500 text-xl font-light">Discente</option>
+                            <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
+                            <option value="vice-president" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
+                            <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
                         </select>
                     </div>
                     <div className="flex mb-4 mt-14">

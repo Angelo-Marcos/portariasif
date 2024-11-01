@@ -878,7 +878,6 @@ export type Member = Entity & Node & {
   /** The unique identifier */
   id: Scalars['ID'];
   matriculaSiape: Scalars['Int'];
-  memberType: MemberType;
   name: Scalars['String'];
   ordinanceMember: Array<OrdinanceMember>;
   ordinances: Array<MemberOrdinances>;
@@ -982,7 +981,6 @@ export type MemberConnection = {
 export type MemberCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   matriculaSiape: Scalars['Int'];
-  memberType: MemberType;
   name: Scalars['String'];
   ordinanceMember?: InputMaybe<OrdinanceMemberCreateManyInlineInput>;
   ordinances?: InputMaybe<MemberOrdinancesCreateManyInlineInput>;
@@ -1075,13 +1073,6 @@ export type MemberManyWhereInput = {
   matriculaSiape_not?: InputMaybe<Scalars['Int']>;
   /** All values that are not contained in given list. */
   matriculaSiape_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  memberType?: InputMaybe<MemberType>;
-  /** All values that are contained in given list. */
-  memberType_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  memberType_not?: InputMaybe<MemberType>;
-  /** All values that are not contained in given list. */
-  memberType_not_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
   name?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   name_contains?: InputMaybe<Scalars['String']>;
@@ -1152,8 +1143,6 @@ export enum MemberOrderByInput {
   IdDesc = 'id_DESC',
   MatriculaSiapeAsc = 'matriculaSiape_ASC',
   MatriculaSiapeDesc = 'matriculaSiape_DESC',
-  MemberTypeAsc = 'memberType_ASC',
-  MemberTypeDesc = 'memberType_DESC',
   NameAsc = 'name_ASC',
   NameDesc = 'name_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
@@ -1245,12 +1234,11 @@ export type MemberOrdinancesWhereUniqueInput = {
 export enum MemberType {
   Member = 'member',
   President = 'president',
-  Teacher = 'teacher'
+  VicePresident = 'vicePresident'
 }
 
 export type MemberUpdateInput = {
   matriculaSiape?: InputMaybe<Scalars['Int']>;
-  memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
   ordinanceMember?: InputMaybe<OrdinanceMemberUpdateManyInlineInput>;
   ordinances?: InputMaybe<MemberOrdinancesUpdateManyInlineInput>;
@@ -1274,7 +1262,6 @@ export type MemberUpdateManyInlineInput = {
 };
 
 export type MemberUpdateManyInput = {
-  memberType?: InputMaybe<MemberType>;
   name?: InputMaybe<Scalars['String']>;
 };
 
@@ -1390,13 +1377,6 @@ export type MemberWhereInput = {
   matriculaSiape_not?: InputMaybe<Scalars['Int']>;
   /** All values that are not contained in given list. */
   matriculaSiape_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  memberType?: InputMaybe<MemberType>;
-  /** All values that are contained in given list. */
-  memberType_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  memberType_not?: InputMaybe<MemberType>;
-  /** All values that are not contained in given list. */
-  memberType_not_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
   name?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   name_contains?: InputMaybe<Scalars['String']>;
@@ -2537,6 +2517,7 @@ export type OrdinanceMember = Entity & Node & {
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
+  memberType?: Maybe<MemberType>;
   memberWorkload: Array<OrdinanceMemberMemberWorkload>;
   ordinanceWorkload: Array<OrdinanceMemberOrdinanceMember>;
   /** The time the document was published. Null on documents in draft stage. */
@@ -2638,6 +2619,7 @@ export type OrdinanceMemberConnection = {
 
 export type OrdinanceMemberCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  memberType?: InputMaybe<MemberType>;
   memberWorkload?: InputMaybe<OrdinanceMemberMemberWorkloadCreateManyInlineInput>;
   ordinanceWorkload?: InputMaybe<OrdinanceMemberOrdinanceMemberCreateManyInlineInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
@@ -2715,6 +2697,13 @@ export type OrdinanceMemberManyWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  memberType?: InputMaybe<MemberType>;
+  /** All values that are contained in given list. */
+  memberType_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  memberType_not?: InputMaybe<MemberType>;
+  /** All values that are not contained in given list. */
+  memberType_not_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
   /** All values in which the union is empty */
   memberWorkload_empty?: InputMaybe<Scalars['Boolean']>;
   /** Matches if the union contains at least one connection to the provided item to the filter */
@@ -2780,6 +2769,8 @@ export enum OrdinanceMemberOrderByInput {
   CreatedAtDesc = 'createdAt_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
+  MemberTypeAsc = 'memberType_ASC',
+  MemberTypeDesc = 'memberType_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
@@ -2789,6 +2780,7 @@ export enum OrdinanceMemberOrderByInput {
 }
 
 export type OrdinanceMemberUpdateInput = {
+  memberType?: InputMaybe<MemberType>;
   memberWorkload?: InputMaybe<OrdinanceMemberMemberWorkloadUpdateManyInlineInput>;
   ordinanceWorkload?: InputMaybe<OrdinanceMemberOrdinanceMemberUpdateManyInlineInput>;
   workload?: InputMaybe<Scalars['Int']>;
@@ -2812,6 +2804,7 @@ export type OrdinanceMemberUpdateManyInlineInput = {
 };
 
 export type OrdinanceMemberUpdateManyInput = {
+  memberType?: InputMaybe<MemberType>;
   workload?: InputMaybe<Scalars['Int']>;
 };
 
@@ -2912,6 +2905,13 @@ export type OrdinanceMemberWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  memberType?: InputMaybe<MemberType>;
+  /** All values that are contained in given list. */
+  memberType_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  memberType_not?: InputMaybe<MemberType>;
+  /** All values that are not contained in given list. */
+  memberType_not_in?: InputMaybe<Array<InputMaybe<MemberType>>>;
   /** All values in which the union is empty */
   memberWorkload_empty?: InputMaybe<Scalars['Boolean']>;
   /** Matches if the union contains at least one connection to the provided item to the filter */
@@ -5364,7 +5364,6 @@ export type OrdinanceMemberOrdinanceMemberWhereUniqueInput = {
 
 export type CreateMemberMutationVariables = Exact<{
   name: Scalars['String'];
-  memberType: MemberType;
   matriculaSiape: Scalars['Int'];
 }>;
 
@@ -5384,6 +5383,7 @@ export type CreateOrdinanceMutation = { __typename?: 'Mutation', createOrdinance
 
 export type CreateOrdinanceMemberMutationVariables = Exact<{
   memberId?: InputMaybe<Scalars['ID']>;
+  memberType?: InputMaybe<MemberType>;
   workload: Scalars['Int'];
 }>;
 
@@ -5460,7 +5460,7 @@ export type UpdateOrdinanceMemberMutation = { __typename?: 'Mutation', updateOrd
 export type GetMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, memberType: MemberType, matriculaSiape: number }> };
+export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number }> };
 
 export type GetOrdinanceByNumberQueryVariables = Exact<{
   number: Scalars['String'];
@@ -5487,14 +5487,14 @@ export type GetOrdinancesByMemberMatriculaQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, memberType: MemberType, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> } | null };
+export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> } | null };
 
 export type GetOrdinancesByMemberNameQueryVariables = Exact<{
   name: Scalars['String'];
 }>;
 
 
-export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, memberType: MemberType, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
+export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
 
 export type GetOrdinancesByTypeQueryVariables = Exact<{
   ordinanceType: OrdinanceType;
@@ -5510,10 +5510,8 @@ export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __t
 
 
 export const CreateMemberDocument = gql`
-    mutation CreateMember($name: String!, $memberType: MemberType!, $matriculaSiape: Int!) {
-  createMember(
-    data: {name: $name, memberType: $memberType, matriculaSiape: $matriculaSiape}
-  ) {
+    mutation CreateMember($name: String!, $matriculaSiape: Int!) {
+  createMember(data: {name: $name, matriculaSiape: $matriculaSiape}) {
     id
   }
 }
@@ -5534,7 +5532,6 @@ export type CreateMemberMutationFn = Apollo.MutationFunction<CreateMemberMutatio
  * const [createMemberMutation, { data, loading, error }] = useCreateMemberMutation({
  *   variables: {
  *      name: // value for 'name'
- *      memberType: // value for 'memberType'
  *      matriculaSiape: // value for 'matriculaSiape'
  *   },
  * });
@@ -5587,9 +5584,9 @@ export type CreateOrdinanceMutationHookResult = ReturnType<typeof useCreateOrdin
 export type CreateOrdinanceMutationResult = Apollo.MutationResult<CreateOrdinanceMutation>;
 export type CreateOrdinanceMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMutation, CreateOrdinanceMutationVariables>;
 export const CreateOrdinanceMemberDocument = gql`
-    mutation CreateOrdinanceMember($memberId: ID, $workload: Int!) {
+    mutation CreateOrdinanceMember($memberId: ID, $memberType: MemberType, $workload: Int!) {
   createOrdinanceMember(
-    data: {workload: $workload, memberWorkload: {connect: {Member: {id: $memberId}}}}
+    data: {workload: $workload, memberType: $memberType, memberWorkload: {connect: {Member: {id: $memberId}}}}
   ) {
     id
   }
@@ -5611,6 +5608,7 @@ export type CreateOrdinanceMemberMutationFn = Apollo.MutationFunction<CreateOrdi
  * const [createOrdinanceMemberMutation, { data, loading, error }] = useCreateOrdinanceMemberMutation({
  *   variables: {
  *      memberId: // value for 'memberId'
+ *      memberType: // value for 'memberType'
  *      workload: // value for 'workload'
  *   },
  * });
@@ -5937,7 +5935,6 @@ export const GetMembersDocument = gql`
   members(stage: DRAFT) {
     id
     name
-    memberType
     matriculaSiape
   }
 }
@@ -6103,7 +6100,6 @@ export const GetOrdinancesByMemberMatriculaDocument = gql`
   member(where: {matriculaSiape: $matriculaSiape}, stage: DRAFT) {
     id
     name
-    memberType
     ordinances {
       ... on Ordinance {
         number
@@ -6147,7 +6143,6 @@ export const GetOrdinancesByMemberNameDocument = gql`
     query GetOrdinancesByMemberName($name: String!) {
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
-    memberType
     ordinances {
       ... on Ordinance {
         number
