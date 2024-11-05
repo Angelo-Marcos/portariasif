@@ -5496,6 +5496,13 @@ export type GetOrdinancesByMemberNameQueryVariables = Exact<{
 
 export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
 
+export type GetOrdinancesByMemberTypeQueryVariables = Exact<{
+  memberType?: InputMaybe<MemberType>;
+}>;
+
+
+export type GetOrdinancesByMemberTypeQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', workload: number, ordinanceWorkload: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> }> };
+
 export type GetOrdinancesByTypeQueryVariables = Exact<{
   ordinanceType: OrdinanceType;
 }>;
@@ -6182,6 +6189,53 @@ export function useGetOrdinancesByMemberNameLazyQuery(baseOptions?: Apollo.LazyQ
 export type GetOrdinancesByMemberNameQueryHookResult = ReturnType<typeof useGetOrdinancesByMemberNameQuery>;
 export type GetOrdinancesByMemberNameLazyQueryHookResult = ReturnType<typeof useGetOrdinancesByMemberNameLazyQuery>;
 export type GetOrdinancesByMemberNameQueryResult = Apollo.QueryResult<GetOrdinancesByMemberNameQuery, GetOrdinancesByMemberNameQueryVariables>;
+export const GetOrdinancesByMemberTypeDocument = gql`
+    query GetOrdinancesByMemberType($memberType: MemberType) {
+  members(where: {ordinanceMember_every: {memberType: $memberType}}) {
+    name
+    ordinanceMember {
+      workload
+      ordinanceWorkload {
+        ... on Ordinance {
+          id
+          number
+          ordinanceType
+          effectiveStartDate
+          effectiveEndDate
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOrdinancesByMemberTypeQuery__
+ *
+ * To run a query within a React component, call `useGetOrdinancesByMemberTypeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrdinancesByMemberTypeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrdinancesByMemberTypeQuery({
+ *   variables: {
+ *      memberType: // value for 'memberType'
+ *   },
+ * });
+ */
+export function useGetOrdinancesByMemberTypeQuery(baseOptions?: Apollo.QueryHookOptions<GetOrdinancesByMemberTypeQuery, GetOrdinancesByMemberTypeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOrdinancesByMemberTypeQuery, GetOrdinancesByMemberTypeQueryVariables>(GetOrdinancesByMemberTypeDocument, options);
+      }
+export function useGetOrdinancesByMemberTypeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOrdinancesByMemberTypeQuery, GetOrdinancesByMemberTypeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOrdinancesByMemberTypeQuery, GetOrdinancesByMemberTypeQueryVariables>(GetOrdinancesByMemberTypeDocument, options);
+        }
+export type GetOrdinancesByMemberTypeQueryHookResult = ReturnType<typeof useGetOrdinancesByMemberTypeQuery>;
+export type GetOrdinancesByMemberTypeLazyQueryHookResult = ReturnType<typeof useGetOrdinancesByMemberTypeLazyQuery>;
+export type GetOrdinancesByMemberTypeQueryResult = Apollo.QueryResult<GetOrdinancesByMemberTypeQuery, GetOrdinancesByMemberTypeQueryVariables>;
 export const GetOrdinancesByTypeDocument = gql`
     query GetOrdinancesByType($ordinanceType: OrdinanceType!) {
   ordinances(

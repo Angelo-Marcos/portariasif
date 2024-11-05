@@ -1,14 +1,15 @@
 import { Header } from "../components/Header";
 import InputMask from "react-input-mask"
 import { FormEvent, useState } from "react";
-import { 
-    MemberType, 
-    OrdinanceType, 
-    useGetOrdinanceByNumberQuery, 
-    useGetOrdinancesByDateQuery, 
-    useGetOrdinancesByMemberMatriculaQuery, 
-    useGetOrdinancesByMemberNameQuery, 
-    useGetOrdinancesByTypeQuery 
+import {
+    MemberType,
+    OrdinanceType,
+    useGetOrdinanceByNumberQuery,
+    useGetOrdinancesByDateQuery,
+    useGetOrdinancesByMemberMatriculaQuery,
+    useGetOrdinancesByMemberNameQuery,
+    useGetOrdinancesByMemberTypeQuery,
+    useGetOrdinancesByTypeQuery
 } from "../graphql/generated";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { get } from "react-hook-form/dist/utils";
@@ -34,22 +35,27 @@ const validationsForm = yup.object({
     number: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
         }),
     ordinanceType: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
         }),
     member: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
         }),
     matricula: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
+        }),
+    memberType: yup.string().test('oneOfRequired',
+        'Pelo menos um campo deve ser preenchido!',
+        function (item) {
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
         }),
 });
 
@@ -95,6 +101,14 @@ export function Search() {
             ordinanceType: getValues('ordinanceType')
         }
     })
+
+    const { data: dataOrdinancesByMemberType } = useGetOrdinancesByMemberTypeQuery({
+        variables: {
+            memberType: getValues('memberType')
+        }
+    })
+
+    console.log(dataOrdinancesByMemberType)
 
     const calculateDateInterval = (end: any, start: any, ordinanceType: any, memberType: any) => {
         end = new Date(end).valueOf()
@@ -220,7 +234,7 @@ export function Search() {
                             Tipo:
                         </label>
                         <select
-                            // {...register("memberType")}
+                            {...register("memberType")}
                             className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                         // onChange={event => setMemberType(event.target.value as MemberType)}
                         // value={memberType}
@@ -314,7 +328,7 @@ export function Search() {
                                                                     calculateDateInterval(ordinance.effectiveEndDate, ordinance.effectiveStartDate, ordinance.ordinanceType, member.memberType)
                                                                     
                                                                 } */}
-                                                                
+
                                                             </td>
                                                         </tr>
                                                     )
@@ -367,6 +381,31 @@ export function Search() {
                                                     </td>
                                                     <td></td>
                                                 </tr>
+                                            )
+                                        })
+                                    }
+
+
+                                    {getValues("memberType").length >= 3 &&
+                                        dataOrdinancesByMemberType?.members.map(member => {
+                                            return (
+                                                member.ordinanceMember.map(ordinanceWorkload => {
+                                                    return (
+                                                        ordinanceWorkload.ordinanceWorkload.map(ordinance => {
+                                                            return (
+                                                                <tr>
+                                                                    <td>{ordinance.number}</td>
+                                                                    <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                                    <td>{ordinance?.effectiveStartDate}</td>
+                                                                    <td>{ordinance?.effectiveEndDate}</td>
+                                                                    <td>{member.name}</td>
+                                                                    <td>{member.name}</td>
+                                                                </tr>
+                                                            )
+                                                        })
+
+                                                    )
+                                                })
                                             )
                                         })
                                     }

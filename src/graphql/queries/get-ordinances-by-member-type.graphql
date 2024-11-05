@@ -1,0 +1,17 @@
+query GetOrdinancesByMemberType($memberType: MemberType) {
+  members(where: {ordinanceMember_every: {memberType: $memberType}}) {
+    name
+    ordinanceMember {
+      workload
+      ordinanceWorkload {
+        ... on Ordinance {
+          id
+          number
+          ordinanceType
+          effectiveStartDate
+          effectiveEndDate
+        }
+      }
+    }
+  }
+}
