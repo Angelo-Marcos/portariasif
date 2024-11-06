@@ -3,6 +3,7 @@ query GetOrdinances {
         id
         number
         effectiveEndDate
+        effectiveStartDate
         members {
             name
         }
