@@ -5,8 +5,21 @@ query GetOrdinanceByNumber($number: String!) {
     ordinanceType
     effectiveStartDate
     effectiveEndDate
+    subject
     members {
+      id
       name
+      matriculaSiape
+      ordinanceMember {
+        id
+        memberType
+        workload
+        memberWorkload {
+          ... on Member {
+            id
+          }
+        }
+      }
     }
   }
 }

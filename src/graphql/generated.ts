@@ -5467,7 +5467,7 @@ export type GetOrdinanceByNumberQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinanceByNumberQuery = { __typename?: 'Query', ordinance?: { __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', name: string }> } | null };
+export type GetOrdinanceByNumberQuery = { __typename?: 'Query', ordinance?: { __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string, members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> }> } | null };
 
 export type GetOrdinancesAsideQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5487,7 +5487,7 @@ export type GetOrdinancesByMemberMatriculaQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> } | null };
+export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string }>, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> } | null };
 
 export type GetOrdinancesByMemberNameQueryVariables = Exact<{
   name: Scalars['String'];
@@ -5513,7 +5513,7 @@ export type GetOrdinancesByTypeQuery = { __typename?: 'Query', ordinances: Array
 export type GetOrdinancesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveEndDate?: any | null, effectiveStartDate: any, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', name: string }> }> };
+export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveEndDate?: any | null, effectiveStartDate: any, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> }> }> };
 
 
 export const CreateMemberDocument = gql`
@@ -5981,8 +5981,21 @@ export const GetOrdinanceByNumberDocument = gql`
     ordinanceType
     effectiveStartDate
     effectiveEndDate
+    subject
     members {
+      id
       name
+      matriculaSiape
+      ordinanceMember {
+        id
+        memberType
+        workload
+        memberWorkload {
+          ... on Member {
+            id
+          }
+        }
+      }
     }
   }
 }
@@ -6110,10 +6123,22 @@ export const GetOrdinancesByMemberMatriculaDocument = gql`
     matriculaSiape
     ordinances {
       ... on Ordinance {
+        id
         number
         ordinanceType
         effectiveStartDate
         effectiveEndDate
+        subject
+      }
+    }
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
       }
     }
   }
@@ -6291,7 +6316,19 @@ export const GetOrdinancesDocument = gql`
     effectiveEndDate
     effectiveStartDate
     members {
+      id
       name
+      matriculaSiape
+      ordinanceMember {
+        id
+        memberType
+        workload
+        memberWorkload {
+          ... on Member {
+            id
+          }
+        }
+      }
     }
     ordinanceType
     subject

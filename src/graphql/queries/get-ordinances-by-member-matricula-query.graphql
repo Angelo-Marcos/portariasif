@@ -5,10 +5,22 @@ query GetOrdinancesByMemberMatricula($matriculaSiape: Int!) {
     matriculaSiape
     ordinances {
       ... on Ordinance {
+        id
         number
         ordinanceType
         effectiveStartDate
         effectiveEndDate
+        subject
+      }
+    }
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
       }
     }
   }

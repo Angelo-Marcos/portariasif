@@ -108,8 +108,6 @@ export function Search() {
         }
     })
 
-    console.log(dataOrdinancesByMemberType)
-
     const calculateDateInterval = (end: any, start: any, ordinanceType: any, memberType: any) => {
         end = new Date(end).valueOf()
         start = new Date(start).valueOf()

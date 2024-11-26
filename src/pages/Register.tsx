@@ -543,7 +543,7 @@ export function Register() {
                                 // const workloadFilter = workloads.filter((i) => i.memberId === member.id)
 
                                 return (
-                                    <div className="flex flex-wrap">
+                                    <div className="flex flex-wrap text-xl mt-4">
                                         <Member
                                             key={member.id}
                                             name={member.name}
@@ -553,7 +553,7 @@ export function Register() {
                                         />
                                         <button
                                             onClick={() => handleRemoveMemberWorkload(member.id, workloads.filter((i) => i.memberId === member.id).at(0)?.id as string)}
-                                            className="flex justify-center items-center h-[30px] mt-[28px] ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
+                                            className="flex justify-center items-center h-[30px] mt-3 ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
                                             <XCircle size={28} />
                                         </button>
                                     </div>
