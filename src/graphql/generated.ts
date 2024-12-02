@@ -5434,6 +5434,15 @@ export type UpdateMemberMutationVariables = Exact<{
 
 export type UpdateMemberMutation = { __typename?: 'Mutation', updateMember?: { __typename?: 'Member', id: string } | null };
 
+export type UpdateMemberOrdinanceDisconnectMutationVariables = Exact<{
+  number?: InputMaybe<Scalars['String']>;
+  memberDisconnect?: InputMaybe<Scalars['ID']>;
+  ordinanceMemberDisconnect?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type UpdateMemberOrdinanceDisconnectMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+
 export type UpdateOrdinanceMutationVariables = Exact<{
   idMember: Scalars['ID'];
   idOrdinance: Scalars['ID'];
@@ -5448,6 +5457,17 @@ export type UpdateOrdinanceSituationMutationVariables = Exact<{
 
 
 export type UpdateOrdinanceSituationMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', ordinanceSituation?: OrdinanceSituation | null } | null };
+
+export type UpdateOrdinanceAdminMutationVariables = Exact<{
+  number?: InputMaybe<Scalars['String']>;
+  effectiveStartDate?: InputMaybe<Scalars['Date']>;
+  ordinanceType?: InputMaybe<OrdinanceType>;
+  effectiveEndDate?: InputMaybe<Scalars['Date']>;
+  subject?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type UpdateOrdinanceAdminMutation = { __typename?: 'Mutation', updateOrdinance?: { __typename?: 'Ordinance', id: string } | null };
 
 export type UpdateOrdinanceMemberMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -5830,6 +5850,44 @@ export function useUpdateMemberMutation(baseOptions?: Apollo.MutationHookOptions
 export type UpdateMemberMutationHookResult = ReturnType<typeof useUpdateMemberMutation>;
 export type UpdateMemberMutationResult = Apollo.MutationResult<UpdateMemberMutation>;
 export type UpdateMemberMutationOptions = Apollo.BaseMutationOptions<UpdateMemberMutation, UpdateMemberMutationVariables>;
+export const UpdateMemberOrdinanceDisconnectDocument = gql`
+    mutation UpdateMemberOrdinanceDisconnect($number: String, $memberDisconnect: ID, $ordinanceMemberDisconnect: ID) {
+  updateOrdinance(
+    data: {members: {disconnect: {id: $memberDisconnect}}, ordinanceMember: {disconnect: {id: $ordinanceMemberDisconnect}}}
+    where: {number: $number}
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateMemberOrdinanceDisconnectMutationFn = Apollo.MutationFunction<UpdateMemberOrdinanceDisconnectMutation, UpdateMemberOrdinanceDisconnectMutationVariables>;
+
+/**
+ * __useUpdateMemberOrdinanceDisconnectMutation__
+ *
+ * To run a mutation, you first call `useUpdateMemberOrdinanceDisconnectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMemberOrdinanceDisconnectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateMemberOrdinanceDisconnectMutation, { data, loading, error }] = useUpdateMemberOrdinanceDisconnectMutation({
+ *   variables: {
+ *      number: // value for 'number'
+ *      memberDisconnect: // value for 'memberDisconnect'
+ *      ordinanceMemberDisconnect: // value for 'ordinanceMemberDisconnect'
+ *   },
+ * });
+ */
+export function useUpdateMemberOrdinanceDisconnectMutation(baseOptions?: Apollo.MutationHookOptions<UpdateMemberOrdinanceDisconnectMutation, UpdateMemberOrdinanceDisconnectMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateMemberOrdinanceDisconnectMutation, UpdateMemberOrdinanceDisconnectMutationVariables>(UpdateMemberOrdinanceDisconnectDocument, options);
+      }
+export type UpdateMemberOrdinanceDisconnectMutationHookResult = ReturnType<typeof useUpdateMemberOrdinanceDisconnectMutation>;
+export type UpdateMemberOrdinanceDisconnectMutationResult = Apollo.MutationResult<UpdateMemberOrdinanceDisconnectMutation>;
+export type UpdateMemberOrdinanceDisconnectMutationOptions = Apollo.BaseMutationOptions<UpdateMemberOrdinanceDisconnectMutation, UpdateMemberOrdinanceDisconnectMutationVariables>;
 export const UpdateOrdinanceDocument = gql`
     mutation UpdateOrdinance($idMember: ID!, $idOrdinance: ID!) {
   updateOrdinance(
@@ -5900,6 +5958,46 @@ export function useUpdateOrdinanceSituationMutation(baseOptions?: Apollo.Mutatio
 export type UpdateOrdinanceSituationMutationHookResult = ReturnType<typeof useUpdateOrdinanceSituationMutation>;
 export type UpdateOrdinanceSituationMutationResult = Apollo.MutationResult<UpdateOrdinanceSituationMutation>;
 export type UpdateOrdinanceSituationMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceSituationMutation, UpdateOrdinanceSituationMutationVariables>;
+export const UpdateOrdinanceAdminDocument = gql`
+    mutation UpdateOrdinanceAdmin($number: String, $effectiveStartDate: Date, $ordinanceType: OrdinanceType, $effectiveEndDate: Date, $subject: String) {
+  updateOrdinance(
+    data: {effectiveStartDate: $effectiveStartDate, ordinanceType: $ordinanceType, effectiveEndDate: $effectiveEndDate, subject: $subject}
+    where: {number: $number}
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateOrdinanceAdminMutationFn = Apollo.MutationFunction<UpdateOrdinanceAdminMutation, UpdateOrdinanceAdminMutationVariables>;
+
+/**
+ * __useUpdateOrdinanceAdminMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrdinanceAdminMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrdinanceAdminMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrdinanceAdminMutation, { data, loading, error }] = useUpdateOrdinanceAdminMutation({
+ *   variables: {
+ *      number: // value for 'number'
+ *      effectiveStartDate: // value for 'effectiveStartDate'
+ *      ordinanceType: // value for 'ordinanceType'
+ *      effectiveEndDate: // value for 'effectiveEndDate'
+ *      subject: // value for 'subject'
+ *   },
+ * });
+ */
+export function useUpdateOrdinanceAdminMutation(baseOptions?: Apollo.MutationHookOptions<UpdateOrdinanceAdminMutation, UpdateOrdinanceAdminMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateOrdinanceAdminMutation, UpdateOrdinanceAdminMutationVariables>(UpdateOrdinanceAdminDocument, options);
+      }
+export type UpdateOrdinanceAdminMutationHookResult = ReturnType<typeof useUpdateOrdinanceAdminMutation>;
+export type UpdateOrdinanceAdminMutationResult = Apollo.MutationResult<UpdateOrdinanceAdminMutation>;
+export type UpdateOrdinanceAdminMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceAdminMutation, UpdateOrdinanceAdminMutationVariables>;
 export const UpdateOrdinanceMemberDocument = gql`
     mutation updateOrdinanceMember($id: ID!, $ordinanceId: ID!) {
   updateOrdinanceMember(

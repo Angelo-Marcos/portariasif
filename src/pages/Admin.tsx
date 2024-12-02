@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { OrdinanceAdmin } from "../components/OrdinanceAdmin";
 import { OrdinanceAside } from "../components/OrdinanceAside";
-import { MemberType, OrdinanceType, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery } from "../graphql/generated";
+import { MemberType, OrdinanceType, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
 import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
@@ -38,6 +38,11 @@ interface MemberProps {
     }
 }
 
+interface MemberDisconnectProps {
+    idMember: string;
+    idMemberOrdinance: string;
+}
+
 interface WorkloadsProps {
     id: string;
     memberId: string;
@@ -65,7 +70,9 @@ export function Admin() {
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
 
+
     const [members, setMembers] = useState<MemberProps[]>([]);
+    const [membersDisconnect, setMembersDisconnect] = useState<MemberDisconnectProps[]>([]);
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
     const [ordinances, setOrdinances] = useState<OrdinanceProps[]>([]);
 
@@ -252,7 +259,72 @@ export function Admin() {
         // setworkload('')
     }
 
-    const { data: dataOrdinances } = useGetOrdinancesQuery()
+    const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
+        setMembers(oldState => oldState.filter(
+            member => member.id != idMember
+        ))
+
+        setWorkloads(oldState => oldState.filter(
+            workload => workload.id != idWorkload
+        ))
+
+        updateOrdinanceMemberDisconnect({
+            variables: {
+                number: number,
+                memberDisconnect: idMember,
+                ordinanceMemberDisconnect: idWorkload
+            }
+        })
+    }
+
+    const handleUpdateOrdinanceAdmin = (ordinanceId: string) => {
+
+        updateOrdinanceAdmin({
+            variables: {
+                number: number,
+                effectiveStartDate: effectiveStartDate,
+                ordinanceType: ordinanceType,
+                effectiveEndDate: effectiveEndDate,
+                subject: subject
+            }
+        })'''
+
+        members.length > 0 &&
+            members.map((member) => {
+                updateMember({
+                    variables: {
+                        idMember: member.id,
+                        idOrdinance: ordinanceId
+                    }
+                })
+
+                updateOrdinance({
+                    variables: {
+                        idMember: member.id,
+                        idOrdinance: ordinanceId
+                    }
+                })
+
+                updateOrdinanceMember({
+                    variables: {
+                        id: member.ordinanceMember.id,
+                        ordinanceId: ordinanceId
+                    }
+                })
+            })
+
+
+
+        setMembers([]);
+    }
+
+    const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
+    const [updateMember] = useUpdateMemberMutation();
+    const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
+    const [updateOrdinanceAdmin, { loading: loadingUpdateOrdinanceAdmin }] = useUpdateOrdinanceAdminMutation();
+    const [updateOrdinanceMemberDisconnect] = useUpdateMemberOrdinanceDisconnectMutation();
+
+    const { data: dataOrdinances } = useGetOrdinancesQuery();
 
     const { data: dataOrdinanceByNumber } = useGetOrdinanceByNumberQuery({
         variables: {
@@ -278,7 +350,7 @@ export function Admin() {
 
     }
 
-    // console.log(ordinance)
+    console.log(ordinances)
     console.log(members)
     console.log(workloads)
 
@@ -510,6 +582,7 @@ export function Admin() {
                                         className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setNumber(event.target.value)}
                                         value={number}
+                                        disabled={true}
                                     />
                                     <p className="absolute mt-8 text-red-800 text-sm">
                                         {/* {errorsOrdinance.number?.message} */}
@@ -551,7 +624,7 @@ export function Admin() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-wrap justify-between mt-[28px]">
+                            <div className="flex flex-wrap justify-between mt-3">
                                 <div className="flex ">
                                     <label className="block tracking-wide font-light text-gray-500 text-base">
                                         Data de final:
@@ -582,7 +655,7 @@ export function Admin() {
                                 </div>
 
                             </div>
-                            <div className="flex flex-wrap mt-[28px]">
+                            <div className="flex flex-wrap mt-3">
                                 <div className="flex">
                                     <label className="block tracking-wide font-light text-gray-500 text-base">
                                         Membro:
@@ -633,7 +706,7 @@ export function Admin() {
                                     />
 
                                 </div>
-                                <div className="flex mt-[28px]">
+                                <div className="flex mt-3">
                                     <label className="block tracking-wide font-light text-gray-500 text-base">
                                         Tipo:
                                     </label>
@@ -649,7 +722,7 @@ export function Admin() {
 
                                     </select>
                                 </div>
-                                <div className="flex ml-4 mt-[28px]">
+                                <div className="flex ml-4 mt-3">
                                     <label className="block tracking-wide font-light text-gray-500 text-base">
                                         Carga horária/semana:
                                     </label>
@@ -667,7 +740,7 @@ export function Admin() {
                             </p> */}
                                     <span
                                         onClick={handleAddNewMember}
-                                        className="h-[30px] items-center text-green-300 ml-2 rounded-lg hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
+                                        className="items-center text-green-300 ml-2 rounded-full hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
                                         <PlusCircle size={28} />
                                     </span>
                                 </div>
@@ -680,7 +753,7 @@ export function Admin() {
 
                                         return (
 
-                                            <div className="flex flex-row text-base">
+                                            <div className="flex flex-row text-sm h-6">
                                                 <Member
                                                     key={member.id}
                                                     name={member.name}
@@ -711,8 +784,8 @@ export function Admin() {
 
                                                 <button
                                                     // onClick={() => handleRemoveMemberWorkload(member.id, workloads.filter((i) => i.memberId === member.id).at(0)?.id as string)}
-                                                    className="justify-center items-center h-6 mt-3 ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
-                                                    <XCircle size={28} />
+                                                    className="flex justify-center items-center h-6 mt-4 ml-2 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
+                                                    <XCircle size={22} />
                                                 </button>
                                             </div>
                                         )
@@ -723,7 +796,7 @@ export function Admin() {
                                     })}
                                 </ul>
                             </div>
-                            <div className="flex flex-col mt-[28px]">
+                            <div className="flex flex-col mt-6">
                                 <div className="flex">
                                     <label className="block tracking-wide font-bold text-gray-500 text-base">
                                         Esta portaria revoga outra portaria?
@@ -752,7 +825,7 @@ export function Admin() {
                                     </label>
                                 </div>
                                 {radio === 'yes'
-                                    ? <div className="flex mt-[14px]">
+                                    ? <div className="flex mt-3">
                                         <label className="block tracking-wide font-light text-gray-500 text-base">
                                             Digite o número da portaria a ser revogada:
                                         </label>
@@ -787,7 +860,7 @@ export function Admin() {
                                 Cancelar
                             </button>
                             <button
-                                // onClick={handlePublishOrdinance}
+                                onClick={() => handleUpdateOrdinanceAdmin(ordinances.at(0)?.id as string)}
                                 className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
                             >
                                 Confirmar
