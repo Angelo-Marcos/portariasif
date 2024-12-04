@@ -3,5 +3,15 @@ query GetMembers {
     id
     name
     matriculaSiape
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
+      }
+    }
   }
 }

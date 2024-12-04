@@ -25,8 +25,8 @@ import { PlusCircle, XCircle } from "phosphor-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import { getVariableValues } from "graphql";
-import { format } from "date-fns";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface MemberProps {
     id: string;
@@ -93,12 +93,14 @@ export function Register() {
                 })
 
             handleOpenModal()
+
+            
         }
     };
 
 
     const [name, setName] = useState('');
-    const [memberType, setMemberType] = useState<MemberType>(MemberType.President);
+    const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
     const [matriculaSiape, setMatriculaSiape] = useState('');
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
@@ -109,7 +111,7 @@ export function Register() {
     // Mutations Graphql
     const [createOrdinance, { loading: loadingCreate, data: dataCreateOrdinance }] = useCreateOrdinanceMutation();
     const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
-    const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
+    const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdinanceMember }] = useCreateOrdinanceMemberMutation();
     const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
     const [updateOrdinanceSituation] = useUpdateOrdinanceSituationMutation();
     const [updateMember, { loading: loadingMemberUpdate }] = useUpdateMemberMutation();
@@ -144,12 +146,13 @@ export function Register() {
             memberType: memberType,
         }
 
-
         setWorkloads(oldState => [...oldState, dataWorkloads])
 
         setMembers(oldState => [...oldState, dataMembers])
         setName('')
         setworkload('')
+
+        notify("addMember")
     }
 
     // Modal
@@ -255,31 +258,9 @@ export function Register() {
         setMatriculaSiape('')
         setMemberType(MemberType.President)
         setworkload('')
+
+        notify("registeredMember")
     }
-
-    // const handleRemoveMember = (id: string) => {
-    //     // deleteMember({
-    //     //     variables: {
-    //     //         id: id,
-    //     //     }
-    //     // }).then(res => {
-    //     setMembers(oldState => oldState.filter(
-    //         member => member.id != id
-    //     ))
-    //     // })
-    // }
-
-    // const handleRemoveWorkload = (id: string) => {
-    //     // deleteMember({
-    //     //     variables: {
-    //     //         id: id,
-    //     //     }
-    //     // }).then(res => {
-    //     setWorkloads(oldState => oldState.filter(
-    //         workload => workload.id != id
-    //     ))
-    //     // })
-    // }
 
     const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
         setMembers(oldState => oldState.filter(
@@ -289,6 +270,8 @@ export function Register() {
         setWorkloads(oldState => oldState.filter(
             workload => workload.id != idWorkload
         ))
+
+        notify("removeMember")
     }
 
     const handlePublishOrdinance = () => {
@@ -324,17 +307,8 @@ export function Register() {
         publishMembers();
         publishOrdinanceMembers();
 
-        // setNumber('');
-        // setEffectiveStartDate('');
-        // setOrdinanceType(OrdinanceType.Designation);
-        // setEffectiveEndDate('');
-        // setSubject('');
-        // setName('');
-        // setMemberType(MemberType.Student);
-        // setRadio('');
-        // setNumberRevoked('');
-
         handleCloseModal();
+        notify("registeredOrdinance")
     }
 
     const handleDeleteOrdinance = async () => {
@@ -344,23 +318,44 @@ export function Register() {
             }
         })
 
-        // const deleteMembers = () => {
-        //     members.map((id) => {
-        //         deleteMember({
-        //             variables: {
-        //                 id: id.id
-        //             }
-        //         })
-        //     })
-        // }
-
-        // deleteMembers();
-
         handleCloseModal();
+    }
+
+    const notify = (notify: string) => {
+        if (notify === "registeredOrdinance")
+            toast.success("Portaria cadastrada com sucesso!", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "registeredMember")
+            toast.success("Membro cadastrado com sucesso!", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "addMember")
+            toast.success("Membro adicionado com sucesso!", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "removeMember")
+            toast.success("Membro removido com sucesso!", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "loading")
+            toast.promise(
+                new Promise(resolve => setTimeout(resolve, 3000)), {
+                pending: "Carregando...",
+                success: "Busca concluída! 👌",
+                error: "Algo deu errado! 🤯"
+            }
+        )
     }
 
     return (
         <div className="flex flex-col min-h-screen">
+            <ToastContainer />
+
             <Header />
             <div className="flex flex-col items-center justify-center pt-[130px] px-48">
                 <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-300">
@@ -507,9 +502,9 @@ export function Register() {
                                 onChange={event => setMemberType(event.target.value as MemberType)}
                             // value={memberType}
                             >
-                                <option value="" className="text-gray-500 text-xl font-light"></option>
+                                <option value="member" className="text-gray-500 text-xl font-light"></option>
                                 <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
-                                <option value="vice-president" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
+                                <option value="vicePresident" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
                                 
                             </select>
                         </div>
@@ -531,7 +526,7 @@ export function Register() {
                             </p> */}
                             <span
                                 onClick={handleAddNewMember}
-                                className="h-[30px] items-center text-green-300 ml-2 rounded-lg hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
+                                className="items-center text-green-300 ml-2 rounded-full hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
                                 <PlusCircle size={28} />
                             </span>
                         </div>
@@ -543,7 +538,7 @@ export function Register() {
                                 // const workloadFilter = workloads.filter((i) => i.memberId === member.id)
 
                                 return (
-                                    <div className="flex flex-wrap text-xl mt-4">
+                                    <div className="flex flex-row text-sm h-6">
                                         <Member
                                             key={member.id}
                                             name={member.name}
@@ -553,8 +548,8 @@ export function Register() {
                                         />
                                         <button
                                             onClick={() => handleRemoveMemberWorkload(member.id, workloads.filter((i) => i.memberId === member.id).at(0)?.id as string)}
-                                            className="flex justify-center items-center h-[30px] mt-3 ml-2 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
-                                            <XCircle size={28} />
+                                            className="flex justify-center items-center h-6 mt-4 ml-2 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
+                                            <XCircle size={22} />
                                         </button>
                                     </div>
                                 )

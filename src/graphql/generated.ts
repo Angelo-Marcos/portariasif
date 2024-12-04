@@ -5480,7 +5480,7 @@ export type UpdateOrdinanceMemberMutation = { __typename?: 'Mutation', updateOrd
 export type GetMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number }> };
+export type GetMembersQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> }> };
 
 export type GetOrdinanceByNumberQueryVariables = Exact<{
   number: Scalars['String'];
@@ -6041,6 +6041,16 @@ export const GetMembersDocument = gql`
     id
     name
     matriculaSiape
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
+      }
+    }
   }
 }
     `;

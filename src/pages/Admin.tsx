@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { OrdinanceAdmin } from "../components/OrdinanceAdmin";
 import { OrdinanceAside } from "../components/OrdinanceAside";
-import { MemberType, OrdinanceType, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
+import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useDeleteOrdinanceMutation, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
 import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
@@ -12,6 +12,8 @@ import Modal from "react-modal"
 import InputMask from "react-input-mask"
 import { Member } from "../components/Member";
 import { string } from "yup";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface IFormInputSearch {
     search: string
@@ -38,6 +40,12 @@ interface MemberProps {
     }
 }
 
+interface MemberAutoCompleteProps {
+    id: string;
+    name: string;
+    matriculaSiape: number
+}
+
 interface MemberDisconnectProps {
     idMember: string;
     idMemberOrdinance: string;
@@ -55,7 +63,7 @@ export function Admin() {
     const { register: registerSearch, handleSubmit: handleSubmitSearch, getValues: getValuesSearch, formState: { errors: errorsOrdinanceSearch, } } = useForm<IFormInputSearch>();
 
     async function onSubmitSearch(data: IFormInputSearch) {
-
+        notify("loading")
     }
 
     const [number, setNumber] = useState('');
@@ -167,6 +175,17 @@ export function Admin() {
                 setEffectiveEndDate(ordinance?.effectiveEndDate)
                 setSubject(ordinance?.subject as string)
 
+                const dataOrdinance: OrdinanceProps = {
+                    id: ordinance?.id as string,
+                    number: ordinance?.number as string,
+                    effectiveStartDate: ordinance?.effectiveStartDate,
+                    ordinanceType: ordinance?.ordinanceType as OrdinanceType,
+                    effectiveEndDate: ordinance?.effectiveEndDate,
+                    subject: ordinance?.subject as string
+                }
+
+                setOrdinances(oldState => [...oldState, dataOrdinance])
+
                 ordinance?.members.map(member => {
                     const dataMembers: MemberProps = {
                         id: member.id,
@@ -189,83 +208,110 @@ export function Admin() {
         }
     }
 
+    const { data: dataMembersQuery } = useGetMembersQuery();
 
+    const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
+
+    const handleClickAutoComplete = (memberId: string) => {
+
+        dataMembersQuery?.members.filter(id => id.id === memberId).map(member => {
+            createOrdinanceMember({
+                variables: {
+                    memberId: member?.id,
+                    workload: Number(workload),
+                    memberType: memberType
+                }
+            }).then(res => {
+                const dataMembers: MemberProps = {
+                    id: member?.id,
+                    name: member?.name,
+                    matriculaSiape: Number(matriculaSiape),
+                    ordinanceMember: {
+                        id: String(res.data?.createOrdinanceMember?.id),
+                        memberId: member?.id,
+                        workload: Number(workload),
+                        memberType: memberType
+                    }
+                }
+
+                setMembers(oldState => [...oldState, dataMembers])
+
+            })
+        })
+
+        setName('')
+        setworkload('')
+    }
 
     const handleAddNewMember = async () => {
 
-        // if (dataOrdinancesByMemberMatricula?.member?.id.length != null) {
-        //     const dataMembers: MemberProps = {
-        //         id: dataOrdinancesByMemberMatricula.member?.id as string,
-        //         name: dataOrdinancesByMemberMatricula.member?.name as string,
-        //         matriculaSiape: Number(matriculaSiape),
-        //     }
+        if (dataOrdinancesByMemberMatricula?.member?.id.length != null) {
 
-        //     createOrdinanceMember({
-        //         variables: {
-        //             memberId: dataMembers.id,
-        //             workload: Number(workload),
-        //             memberType: memberType
-        //         }
-        //     }).then(res => {
-        //         const dataWorkloads: WorkloadsProps = {
-        //             id: String(res.data?.createOrdinanceMember?.id),
-        //             memberId: dataMembers.id,
-        //             workload: workload,
-        //             memberType: memberType
-        //         }
+            createOrdinanceMember({
+                variables: {
+                    memberId: dataOrdinancesByMemberMatricula.member?.id as string,
+                    workload: Number(workload),
+                    memberType: memberType
+                }
+            }).then(res => {
+                const dataMembers: MemberProps = {
+                    id: dataOrdinancesByMemberMatricula.member?.id as string,
+                    name: dataOrdinancesByMemberMatricula.member?.name as string,
+                    matriculaSiape: Number(matriculaSiape),
+                    ordinanceMember: {
+                        id: String(res.data?.createOrdinanceMember?.id),
+                        memberId: dataOrdinancesByMemberMatricula.member?.id as string,
+                        workload: Number(workload),
+                        memberType: memberType
+                    }
+                }
 
-        //         setWorkloads(oldState => [...oldState, dataWorkloads])
-        //     })
+                setMembers(oldState => [...oldState, dataMembers])
 
-        //     setMembers(oldState => [...oldState, dataMembers])
-        // } else {
-        //     await createMember({
-        //         variables: {
-        //             name: name,
-        //             matriculaSiape: Number(matriculaSiape)
-        //         }
-        //     }).then(res => {
-        //         const dataMembers: MemberProps = {
-        //             id: String(res.data?.createMember?.id),
-        //             name: name,
-        //             matriculaSiape: Number(matriculaSiape),
-        //         }
+            })
 
-        //         createOrdinanceMember({
-        //             variables: {
-        //                 memberId: dataMembers.id,
-        //                 workload: Number(workload),
-        //                 memberType: memberType
-        //             }
-        //         }).then(res => {
-        //             const dataWorkloads: WorkloadsProps = {
-        //                 id: String(res.data?.createOrdinanceMember?.id),
-        //                 memberId: dataMembers.id,
-        //                 workload: workload,
-        //                 memberType: memberType
-        //             }
+        } else {
+            await createMember({
+                variables: {
+                    name: name,
+                    matriculaSiape: Number(matriculaSiape)
+                }
+            }).then(res => {
+                let id = String(res.data?.createMember?.id)
 
-        //             setWorkloads(oldState => [...oldState, dataWorkloads])
-        //         })
+                createOrdinanceMember({
+                    variables: {
+                        memberId: id,
+                        workload: Number(workload),
+                        memberType: memberType
+                    }
+                }).then(res => {
+                    const dataMembers: MemberProps = {
+                        id: id,
+                        name: name,
+                        matriculaSiape: Number(matriculaSiape),
+                        ordinanceMember: {
+                            id: String(res.data?.createOrdinanceMember?.id),
+                            memberId: id,
+                            workload: Number(workload),
+                            memberType: memberType
+                        }
+                    }
 
-        //         setMembers(oldState => [...oldState, dataMembers])
+                    setMembers(oldState => [...oldState, dataMembers])
+                })
+            })
+        }
 
-        //     })
-        // }
-
-        // setName('');
-        // setMatriculaSiape('')
-        // setMemberType(MemberType.President)
-        // setworkload('')
+        setName('');
+        setMatriculaSiape('')
+        setMemberType(MemberType.Member)
+        setworkload('')
     }
 
     const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
         setMembers(oldState => oldState.filter(
             member => member.id != idMember
-        ))
-
-        setWorkloads(oldState => oldState.filter(
-            workload => workload.id != idWorkload
         ))
 
         updateOrdinanceMemberDisconnect({
@@ -277,7 +323,7 @@ export function Admin() {
         })
     }
 
-    const handleUpdateOrdinanceAdmin = (ordinanceId: string) => {
+    const handleUpdateOrdinanceAdmin = async (ordinanceId: string) => {
 
         updateOrdinanceAdmin({
             variables: {
@@ -287,7 +333,7 @@ export function Admin() {
                 effectiveEndDate: effectiveEndDate,
                 subject: subject
             }
-        })'''
+        })
 
         members.length > 0 &&
             members.map((member) => {
@@ -313,16 +359,89 @@ export function Admin() {
                 })
             })
 
-
-
+        notify("updated")
+        handleCloseModal();
         setMembers([]);
+        reload()
     }
 
+    const handleDeleteOrdinance = async (ordinanceId: string) => {
+        await deleteOrdinance({
+            variables: {
+                id: ordinanceId
+            }
+        })
+
+        // handleCloseModal();
+        reload()
+        notify("deleted")
+    }
+
+    const notify = (notify: string) => {
+        if (notify === "updated")
+            toast.success("Portaria atualizada com sucesso!", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "error")
+            toast.error("Falha ao atualizar Portaria", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "deleted")
+            toast.success("Portaria excluída com sucesso!", {
+                autoClose: 5000
+            }
+        )
+        else if (notify === "loading")
+            toast.promise(
+                new Promise(resolve => setTimeout(resolve, 3000)), {
+                pending: "Carregando...",
+                success: "Busca concluída! 👌",
+                error: "Algo deu errado! 🤯"
+            }
+        )
+    }
+
+    const notifyDelete = (ordinanceId: string) => {
+
+        toast.warn(
+            <div className="flex flex-col justify-between items-center my-8">
+                <span className="flex w-full mt-6 mb-7  justify-center font-medium text-lg text-center text-black">
+                    Tem certeza que deseja excluir a portaria?
+                </span>
+                <div className="flex flex-row justify-center items-center text-base text-white">
+                    <button
+
+                        onClick={() => handleDeleteOrdinance(ordinanceId)}
+                        className="flex justify-center items-center w-[100px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                        Confirmar
+                    </button>
+                </div>
+
+            </div>,
+            {
+                autoClose: false,
+                position: "top-center",
+                closeOnClick: true
+            })
+    }
+
+    const reload = () => {
+        setTimeout(() => {
+            window.location.reload();
+        }, 5000)
+    }
+
+    const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
+    const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
     const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
     const [updateMember] = useUpdateMemberMutation();
     const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
     const [updateOrdinanceAdmin, { loading: loadingUpdateOrdinanceAdmin }] = useUpdateOrdinanceAdminMutation();
     const [updateOrdinanceMemberDisconnect] = useUpdateMemberOrdinanceDisconnectMutation();
+    const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
 
     const { data: dataOrdinances } = useGetOrdinancesQuery();
 
@@ -336,8 +455,6 @@ export function Admin() {
         variables: {
             matriculaSiape: +getValuesSearch('search')
         }
-
-
     })
 
     const { data: dataOrdincesByMemberName } = useGetOrdinancesByMemberNameQuery({
@@ -346,22 +463,18 @@ export function Admin() {
         }
     })
 
-    const completeOrdinanceSearch = () => {
-
-    }
-
-    console.log(ordinances)
     console.log(members)
-    console.log(workloads)
 
-    console.log(dataOrdinanceByNumber)
+    // console.log(dataOrdinanceByNumber)
 
-    console.log(dataOrdinancesByMemberMatricula)
+    // console.log(dataOrdinancesByMemberMatricula)
 
     // console.log(getValuesSearch('search'))
 
     return (
         <div className="flex flex-col min-h-screen">
+            <ToastContainer />
+
             <Header />
 
             <main className="flex flex-col pt-[130px] px-48 mt-10">
@@ -432,17 +545,19 @@ export function Admin() {
                             </div>
 
                             <div className="flex justify-center items-center text-center">
-                                <span
-                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
-                                >
-                                    <Trash size={32} />
-                                </span>
+
                                 <span
 
                                     className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
                                     onClick={handleOpenModal}
                                 >
                                     <ClockClockwise size={32} />
+                                </span>
+                                <span
+                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                    onClick={() => notifyDelete(dataOrdinanceByNumber?.ordinance?.id as string)}
+                                >
+                                    <Trash size={32} />
                                 </span>
                             </div>
                         </div>
@@ -491,16 +606,18 @@ export function Admin() {
 
 
                                     <div className="flex justify-center items-center text-center">
-                                        <span
-                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
-                                        >
-                                            <Trash size={32} />
-                                        </span>
+
                                         <span
                                             className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
                                             onClick={() => handleClickSearch(ordinance.number)}
                                         >
                                             <ClockClockwise size={32} />
+                                        </span>
+                                        <span
+                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                            onClick={() => notifyDelete(ordinance.id)}
+                                        >
+                                            <Trash size={32} />
                                         </span>
                                     </div>
                                 </div>
@@ -540,16 +657,18 @@ export function Admin() {
                                         </span>
                                     </div>
                                     <div className="flex justify-center items-center text-center">
-                                        <span
-                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
-                                        >
-                                            <Trash size={32} />
-                                        </span>
+
                                         <span
                                             className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
                                             onClick={() => handleClickSearch(ordinance.number)}
                                         >
                                             <ClockClockwise size={32} />
+                                        </span>
+                                        <span
+                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                            onClick={() => notifyDelete(ordinance.id)}
+                                        >
+                                            <Trash size={32} />
                                         </span>
                                     </div>
 
@@ -673,19 +792,19 @@ export function Admin() {
                                     </p>
                                 } */}
                                         <div className="absolute z-10 w-[320px] max-h-xs ml-2 mt-[34px] mt bg-white rounded-md">
-                                            {/* <div className="flex flex-col">
-                                        {membersFilters?.length !== 0 && name !== '' &&
-                                            membersFilters?.map(member => {
-                                                return (
-                                                    <a
-                                                        className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
-                                                        onClick={() => handleClickAutoComplete(member)}
-                                                    >
-                                                        {member.name} / {member.matriculaSiape}
-                                                    </a>
-                                                )
-                                            })}
-                                    </div> */}
+                                            <div className="flex flex-col">
+                                                {membersFilters?.length !== 0 && name !== '' &&
+                                                    membersFilters?.map(member => {
+                                                        return (
+                                                            <a
+                                                                className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
+                                                                onClick={() => handleClickAutoComplete(member.id)}
+                                                            >
+                                                                {member.name} / {member.matriculaSiape}
+                                                            </a>
+                                                        )
+                                                    })}
+                                            </div>
 
                                         </div>
 
@@ -714,11 +833,11 @@ export function Admin() {
                                         // {...registerMember("memberType")}
                                         className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setMemberType(event.target.value as MemberType)}
-                                    // value={memberType}
+                                        value={memberType}
                                     >
-                                        <option value="" className="text-gray-500 text-base font-light"></option>
+                                        <option value="member" className="text-gray-500 text-base font-light"></option>
                                         <option value="president" className="text-gray-500 text-base font-light">Presidente</option>
-                                        <option value="vice-president" className="text-gray-500 text-base font-light">Vice-Presidente</option>
+                                        <option value="vicePresident" className="text-gray-500 text-base font-light">Vice-Presidente</option>
 
                                     </select>
                                 </div>
@@ -783,8 +902,10 @@ export function Admin() {
                                                 </div> */}
 
                                                 <button
-                                                    // onClick={() => handleRemoveMemberWorkload(member.id, workloads.filter((i) => i.memberId === member.id).at(0)?.id as string)}
+                                                    type="button"
+                                                    onClick={() => handleRemoveMemberWorkload(member.id, member.ordinanceMember.id)}
                                                     className="flex justify-center items-center h-6 mt-4 ml-2 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
+
                                                     <XCircle size={22} />
                                                 </button>
                                             </div>
@@ -860,6 +981,7 @@ export function Admin() {
                                 Cancelar
                             </button>
                             <button
+
                                 onClick={() => handleUpdateOrdinanceAdmin(ordinances.at(0)?.id as string)}
                                 className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
                             >
