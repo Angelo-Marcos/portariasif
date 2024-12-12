@@ -219,6 +219,9 @@ export function Register() {
             })
 
             setMembers(oldState => [...oldState, dataMembers])
+
+        } else if (name === '' || name.length < 4) {
+            return notify("nameInvalid")
         } else {
             await createMember({
                 variables: {
@@ -250,7 +253,6 @@ export function Register() {
                 })
     
                 setMembers(oldState => [...oldState, dataMembers])
-    
             })
         }
 
@@ -314,7 +316,7 @@ export function Register() {
     const handleDeleteOrdinance = async () => {
         await deleteOrdinance({
             variables: {
-                id: dataCreateOrdinance?.createOrdinance?.id
+                number: dataCreateOrdinance?.createOrdinance?.id
             }
         })
 
@@ -350,6 +352,13 @@ export function Register() {
                 error: "Algo deu errado! 🤯"
             }
         )
+        else if (notify === "nameInvalid")
+            toast.warning("Nome inválido! 🤯", {
+                autoClose: false,
+                position: "top-center",
+                closeOnClick: true,
+            }
+            )
     }
 
     return (
@@ -526,7 +535,7 @@ export function Register() {
                             </p> */}
                             <span
                                 onClick={handleAddNewMember}
-                                className="items-center text-green-300 ml-2 rounded-full hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
+                                className="h-[30px] items-center text-green-300 ml-2 rounded-full cursor-pointer hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
                                 <PlusCircle size={28} />
                             </span>
                         </div>

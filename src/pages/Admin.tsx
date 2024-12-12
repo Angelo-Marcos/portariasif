@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { OrdinanceAdmin } from "../components/OrdinanceAdmin";
 import { OrdinanceAside } from "../components/OrdinanceAside";
-import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useDeleteOrdinanceMutation, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
+import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useDeleteMemberMutation, useDeleteOrdinanceMutation, useGetMembersByMatriculaQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
 import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
@@ -73,7 +73,7 @@ export function Admin() {
     const [subject, setSubject] = useState('');
 
     const [name, setName] = useState('');
-    const [memberType, setMemberType] = useState<MemberType>(MemberType.President);
+    const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
     const [matriculaSiape, setMatriculaSiape] = useState('');
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
@@ -84,6 +84,46 @@ export function Admin() {
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
     const [ordinances, setOrdinances] = useState<OrdinanceProps[]>([]);
 
+    const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
+    const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
+    const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
+    const [updateMember] = useUpdateMemberMutation();
+    const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
+    const [updateOrdinanceAdmin, { loading: loadingUpdateOrdinanceAdmin }] = useUpdateOrdinanceAdminMutation();
+    const [updateOrdinanceMemberDisconnect] = useUpdateMemberOrdinanceDisconnectMutation();
+    const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
+    const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
+
+    const { data: dataOrdinances } = useGetOrdinancesQuery();
+
+    const { data: dataOrdinanceByNumber, loading: loadingOrdinanceByNumber } = useGetOrdinanceByNumberQuery({
+        variables: {
+            number: getValuesSearch('search')
+        }
+    })
+
+    const { data: dataOrdinancesByMemberMatricula, loading: loadingOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
+        variables: {
+            matriculaSiape: +getValuesSearch('search')
+        }
+    })
+
+    const { data: dataOrdincesByMemberName } = useGetOrdinancesByMemberNameQuery({
+        variables: {
+            name: getValuesSearch('search')
+        }
+    })
+
+    const { data: dataMemberByMatricula } = useGetMembersByMatriculaQuery({
+        variables: {
+            matricula: +getValuesSearch('search')
+        }
+    })
+
+    const { data: dataMembersQuery } = useGetMembersQuery();
+    const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
+
+
     const [modalIsOpen, setIsOpen] = useState(false);
     const handleOpenModal = async () => {
         setIsOpen(true);
@@ -93,8 +133,7 @@ export function Admin() {
         setMembers([]);
     };
 
-    const handleClickSearch = (number: string) => {
-
+    const handleClickSearch = (numberSearch: string) => {
 
         if (dataOrdinanceByNumber?.ordinance?.number != null) {
 
@@ -125,9 +164,7 @@ export function Admin() {
 
         } else if (dataOrdinancesByMemberMatricula?.member?.matriculaSiape != null) {
 
-
-
-            dataOrdinancesByMemberMatricula.member?.ordinances.filter(numberOrdinance => numberOrdinance.number === number).map(ordinance => {
+            dataOrdinancesByMemberMatricula.member?.ordinances.filter(numberOrdinance => numberOrdinance.number === numberSearch).map(ordinance => {
 
                 setNumber(ordinance.number)
                 setEffectiveStartDate(ordinance.effectiveStartDate)
@@ -148,9 +185,6 @@ export function Admin() {
 
             })
 
-
-
-
             const dataMembers: MemberProps = {
                 id: dataOrdinancesByMemberMatricula.member?.id as string,
                 name: dataOrdinancesByMemberMatricula.member?.name as string,
@@ -168,7 +202,7 @@ export function Admin() {
             handleOpenModal()
 
         } else {
-            dataOrdinances?.ordinances.filter(numberOrdinance => numberOrdinance.number === number).map(ordinance => {
+            dataOrdinances?.ordinances.filter(numberOrdinance => numberOrdinance.number === numberSearch).map(ordinance => {
                 setNumber(ordinance?.number as string)
                 setEffectiveStartDate(ordinance?.effectiveStartDate)
                 setOrdinanceType(ordinance?.ordinanceType as OrdinanceType)
@@ -207,10 +241,6 @@ export function Admin() {
             })
         }
     }
-
-    const { data: dataMembersQuery } = useGetMembersQuery();
-
-    const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
     const handleClickAutoComplete = (memberId: string) => {
 
@@ -270,6 +300,8 @@ export function Admin() {
 
             })
 
+        } else if (name === '' || name.length < 4) {
+            return notify("nameInvalid")
         } else {
             await createMember({
                 variables: {
@@ -365,10 +397,10 @@ export function Admin() {
         reload()
     }
 
-    const handleDeleteOrdinance = async (ordinanceId: string) => {
+    const handleDeleteOrdinance = async (numberDelete: string) => {
         await deleteOrdinance({
             variables: {
-                id: ordinanceId
+                number: numberDelete
             }
         })
 
@@ -377,43 +409,69 @@ export function Admin() {
         notify("deleted")
     }
 
+    const handleDeleteMember = async (idMember: string) => {
+        await deleteMember({
+            variables: {
+                id: idMember
+            }
+        })
+
+        // handleCloseModal();
+        reload()
+        notify("deletedMember")
+    }
+
     const notify = (notify: string) => {
         if (notify === "updated")
             toast.success("Portaria atualizada com sucesso!", {
-                autoClose: 5000
+                autoClose: 3000
             }
-        )
+            )
         else if (notify === "error")
             toast.error("Falha ao atualizar Portaria", {
                 autoClose: 5000
             }
-        )
-        else if (notify === "deleted")
-            toast.success("Portaria excluída com sucesso!", {
+            )
+        else if (notify === "deletedMember")
+            toast.success("Membro excluído com sucesso!", {
                 autoClose: 5000
             }
-        )
-        else if (notify === "loading")
+            )
+        else if (notify === "loadingSearch")
             toast.promise(
                 new Promise(resolve => setTimeout(resolve, 3000)), {
                 pending: "Carregando...",
                 success: "Busca concluída! 👌",
                 error: "Algo deu errado! 🤯"
             }
-        )
+            )
+        else if (notify === "loadingUpadate")
+            toast.promise(
+                new Promise(resolve => setTimeout(resolve, 3000)), {
+                pending: "Carregando...",
+                error: "Algo deu errado! 🤯"
+            }
+            )
+        else if (notify === "nameInvalid")
+            toast.warning("Nome inválido! 🤯", {
+                autoClose: false,
+                position: "top-center",
+                closeOnClick: true,
+            }
+            )
     }
 
-    const notifyDelete = (ordinanceId: string) => {
+    const notifyDelete = (numberDelete: string) => {
 
         toast.warn(
-            <div className="flex flex-col justify-between items-center my-8">
-                <span className="flex w-full mt-6 mb-7  justify-center font-medium text-lg text-center text-black">
-                    Tem certeza que deseja excluir a portaria?
+            <div className="flex flex-col justify-between items-center">
+                <span className="flex w-full mb-2 justify-center font-light text-lg text-center text-black">
+                    Tem certeza que deseja excluir a portaria {numberDelete}?
                 </span>
                 <div className="flex flex-row justify-center items-center text-base text-white">
                     <button
 
-                        onClick={() => handleDeleteOrdinance(ordinanceId)}
+                        onClick={() => handleDeleteOrdinance(numberDelete)}
                         className="flex justify-center items-center w-[100px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                         Confirmar
@@ -424,52 +482,47 @@ export function Admin() {
             {
                 autoClose: false,
                 position: "top-center",
-                closeOnClick: true
-            })
+                closeOnClick: true,
+                icon: false
+            }
+        )
+    }
+
+    const notifyDeleteMember = (idMember: string) => {
+
+        toast.warn(
+            <div className="flex flex-col justify-between items-center">
+                <span className="flex w-full mb-2 justify-center font-light text-lg text-center text-black">
+                    Tem certeza que deseja excluir o membro?
+                </span>
+                <span className="flex w-full mb-2 justify-center font-light text-base text-center text-red-900">
+                        Ao excluir um membro, ele será removido de todas as portarias ao qual esteja vinculado.
+                    </span>
+                <div className="flex flex-row justify-center items-center text-base text-white">
+                    <button
+
+                        onClick={() => handleDeleteMember(idMember)}
+                        className="flex justify-center items-center w-[100px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                        Confirmar
+                    </button>
+                </div>
+
+            </div>,
+            {
+                autoClose: false,
+                position: "top-center",
+                closeOnClick: true,
+                icon: false
+            }
+        )
     }
 
     const reload = () => {
         setTimeout(() => {
             window.location.reload();
-        }, 5000)
+        }, 3000)
     }
-
-    const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
-    const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
-    const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
-    const [updateMember] = useUpdateMemberMutation();
-    const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
-    const [updateOrdinanceAdmin, { loading: loadingUpdateOrdinanceAdmin }] = useUpdateOrdinanceAdminMutation();
-    const [updateOrdinanceMemberDisconnect] = useUpdateMemberOrdinanceDisconnectMutation();
-    const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
-
-    const { data: dataOrdinances } = useGetOrdinancesQuery();
-
-    const { data: dataOrdinanceByNumber } = useGetOrdinanceByNumberQuery({
-        variables: {
-            number: getValuesSearch('search')
-        }
-    })
-
-    const { data: dataOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
-        variables: {
-            matriculaSiape: +getValuesSearch('search')
-        }
-    })
-
-    const { data: dataOrdincesByMemberName } = useGetOrdinancesByMemberNameQuery({
-        variables: {
-            name: getValuesSearch('search')
-        }
-    })
-
-    console.log(members)
-
-    // console.log(dataOrdinanceByNumber)
-
-    // console.log(dataOrdinancesByMemberMatricula)
-
-    // console.log(getValuesSearch('search'))
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -507,7 +560,12 @@ export function Admin() {
                             <p className="text-center mt-5 mb-1 text-xl text-black font-medium">Something went wrong!</p>
 
                             <button>
-                                <a href={'/admin'} className="h-10 mt-2 text-white bg-red-900 rounded-lg"> <ArrowsCounterClockwise size={32} className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50" /></a>
+                                <a href={'/admin'} className="h-10 mt-2 text-white bg-red-900 rounded-lg">
+                                    <ArrowsCounterClockwise
+                                        size={32}
+                                        className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
+                                    />
+                                </a>
                             </button>
 
                             <p className="text-center mt-2 mb-1 text-xl text-black font-medium">Try again</p>
@@ -548,13 +606,13 @@ export function Admin() {
 
                                 <span
 
-                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
-                                    onClick={handleOpenModal}
+                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full cursor-pointer hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
+                                    onClick={() => handleClickSearch(dataOrdinanceByNumber?.ordinance?.number as string)}
                                 >
                                     <ClockClockwise size={32} />
                                 </span>
                                 <span
-                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
                                     onClick={() => notifyDelete(dataOrdinanceByNumber?.ordinance?.id as string)}
                                 >
                                     <Trash size={32} />
@@ -565,35 +623,30 @@ export function Admin() {
 
 
                     {
-                        dataOrdinancesByMemberMatricula?.member?.matriculaSiape as number === +getValuesSearch('search') &&
-                        dataOrdinancesByMemberMatricula?.member?.ordinances.map(ordinance => {
-                            return (
-                                <div className="flex space-x-6 justify-between items-center p-2 mt-10 bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
-                                    <div className="flex space-x-6 justify-center items-center p-2">
-                                        <span className="flex flex-col justify-center items-center text-center">
-                                            <p className="mb-1 text-xs text-black font-medium">Número</p>
-                                            {ordinance?.number}
-                                        </span>
-                                        <span className="flex flex-col justify-center items-center text-center pl-6 border-l border-zinc-500">
-                                            <p className="mb-1 text-xs text-black font-medium">Tipo de portaria</p>
-                                            {ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}
-                                        </span>
-                                        <span className="flex flex-col justify-center items-center text-center pl-6 border-l border-zinc-500">
-                                            <p className="mb-1 text-xs text-black font-medium">Data início</p>
-                                            {format(new Date(ordinance?.effectiveStartDate), "dd/MM/yyyy")}
-                                        </span>
-                                        <span className="flex flex-col justify-center items-center text-center pl-6 border-l border-zinc-500">
-                                            <p className="mb-1 text-xs text-black font-medium">Data final</p>
-                                            {ordinance?.effectiveEndDate === null ? "" : format(new Date(ordinance?.effectiveEndDate), "dd/MM/yyyy")}
-                                        </span>
-                                        <span className="flex flex-col justify-center items-center text-center pl-6 border-l border-zinc-500">
-                                            <p className="mb-1 text-xs text-black font-medium">Membro(s)</p>
-                                            {dataOrdinancesByMemberMatricula?.member?.name}
-                                        </span>
-                                    </div>
+                        dataMemberByMatricula?.member?.matriculaSiape as number === +getValuesSearch('search') &&
+
+                        <div className="flex space-x-6 justify-center items-center p-2 mt-10 bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
+                            <div className="flex space-x-6 justify-center items-center p-2">
+                                <span className="flex flex-col justify-center items-center text-center">
+                                    <p className="mb-1 text-xs text-black font-medium">Nome</p>
+                                    {dataMemberByMatricula?.member?.name}
+                                </span>
+                                <span className="flex flex-col justify-center items-center text-center pl-6 border-l border-zinc-500">
+                                    <p className="mb-1 text-xs text-black font-medium">Matrícula Siape</p>
+                                    {dataMemberByMatricula?.member?.matriculaSiape}
+                                </span>
+                                <span className="flex flex-col justify-center items-center text-center pl-6 border-l border-zinc-500">
+                                    <p className="mb-1 text-xs text-black font-medium">Portaria(s)</p>
+                                    {dataMemberByMatricula?.member?.ordinances.map(ordinance => {
+                                        return (
+                                            <span className="flex flex-col justify-center items-center text-center">{ordinance.number}</span>
+                                        )
+                                    })}
+                                </span>
+                            </div>
 
 
-                                    {/* <OrdinanceAdmin
+                            {/* <OrdinanceAdmin
                                         key={ordinance.id}
                                         number={ordinance.number}
                                         effectiveStartDate={ordinance.effectiveStartDate}
@@ -605,24 +658,24 @@ export function Admin() {
 
 
 
-                                    <div className="flex justify-center items-center text-center">
+                            <div className="flex justify-center items-center text-center">
 
-                                        <span
-                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
-                                            onClick={() => handleClickSearch(ordinance.number)}
-                                        >
-                                            <ClockClockwise size={32} />
-                                        </span>
-                                        <span
-                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
-                                            onClick={() => notifyDelete(ordinance.id)}
-                                        >
-                                            <Trash size={32} />
-                                        </span>
-                                    </div>
-                                </div>
-                            )
-                        })
+                                <span
+                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full cursor-pointer hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
+                                    onClick={() => handleClickSearch(dataMemberByMatricula?.member?.matriculaSiape as unknown as string)}
+                                >
+                                    <ClockClockwise size={32} />
+                                </span>
+                                <span
+                                    className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                    onClick={() => notifyDeleteMember(dataMemberByMatricula?.member?.id as string)}
+                                >
+                                    <Trash size={32} />
+                                </span>
+                            </div>
+                        </div>
+
+
                     }
 
                     {
@@ -659,14 +712,14 @@ export function Admin() {
                                     <div className="flex justify-center items-center text-center">
 
                                         <span
-                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
+                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-blue-700 rounded-full cursor-pointer hover:bg-blue-700 hover:text-white transition-colors disabled:opacity-50"
                                             onClick={() => handleClickSearch(ordinance.number)}
                                         >
                                             <ClockClockwise size={32} />
                                         </span>
                                         <span
-                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
-                                            onClick={() => notifyDelete(ordinance.id)}
+                                            className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                            onClick={() => notifyDelete(ordinance.number)}
                                         >
                                             <Trash size={32} />
                                         </span>
@@ -685,7 +738,7 @@ export function Admin() {
                     contentLabel="modal"
                     className="flex justify-center items-center h-screen w-full rounded"
                 >
-                    <div className="flex flex-col justify-center items-center h-[500px] w-[800px] bg-white border border-green-700 rounded-lg">
+                    <div className="flex flex-col justify-center items-center w-[800px] bg-white border border-green-700 rounded-lg">
                         <strong className="flex justify-center my-4 text-red-900">Confirme as informações!</strong>
 
                         <form className="w-full max-w-7xl px-5">
@@ -698,7 +751,7 @@ export function Admin() {
                                         // value={ordinance.at(0)?.number}
                                         mask="999/9999"
                                         // {...registerUpdate("number")}
-                                        className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                        className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50"
                                         onChange={event => setNumber(event.target.value)}
                                         value={number}
                                         disabled={true}
@@ -981,7 +1034,7 @@ export function Admin() {
                                 Cancelar
                             </button>
                             <button
-
+                                disabled={loadingOrdinanceUpdate}
                                 onClick={() => handleUpdateOrdinanceAdmin(ordinances.at(0)?.id as string)}
                                 className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
                             >

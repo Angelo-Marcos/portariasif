@@ -5398,7 +5398,7 @@ export type DeleteMemberMutationVariables = Exact<{
 export type DeleteMemberMutation = { __typename?: 'Mutation', deleteMember?: { __typename?: 'Member', id: string } | null };
 
 export type DeleteOrdinanceMutationVariables = Exact<{
-  id?: InputMaybe<Scalars['ID']>;
+  number?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -5476,6 +5476,13 @@ export type UpdateOrdinanceMemberMutationVariables = Exact<{
 
 
 export type UpdateOrdinanceMemberMutation = { __typename?: 'Mutation', updateOrdinanceMember?: { __typename?: 'OrdinanceMember', id: string } | null };
+
+export type GetMembersByMatriculaQueryVariables = Exact<{
+  matricula: Scalars['Int'];
+}>;
+
+
+export type GetMembersByMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string }> } | null };
 
 export type GetMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5681,8 +5688,8 @@ export type DeleteMemberMutationHookResult = ReturnType<typeof useDeleteMemberMu
 export type DeleteMemberMutationResult = Apollo.MutationResult<DeleteMemberMutation>;
 export type DeleteMemberMutationOptions = Apollo.BaseMutationOptions<DeleteMemberMutation, DeleteMemberMutationVariables>;
 export const DeleteOrdinanceDocument = gql`
-    mutation DeleteOrdinance($id: ID) {
-  deleteOrdinance(where: {id: $id}) {
+    mutation DeleteOrdinance($number: String) {
+  deleteOrdinance(where: {number: $number}) {
     id
   }
 }
@@ -5702,7 +5709,7 @@ export type DeleteOrdinanceMutationFn = Apollo.MutationFunction<DeleteOrdinanceM
  * @example
  * const [deleteOrdinanceMutation, { data, loading, error }] = useDeleteOrdinanceMutation({
  *   variables: {
- *      id: // value for 'id'
+ *      number: // value for 'number'
  *   },
  * });
  */
@@ -6035,6 +6042,49 @@ export function useUpdateOrdinanceMemberMutation(baseOptions?: Apollo.MutationHo
 export type UpdateOrdinanceMemberMutationHookResult = ReturnType<typeof useUpdateOrdinanceMemberMutation>;
 export type UpdateOrdinanceMemberMutationResult = Apollo.MutationResult<UpdateOrdinanceMemberMutation>;
 export type UpdateOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceMemberMutation, UpdateOrdinanceMemberMutationVariables>;
+export const GetMembersByMatriculaDocument = gql`
+    query GetMembersByMatricula($matricula: Int!) {
+  member(where: {matriculaSiape: $matricula}, stage: DRAFT) {
+    id
+    name
+    matriculaSiape
+    ordinances {
+      ... on Ordinance {
+        id
+        number
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMembersByMatriculaQuery__
+ *
+ * To run a query within a React component, call `useGetMembersByMatriculaQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMembersByMatriculaQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMembersByMatriculaQuery({
+ *   variables: {
+ *      matricula: // value for 'matricula'
+ *   },
+ * });
+ */
+export function useGetMembersByMatriculaQuery(baseOptions: Apollo.QueryHookOptions<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>(GetMembersByMatriculaDocument, options);
+      }
+export function useGetMembersByMatriculaLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>(GetMembersByMatriculaDocument, options);
+        }
+export type GetMembersByMatriculaQueryHookResult = ReturnType<typeof useGetMembersByMatriculaQuery>;
+export type GetMembersByMatriculaLazyQueryHookResult = ReturnType<typeof useGetMembersByMatriculaLazyQuery>;
+export type GetMembersByMatriculaQueryResult = Apollo.QueryResult<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>;
 export const GetMembersDocument = gql`
     query GetMembers {
   members(stage: DRAFT) {
