@@ -2,6 +2,9 @@ import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
 import { OrdinanceAside } from "../components/OrdinanceAside";
 import { useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
+import { useLocation, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useUser } from "../context/UserContext"
 
 export function Home() {
 
@@ -9,11 +12,25 @@ export function Home() {
 
     const { data: ordinancesAside } = useGetOrdinancesAsideQuery()
 
+    const { user } = useUser();
+    console.log(user)
+
+    if (!user) {
+        return <p>Por favor, faça login.</p>
+    }
+
+
+
     return (
         <div className="flex flex-col min-h-screen">
-            <Header />
+            <Header
+                name={user.name}
+                given_name={user.given_name}
+                email={user.email}
+                picture={user.picture}
+            />
 
-            <main className="flex flex-1 pt-[100px] px-48">
+            <main className="flex flex-1 pt-[70px] px-48">
                 <aside className="flex flex-col w-[276px] max-h-full px-[10px] bg-gray-200 mt-[54px] justify-center overflow-auto">
                     <span className="flex mt-[21px] font-light text-xl text-gray-500 justify-center">
                         Recentes

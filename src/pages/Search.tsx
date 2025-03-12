@@ -19,7 +19,7 @@ import { tr } from "date-fns/locale";
 import { format } from "date-fns";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+import { useUser } from "../context/UserContext"
 
 interface IFormInputSearch {
     number: string,
@@ -60,6 +60,12 @@ const validationsForm = yup.object({
 });
 
 export function Search() {
+
+    const { user } = useUser();
+
+    if (!user) {
+        return <p>Por favor, faça login.</p>
+    }
 
     const { register, handleSubmit: handleSubmitSearch, getValues, formState: { errors: errorsOrdinance, } } = useForm<IFormInputSearch>({
         resolver: yupResolver(validationsForm)
@@ -137,7 +143,12 @@ export function Search() {
     return (
 
         <div className="flex flex-col min-h-screen">
-            <Header />
+            <Header
+                name={user.name}
+                given_name={user.given_name}
+                email={user.email}
+                picture={user.picture}
+            />
             <div className="flex flex-col items-center justify-center pt-[130px] px-48">
                 <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-300">
                     Insira pelo menos uma das informações abaixo

@@ -14,6 +14,7 @@ import { Member } from "../components/Member";
 import { string } from "yup";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from "../context/UserContext"
 
 interface IFormInputSearch {
     search: string
@@ -59,6 +60,12 @@ interface WorkloadsProps {
 }
 
 export function Admin() {
+
+    const { user } = useUser();
+
+    if (!user) {
+        return <p>Por favor, faça login.</p>
+    }
 
     const { register: registerSearch, handleSubmit: handleSubmitSearch, getValues: getValuesSearch, formState: { errors: errorsOrdinanceSearch, } } = useForm<IFormInputSearch>();
 
@@ -406,7 +413,7 @@ export function Admin() {
 
         // handleCloseModal();
         reload()
-        notify("deleted")
+        notify("deletedOrdinance")
     }
 
     const handleDeleteMember = async (idMember: string) => {
@@ -429,6 +436,11 @@ export function Admin() {
             )
         else if (notify === "error")
             toast.error("Falha ao atualizar Portaria", {
+                autoClose: 5000
+            }
+            )
+        else if (notify === "deletedOrdinance")
+            toast.success("Portaria excluída com sucesso!", {
                 autoClose: 5000
             }
             )
@@ -496,8 +508,8 @@ export function Admin() {
                     Tem certeza que deseja excluir o membro?
                 </span>
                 <span className="flex w-full mb-2 justify-center font-light text-base text-center text-red-900">
-                        Ao excluir um membro, ele será removido de todas as portarias ao qual esteja vinculado.
-                    </span>
+                    Ao excluir um membro, ele será removido de todas as portarias ao qual esteja vinculado.
+                </span>
                 <div className="flex flex-row justify-center items-center text-base text-white">
                     <button
 
@@ -528,7 +540,12 @@ export function Admin() {
         <div className="flex flex-col min-h-screen">
             <ToastContainer />
 
-            <Header />
+            <Header
+                name={user.name}
+                given_name={user.given_name}
+                email={user.email}
+                picture={user.picture}
+            />
 
             <main className="flex flex-col pt-[130px] px-48 mt-10">
                 <div className="flex w-full justify-center items-center mt-4 pb-7 border-b border-green-300">
