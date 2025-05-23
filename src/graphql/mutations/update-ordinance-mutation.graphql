@@ -1,7 +1,12 @@
-mutation UpdateOrdinance($idMember: ID!, $idOrdinance: ID!) {
+mutation UpdateOrdinance($connectionsMembers: [MemberConnectInput!], $connectionsOrdinanceMembers: [OrdinanceMemberConnectInput!], $idOrdinance: ID!) {
   updateOrdinance(
-    data: {members: {connect: {where: {id: $idMember}}}}
     where: {id: $idOrdinance}
+    data: {
+      members: {
+        connect: $connectionsMembers}, 
+      ordinanceMember: {
+        connect: $connectionsOrdinanceMembers}
+    }
   ) {
     id
   }

@@ -5,6 +5,7 @@ import { useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/ge
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useUser } from "../context/UserContext"
+import { WarningCircle } from "phosphor-react";
 
 export function Home() {
 
@@ -13,10 +14,26 @@ export function Home() {
     const { data: ordinancesAside } = useGetOrdinancesAsideQuery()
 
     const { user } = useUser();
-    console.log(user)
+
+    const navigate = useNavigate()
 
     if (!user) {
-        return <p>Por favor, faça login.</p>
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
     }
 
 

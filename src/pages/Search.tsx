@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useUser } from "../context/UserContext"
+import { WarningCircle } from "phosphor-react";
 
 interface IFormInputSearch {
     number: string,
@@ -35,28 +36,34 @@ const validationsForm = yup.object({
     number: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType || this.parent.effectiveStartDate)
         }),
     ordinanceType: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType || this.parent.effectiveStartDate)
         }),
     member: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType || this.parent.effectiveStartDate)
         }),
     matricula: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType || this.parent.effectiveStartDate)
         }),
     memberType: yup.string().test('oneOfRequired',
         'Pelo menos um campo deve ser preenchido!',
         function (item) {
-            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType)
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType || this.parent.effectiveStartDate)
         }),
+    effectiveStartDate: yup.date().test('oneOfRequired',
+        'Pelo menos um campo deve ser preenchido!',
+        function (item) {
+            return (this.parent.number || this.parent.ordinanceType || this.parent.member || this.parent.matricula || this.parent.memberType || this.parent.effectiveStartDate)
+        }
+    )
 });
 
 export function Search() {
@@ -64,7 +71,22 @@ export function Search() {
     const { user } = useUser();
 
     if (!user) {
-        return <p>Por favor, faça login.</p>
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
     }
 
     const { register, handleSubmit: handleSubmitSearch, getValues, formState: { errors: errorsOrdinance, } } = useForm<IFormInputSearch>({
@@ -111,8 +133,11 @@ export function Search() {
     const { data: dataOrdinancesByMemberType } = useGetOrdinancesByMemberTypeQuery({
         variables: {
             memberType: getValues('memberType')
-        }
+        },
+        fetchPolicy: "network-only",
     })
+
+    console.log(dataOrdinancesByMemberType)
 
     const calculateDateInterval = (end: any, start: any, ordinanceType: any, memberType: any) => {
         end = new Date(end).valueOf()
@@ -250,7 +275,7 @@ export function Search() {
                         >
                             <option value="" className="text-gray-500 text-xl font-light"></option>
                             <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
-                            <option value="vice-president" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
+                            <option value="vicePresident" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
                             <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
                         </select>
                     </div>
@@ -267,180 +292,171 @@ export function Search() {
                         </p>
                     </div>
                     <div className="my-10">
-                        {dataOrdinanceByNumber?.ordinance != null || dataOrdinancesByMemberMatricula != null || dataOrdincesByMemberName != null ?
-                            <table className="w-full font-light text-md bg-green-300 dark:text-gray-400 ">
-                                <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
-                                    <tr>
-                                        <th className="px-3">Número</th>
-                                        <th>Tipo de Portaria</th>
-                                        <th className="px-0">Data Início Vigência</th>
-                                        <th className="px-0">Data Fim Vigência</th>
-                                        <th>Membros</th>
-                                        <th>Carga Horária</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
-
-                                    {getValues('number').length == 8 &&
+                        {
+                            (
+                                dataOrdinanceByNumber?.ordinance != null || dataOrdinancesByMemberMatricula?.member != null || dataOrdincesByMemberName?.members != null
+                                || dataOrdinancesByDate?.ordinances != null || dataOrdinancesByType?.ordinances != null || dataOrdinancesByMemberType?.ordinanceMembers != null
+                            ) ?
+                                <table className="w-full font-light text-md bg-green-300 dark:text-gray-400 ">
+                                    <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
                                         <tr>
-                                            <td>{dataOrdinanceByNumber?.ordinance?.number}</td>
-                                            <td>{dataOrdinanceByNumber?.ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
-                                            <td>{dataOrdinanceByNumber?.ordinance?.effectiveStartDate}</td>
-                                            <td>{dataOrdinanceByNumber?.ordinance?.effectiveEndDate}</td>
-                                            <td>
-                                                {dataOrdinanceByNumber?.ordinance?.members.map(member => {
-                                                    return (
-                                                        <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
-                                                            {member.name}
-                                                        </span>
-                                                    )
-                                                })}
-                                            </td>
-                                            <td></td>
+                                            <th className="px-3">Número</th>
+                                            <th>Tipo de Portaria</th>
+                                            <th className="px-0">Data Início Vigência</th>
+                                            <th className="px-0">Data Fim Vigência</th>
+                                            <th>Membros</th>
+                                            <th>Carga Horária</th>
                                         </tr>
-                                    }
+                                    </thead>
+                                    <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
 
-                                    {getValues("matricula").length >= 3 &&
-                                        dataOrdinancesByMemberMatricula?.member?.ordinances.map(ordinance => {
-                                            return (
-                                                <tr>
-                                                    <td>{ordinance.number}</td>
-                                                    <td>{ordinance.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
-                                                    <td>{ordinance.effectiveStartDate}</td>
-                                                    <td>{ordinance.effectiveEndDate}</td>
-                                                    <td>{dataOrdinancesByMemberMatricula.member?.name}</td>
-                                                    <td></td>
-                                                </tr>
-
-                                            )
-                                        })
-                                    }
-
-                                    {getValues("member").length >= 1 &&
-                                        dataOrdincesByMemberName?.members.map(member => {
-                                            return (
-                                                member.ordinances.map(ordinance => {
-                                                    return (
-                                                        <tr>
-
-                                                            <td>{ordinance.number}</td>
-                                                            <td>{ordinance.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
-                                                            <td>{ordinance.effectiveStartDate}</td>
-                                                            <td>{ordinance.effectiveEndDate}</td>
-                                                            <td>
+                                        {getValues('number').length == 8 &&
+                                            <tr>
+                                                <td>{dataOrdinanceByNumber?.ordinance?.number}</td>
+                                                <td>{dataOrdinanceByNumber?.ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                <td>{dataOrdinanceByNumber?.ordinance?.effectiveStartDate}</td>
+                                                <td>{dataOrdinanceByNumber?.ordinance?.effectiveEndDate}</td>
+                                                <td>
+                                                    {dataOrdinanceByNumber?.ordinance?.members.map(member => {
+                                                        return (
+                                                            <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
                                                                 {member.name}
-                                                            </td>
-                                                            <td>
-                                                                {/* {
+                                                            </span>
+                                                        )
+                                                    })}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        }
+
+                                        {getValues("matricula").length >= 3 &&
+                                            dataOrdinancesByMemberMatricula?.member?.ordinances.map(ordinance => {
+                                                return (
+                                                    <tr>
+                                                        <td>{ordinance.number}</td>
+                                                        <td>{ordinance.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                        <td>{ordinance.effectiveStartDate}</td>
+                                                        <td>{ordinance.effectiveEndDate}</td>
+                                                        <td>{dataOrdinancesByMemberMatricula.member?.name}</td>
+                                                        <td></td>
+                                                    </tr>
+
+                                                )
+                                            })
+                                        }
+
+                                        {getValues("member").length >= 1 &&
+                                            dataOrdincesByMemberName?.members.map(member => {
+                                                return (
+                                                    member.ordinances.map(ordinance => {
+                                                        return (
+                                                            <tr>
+
+                                                                <td>{ordinance.number}</td>
+                                                                <td>{ordinance.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                                <td>{ordinance.effectiveStartDate}</td>
+                                                                <td>{ordinance.effectiveEndDate}</td>
+                                                                <td>
+                                                                    {member.name}
+                                                                </td>
+                                                                <td>
+                                                                    {/* {
                                                                     ordinance.ordinanceType === 'progression' && member.memberType === 'president' ? 6 : 
                                                                     ordinance.ordinanceType === 'progression' && member.memberType === 'member' ? 3 : 
                                                                     calculateDateInterval(ordinance.effectiveEndDate, ordinance.effectiveStartDate, ordinance.ordinanceType, member.memberType)
                                                                     
                                                                 } */}
 
-                                                            </td>
-                                                        </tr>
-                                                    )
+                                                                </td>
+                                                            </tr>
+                                                        )
 
-                                                })
-                                            )
-                                        })
-                                    }
+                                                    })
+                                                )
+                                            })
+                                        }
 
-                                    {getValues("effectiveStartDate") != undefined &&
-                                        dataOrdinancesByDate?.ordinances.map(ordinance => {
-                                            return (
-                                                <tr>
-                                                    <td>{ordinance?.number}</td>
-                                                    <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
-                                                    <td>{ordinance?.effectiveStartDate}</td>
-                                                    <td>{ordinance?.effectiveEndDate}</td>
-                                                    <td>
-                                                        {ordinance?.members.map(member => {
-                                                            return (
-                                                                <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
-                                                                    {member.name}
-                                                                </span>
-                                                            )
-                                                        })}
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                            )
-                                        })
+                                        {getValues("effectiveStartDate") != undefined &&
+                                            dataOrdinancesByDate?.ordinances.map(ordinance => {
+                                                return (
+                                                    <tr>
+                                                        <td>{ordinance?.number}</td>
+                                                        <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                        <td>{ordinance?.effectiveStartDate}</td>
+                                                        <td>{ordinance?.effectiveEndDate}</td>
+                                                        <td>
+                                                            {ordinance?.members.map(member => {
+                                                                return (
+                                                                    <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
+                                                                        {member.name}
+                                                                    </span>
+                                                                )
+                                                            })}
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                )
+                                            })
 
-                                    }
+                                        }
 
-                                    {getValues("ordinanceType").length >= 3 &&
-                                        dataOrdinancesByType?.ordinances.map(ordinance => {
-                                            return (
-                                                <tr>
-                                                    <td>{ordinance?.number}</td>
-                                                    <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
-                                                    <td>{ordinance?.effectiveStartDate}</td>
-                                                    <td>{ordinance?.effectiveEndDate}</td>
-                                                    <td>
-                                                        {ordinance?.members.map(member => {
-                                                            return (
-                                                                <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
-                                                                    {member.name}
-                                                                </span>
-                                                            )
-                                                        })}
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                            )
-                                        })
-                                    }
+                                        {getValues("ordinanceType").length >= 3 &&
+                                            dataOrdinancesByType?.ordinances.map(ordinance => {
+                                                return (
+                                                    <tr>
+                                                        <td>{ordinance?.number}</td>
+                                                        <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
+                                                        <td>{ordinance?.effectiveStartDate}</td>
+                                                        <td>{ordinance?.effectiveEndDate}</td>
+                                                        <td>
+                                                            {ordinance?.members.map(member => {
+                                                                return (
+                                                                    <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
+                                                                        {member.name}
+                                                                    </span>
+                                                                )
+                                                            })}
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
 
 
-                                    {getValues("memberType").length >= 3 &&
-                                        dataOrdinancesByMemberType?.members.map(member => {
-                                            return (
-                                                member.ordinanceMember.map(ordinanceWorkload => {
-                                                    return (
-                                                        ordinanceWorkload.ordinanceWorkload.map(ordinance => {
-                                                            return (
+                                        {getValues("memberType").length >= 1 &&
+                                            dataOrdinancesByMemberType?.ordinanceMembers.map(member => {
+                                                return (
+                                                    member.memberWorkload.map(memberWorkload => {
+                                                        return (
+                                                            memberWorkload.ordinances.map(ordinance => {
                                                                 <tr>
-                                                                    <td>{ordinance.number}</td>
+                                                                    <td>{ordinance?.number}</td>
                                                                     <td>{ordinance?.ordinanceType === 'designation' ? 'Designação' : 'Progressão'}</td>
                                                                     <td>{ordinance?.effectiveStartDate}</td>
                                                                     <td>{ordinance?.effectiveEndDate}</td>
-                                                                    <td>{member.name}</td>
-                                                                    <td>{member.name}</td>
+                                                                    <td>{
+                                                                        <span className="flex flex-col justify-center items-center px-2 font-light text-gray-500 text-md ">
+                                                                            {memberWorkload.name}
+                                                                        </span>
+
+                                                                    }
+                                                                    </td>
+                                                                    <td></td>
                                                                 </tr>
-                                                            )
-                                                        })
+                                                            })
+                                                        )
+                                                    })
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                </table> :
 
-                                                    )
-                                                })
-                                            )
-                                        })
-                                    }
-                                </tbody>
-                            </table> :
-                            <table>
-                                <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
-                                    <tr>
-                                        <th className="px-3">Número</th>
-                                        <th>Tipo de Portaria</th>
-                                        <th className="px-0">Data Início Vigência</th>
-                                        <th className="px-0">Data Fim Vigência</th>
-                                        <th>Membros</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
-                                    <tr>
-                                        <td>
-                                            <span className="flex w-full mt-6 mb-7 font-medium justify-center text-x text-red-900 border-b border-green-300">
-                                                Nenhuma portaria encontrada!
-                                            </span>
-                                        </td>
+                                <span className="flex w-full mt-6 mb-7 font-medium justify-center text-x text-red-900 border-b border-green-300">
+                                    Nenhuma portaria encontrada!!!
+                                </span>
 
-                                    </tr>
-                                </tbody>
-                            </table>
                         }
                     </div>
                 </form>

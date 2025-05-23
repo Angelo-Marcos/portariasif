@@ -1,5 +1,5 @@
 query GetOrdinanceByNumber($number: String!) {
-  ordinance(where: {number: $number}, stage: DRAFT) {
+  ordinance(where: {number: $number}) {
     id
     number
     ordinanceType

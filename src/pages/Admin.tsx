@@ -3,7 +3,7 @@ import { Header } from "../components/Header";
 import { OrdinanceAdmin } from "../components/OrdinanceAdmin";
 import { OrdinanceAside } from "../components/OrdinanceAside";
 import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useDeleteMemberMutation, useDeleteOrdinanceMutation, useGetMembersByMatriculaQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
-import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, XCircle } from "phosphor-react"
+import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, WarningCircle, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
 import { Search } from "./Search";
@@ -64,13 +64,28 @@ export function Admin() {
     const { user } = useUser();
 
     if (!user) {
-        return <p>Por favor, faça login.</p>
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
     }
 
     const { register: registerSearch, handleSubmit: handleSubmitSearch, getValues: getValuesSearch, formState: { errors: errorsOrdinanceSearch, } } = useForm<IFormInputSearch>();
 
     async function onSubmitSearch(data: IFormInputSearch) {
-        notify("loading")
+        notify("loadingSearch")
     }
 
     const [number, setNumber] = useState('');
@@ -374,29 +389,13 @@ export function Admin() {
             }
         })
 
-        members.length > 0 &&
-            members.map((member) => {
-                updateMember({
-                    variables: {
-                        idMember: member.id,
-                        idOrdinance: ordinanceId
-                    }
-                })
-
-                updateOrdinance({
-                    variables: {
-                        idMember: member.id,
-                        idOrdinance: ordinanceId
-                    }
-                })
-
-                updateOrdinanceMember({
-                    variables: {
-                        id: member.ordinanceMember.id,
-                        ordinanceId: ordinanceId
-                    }
-                })
-            })
+        updateOrdinance({
+            variables: {
+                idOrdinance: ordinanceId,
+                connectionsMembers: members.map(idMember => ({ where: { id: idMember.id } })),
+                connectionsOrdinanceMembers: workloads.map(idWorkload => ({ where: { id: idWorkload.id } }))
+            }
+        })
 
         notify("updated")
         handleCloseModal();
@@ -746,6 +745,15 @@ export function Admin() {
                             )
                         })
                     }
+
+                    {/* {
+                        (
+                            dataOrdinancesByMemberMatricula?.member === null ||
+                            dataOrdinanceByNumber?.ordinance === null
+                        ) && (
+                            <span className="flex w-full justify-center items-center text-black mt-3">Nenhuma portaria encontrada!!!</span>
+                        )
+                    } */}
                 </ErrorBoundary>
 
 

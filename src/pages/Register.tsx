@@ -21,7 +21,7 @@ import {
 } from "../graphql/generated";
 import Modal from "react-modal"
 import { Member } from "../components/Member";
-import { ArrowsCounterClockwise, PlusCircle, XCircle } from "phosphor-react"
+import { ArrowsCounterClockwise, PlusCircle, WarningCircle, XCircle } from "phosphor-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
@@ -120,6 +120,8 @@ export function Register() {
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
 
+    console.log(memberType)
+
     const [members, setMembers] = useState<MemberProps[]>([])
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
 
@@ -175,30 +177,178 @@ export function Register() {
     const handleOpenModal = () => { setIsOpen(true) };
     const handleCloseModal = () => { setIsOpen(false) };
 
-    const handleUpdateMemberOrdinance = () => {
-        members.length > 0 &&
-            members.map((member) => {
-                updateMember({
-                    variables: {
-                        idMember: member.id,
-                        idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string
-                    }
-                })
-                updateOrdinance({
-                    variables: {
-                        idMember: member.id,
-                        idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string
-                    }
-                })
-            })
+    // const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-        workloads.map((workload) => {
-            updateOrdinanceMember({
-                variables: {
-                    id: workload.id,
-                    ordinanceId: dataCreateOrdinance?.createOrdinance?.id as string
-                }
-            })
+    // const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000): Promise<any> => {
+    //     try {
+    //         return await fn();
+    //     } catch (err: any) {
+    //         if (retries > 0) {
+    //             await sleep(delay);
+    //             return retry(fn, retries - 1, delay * 2); // aumenta tempo a cada tentativa
+    //         }
+    //         throw err;
+    //     }
+    // };
+
+    // const handleUpdateMemberOrdinance = async () => {
+    //     const ordinanceId = dataCreateOrdinance?.createOrdinance?.id as string;
+
+    //     if (!ordinanceId) {
+    //         toast.error("ID da portaria não encontrado.");
+    //         return;
+    //     }
+
+    //     const totalOps = members.length * 2 + workloads.length;
+    //     let completed = 0;
+
+    //     toast.info("Iniciando atualização lenta e segura...");
+
+    //     try {
+    //         for (const member of members) {
+    //             await retry(() =>
+    //                 updateMember({ variables: { idMember: member.id, idOrdinance: ordinanceId } })
+    //             );
+    //             completed++;
+    //             toast.info(`(${completed}/${totalOps}) Atualizado membro`);
+
+    //             await sleep(300);
+
+    //             await retry(() =>
+    //                 updateOrdinance({ variables: { idMember: member.id, idOrdinance: ordinanceId } })
+    //             );
+    //             completed++;
+    //             toast.info(`(${completed}/${totalOps}) Atualizada portaria`);
+
+    //             await sleep(300);
+    //         }
+
+    //         for (const workLoad of workloads) {
+    //             await retry(() =>
+    //                 updateOrdinanceMember({
+    //                     variables: { id: workLoad.id, ordinanceId },
+    //                 })
+    //             );
+    //             completed++;
+    //             toast.info(`(${completed}/${totalOps}) Atualizada carga horária`);
+
+    //             await sleep(300);
+    //         }
+
+    //         setMembers([]);
+    //         setWorkloads([]);
+    //         handleCloseModal();
+
+    //         toast.success("Atualização finalizada com sucesso.");
+    //     } catch (err) {
+    //         console.error(err);
+    //         toast.error("Erro durante a atualização. Algumas requisições podem ter falhado.");
+    //     }
+    // };
+
+    // const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+    // const handleUpdateMemberOrdinance = async () => {
+    //     const ordinanceId = dataCreateOrdinance?.createOrdinance?.id as string;
+
+    //     if (!ordinanceId) {
+    //         toast.error("ID da portaria não encontrado.");
+    //         return;
+    //     }
+
+    //     const batchSize = 10;
+    //     let totalOps = members.length * 2 + workloads.length;
+    //     let completed = 0;
+
+    //     const notifyProgress = () => {
+    //         toast.info(`Atualizando... (${completed}/${totalOps})`, { autoClose: 1500 });
+    //     };
+
+    //     toast.info("Iniciando atualização de membros e workloads...");
+
+    //     try {
+    //         for (let i = 0; i < members.length; i += batchSize) {
+    //             const batch = members.slice(i, i + batchSize);
+
+    //             await Promise.all(
+    //                 batch.map(async (member) => {
+    //                     await updateMember({
+    //                         variables: { idMember: member.id, idOrdinance: ordinanceId },
+    //                     });
+    //                     completed++;
+    //                     notifyProgress();
+
+    //                     await updateOrdinance({
+    //                         variables: { idMember: member.id, idOrdinance: ordinanceId },
+    //                     });
+    //                     completed++;
+    //                     notifyProgress();
+    //                 })
+    //             );
+
+    //             await sleep(500); // pausa entre os lotes
+    //         }
+
+    //         for (let i = 0; i < workloads.length; i += batchSize) {
+    //             const batch = workloads.slice(i, i + batchSize);
+
+    //             await Promise.all(
+    //                 batch.map(async (workload) => {
+    //                     await updateOrdinanceMember({
+    //                         variables: { id: workload.id, ordinanceId },
+    //                     });
+    //                     completed++;
+    //                     notifyProgress();
+    //                 })
+    //             );
+
+    //             await sleep(1000);
+    //         }
+
+    //         setMembers([]);
+    //         setWorkloads([]);
+    //         handleCloseModal();
+
+    //         toast.success("Todos os dados foram atualizados com sucesso!");
+    //     } catch (error) {
+    //         console.error(error);
+    //         toast.error("Erro ao atualizar dados. Verifique sua conexão ou tente novamente.");
+    //     }
+    // };
+
+    const handleUpdateMemberOrdinance = () => {
+        // members.length > 0 &&
+        //     members.map((member) => {
+        //         updateMember({
+        //             variables: {
+        //                 idMember: member.id,
+        //                 idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string
+        //             }
+        //         })
+        //         updateOrdinance({
+        //             variables: {
+        //                 idMember: member.id,
+        //                 idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string
+        //             }
+        //         })
+        //     })
+
+        // workloads.map((workload) => {
+        //     updateOrdinanceMember({
+        //         variables: {
+        //             id: workload.id,
+        //             ordinanceId: dataCreateOrdinance?.createOrdinance?.id as string
+        //         }
+        //     })
+        // })
+
+
+        updateOrdinance({
+            variables: {
+                idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string,
+                connectionsMembers: members.map(idMember => ({ where: { id: idMember.id } })),
+                connectionsOrdinanceMembers: workloads.map(idWorkload => ({ where: { id: idWorkload.id } }))
+            }
         })
 
         setMembers([]);
@@ -273,7 +423,7 @@ export function Register() {
 
         setName('');
         setMatriculaSiape('')
-        setMemberType(MemberType.President)
+        setMemberType(MemberType.Member)
         setworkload('')
 
         notify("registeredMember")
@@ -298,31 +448,33 @@ export function Register() {
             variables: {
                 id: dataCreateOrdinance?.createOrdinance?.id,
                 number: dataCreateOrdinance?.createOrdinance?.number,
+                idMembers: members.map(idMember => idMember.id),
+                idOrdinanceMembers: workloads.map(idWorkload => idWorkload.id)
             }
         })
 
-        const publishMembers = () => {
-            members.map((id) => {
-                publishMember({
-                    variables: {
-                        id: id.id,
-                    }
-                })
-            })
-        }
+        // const publishMembers = () => {
+        //     members.map((id) => {
+        //         publishMember({
+        //             variables: {
+        //                 id: id.id,
+        //             }
+        //         })
+        //     })
+        // }
 
-        const publishOrdinanceMembers = () => {
-            workloads.map((workload) => {
-                publishOrdinanceMember({
-                    variables: {
-                        id: workload.id
-                    }
-                })
-            })
-        }
+        // const publishOrdinanceMembers = () => {
+        //     workloads.map((workload) => {
+        //         publishOrdinanceMember({
+        //             variables: {
+        //                 id: workload.id
+        //             }
+        //         })
+        //     })
+        // }
 
-        publishMembers();
-        publishOrdinanceMembers();
+        // publishMembers();
+        // publishOrdinanceMembers();
 
         handleCloseModal();
         notify("registeredOrdinance")
@@ -332,6 +484,7 @@ export function Register() {
             effectiveStartDate: new Date,
             number: '',
             subject: ''
+
         })
     }
 
@@ -394,7 +547,22 @@ export function Register() {
     const { user } = useUser();
 
     if (!user) {
-        return <p>Por favor, faça login.</p>
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
     }
 
     return (
@@ -573,7 +741,7 @@ export function Register() {
                                     onChange={event => setMemberType(event.target.value as MemberType)}
                                 // value={memberType}
                                 >
-                                    <option value="member" className="text-gray-500 text-xl font-light"></option>
+                                    <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
                                     <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
                                     <option value="vicePresident" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
 
