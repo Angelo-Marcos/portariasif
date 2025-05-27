@@ -1,12 +1,17 @@
 query GetOrdinancesByMemberName($name: String!) {
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
-    ordinances {
-      ... on Ordinance {
-        number
-        ordinanceType
-        effectiveStartDate
-        effectiveEndDate
+    id
+    ordinanceMember {
+      workload
+      ordinanceWorkload {
+        ... on Ordinance {
+          id
+          number
+          effectiveEndDate
+          effectiveStartDate
+          ordinanceType
+        }
       }
     }
   }

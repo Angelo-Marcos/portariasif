@@ -1,5 +1,6 @@
 query GetOrdinancesByMemberType($memberType: MemberType) {
   ordinanceMembers(where: {memberType: $memberType}) {
+    workload
     memberType
     memberWorkload {
       ... on Member {

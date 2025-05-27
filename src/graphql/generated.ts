@@ -5638,6 +5638,17 @@ export type GetOrdinanceByNumberQueryVariables = Exact<{
 
 export type GetOrdinanceByNumberQuery = { __typename?: 'Query', ordinance?: { __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string, members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> }> } | null };
 
+export type GetOrdinancesAllQueryVariables = Exact<{
+  number?: InputMaybe<Scalars['String']>;
+  matricula?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+  ordinanceType?: InputMaybe<OrdinanceType>;
+  memberType?: InputMaybe<MemberType>;
+}>;
+
+
+export type GetOrdinancesAllQuery = { __typename?: 'Query', ordinance?: { __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string, members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> }> } | null, member?: { __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string }>, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> } | null, members: Array<{ __typename?: 'Member', name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }>, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', name: string }> }>, ordinanceMembers: Array<{ __typename?: 'OrdinanceMember', memberType?: MemberType | null, memberWorkload: Array<{ __typename?: 'Member', id: string, name: string, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> }> };
+
 export type GetOrdinancesAsideQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -5663,14 +5674,14 @@ export type GetOrdinancesByMemberNameQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, ordinances: Array<{ __typename?: 'Ordinance', number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> };
+export type GetOrdinancesByMemberNameQuery = { __typename?: 'Query', members: Array<{ __typename?: 'Member', name: string, id: string, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', workload: number, ordinanceWorkload: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveEndDate?: any | null, effectiveStartDate: any, ordinanceType: OrdinanceType }> }> }> };
 
 export type GetOrdinancesByMemberTypeQueryVariables = Exact<{
   memberType?: InputMaybe<MemberType>;
 }>;
 
 
-export type GetOrdinancesByMemberTypeQuery = { __typename?: 'Query', ordinanceMembers: Array<{ __typename?: 'OrdinanceMember', memberType?: MemberType | null, memberWorkload: Array<{ __typename?: 'Member', id: string, name: string, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> }> };
+export type GetOrdinancesByMemberTypeQuery = { __typename?: 'Query', ordinanceMembers: Array<{ __typename?: 'OrdinanceMember', workload: number, memberType?: MemberType | null, memberWorkload: Array<{ __typename?: 'Member', id: string, name: string, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null }> }> }> };
 
 export type GetOrdinancesByTypeQueryVariables = Exact<{
   ordinanceType: OrdinanceType;
@@ -6292,7 +6303,7 @@ export type GetMembersLazyQueryHookResult = ReturnType<typeof useGetMembersLazyQ
 export type GetMembersQueryResult = Apollo.QueryResult<GetMembersQuery, GetMembersQueryVariables>;
 export const GetOrdinanceByNumberDocument = gql`
     query GetOrdinanceByNumber($number: String!) {
-  ordinance(where: {number: $number}, stage: DRAFT) {
+  ordinance(where: {number: $number}) {
     id
     number
     ordinanceType
@@ -6345,6 +6356,132 @@ export function useGetOrdinanceByNumberLazyQuery(baseOptions?: Apollo.LazyQueryH
 export type GetOrdinanceByNumberQueryHookResult = ReturnType<typeof useGetOrdinanceByNumberQuery>;
 export type GetOrdinanceByNumberLazyQueryHookResult = ReturnType<typeof useGetOrdinanceByNumberLazyQuery>;
 export type GetOrdinanceByNumberQueryResult = Apollo.QueryResult<GetOrdinanceByNumberQuery, GetOrdinanceByNumberQueryVariables>;
+export const GetOrdinancesAllDocument = gql`
+    query GetOrdinancesAll($number: String, $matricula: Int, $name: String, $ordinanceType: OrdinanceType, $memberType: MemberType) {
+  ordinance(where: {number: $number}) {
+    id
+    number
+    ordinanceType
+    effectiveStartDate
+    effectiveEndDate
+    subject
+    members {
+      id
+      name
+      matriculaSiape
+      ordinanceMember {
+        id
+        memberType
+        workload
+        memberWorkload {
+          ... on Member {
+            id
+          }
+        }
+      }
+    }
+  }
+  member(where: {matriculaSiape: $matricula}) {
+    id
+    name
+    matriculaSiape
+    ordinances {
+      ... on Ordinance {
+        id
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+        subject
+      }
+    }
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
+      }
+    }
+  }
+  members(where: {name_starts_with: $name}) {
+    name
+    ordinances {
+      ... on Ordinance {
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+      }
+    }
+  }
+  ordinances(
+    where: {ordinanceType: $ordinanceType}
+    orderBy: effectiveStartDate_ASC
+  ) {
+    id
+    number
+    ordinanceType
+    effectiveStartDate
+    effectiveEndDate
+    members {
+      name
+    }
+  }
+  ordinanceMembers(where: {memberType: $memberType}) {
+    memberType
+    memberWorkload {
+      ... on Member {
+        id
+        name
+        ordinances {
+          ... on Ordinance {
+            id
+            number
+            ordinanceType
+            effectiveStartDate
+            effectiveEndDate
+          }
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOrdinancesAllQuery__
+ *
+ * To run a query within a React component, call `useGetOrdinancesAllQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrdinancesAllQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrdinancesAllQuery({
+ *   variables: {
+ *      number: // value for 'number'
+ *      matricula: // value for 'matricula'
+ *      name: // value for 'name'
+ *      ordinanceType: // value for 'ordinanceType'
+ *      memberType: // value for 'memberType'
+ *   },
+ * });
+ */
+export function useGetOrdinancesAllQuery(baseOptions?: Apollo.QueryHookOptions<GetOrdinancesAllQuery, GetOrdinancesAllQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOrdinancesAllQuery, GetOrdinancesAllQueryVariables>(GetOrdinancesAllDocument, options);
+      }
+export function useGetOrdinancesAllLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOrdinancesAllQuery, GetOrdinancesAllQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOrdinancesAllQuery, GetOrdinancesAllQueryVariables>(GetOrdinancesAllDocument, options);
+        }
+export type GetOrdinancesAllQueryHookResult = ReturnType<typeof useGetOrdinancesAllQuery>;
+export type GetOrdinancesAllLazyQueryHookResult = ReturnType<typeof useGetOrdinancesAllLazyQuery>;
+export type GetOrdinancesAllQueryResult = Apollo.QueryResult<GetOrdinancesAllQuery, GetOrdinancesAllQueryVariables>;
 export const GetOrdinancesAsideDocument = gql`
     query GetOrdinancesAside {
   ordinances(orderBy: effectiveStartDate_ASC, stage: DRAFT) {
@@ -6493,12 +6630,17 @@ export const GetOrdinancesByMemberNameDocument = gql`
     query GetOrdinancesByMemberName($name: String!) {
   members(where: {name_starts_with: $name}, stage: DRAFT) {
     name
-    ordinances {
-      ... on Ordinance {
-        number
-        ordinanceType
-        effectiveStartDate
-        effectiveEndDate
+    id
+    ordinanceMember {
+      workload
+      ordinanceWorkload {
+        ... on Ordinance {
+          id
+          number
+          effectiveEndDate
+          effectiveStartDate
+          ordinanceType
+        }
       }
     }
   }
@@ -6535,6 +6677,7 @@ export type GetOrdinancesByMemberNameQueryResult = Apollo.QueryResult<GetOrdinan
 export const GetOrdinancesByMemberTypeDocument = gql`
     query GetOrdinancesByMemberType($memberType: MemberType) {
   ordinanceMembers(where: {memberType: $memberType}) {
+    workload
     memberType
     memberWorkload {
       ... on Member {

@@ -156,14 +156,31 @@ export function Register() {
             matriculaSiape: member.matriculaSiape,
         }
 
-        const dataWorkloads: WorkloadsProps = {
-            id: "",
-            memberId: member.id,
-            workload: workload,
-            memberType: memberType,
-        }
+        // const dataWorkloads: WorkloadsProps = {
+        //     id: "",
+        //     memberId: member.id,
+        //     workload: workload,
+        //     memberType: memberType,
+        // }
 
-        setWorkloads(oldState => [...oldState, dataWorkloads])
+        // setWorkloads(oldState => [...oldState, dataWorkloads])
+
+        createOrdinanceMember({
+                variables: {
+                    memberId: dataMembers.id,
+                    workload: Number(workload),
+                    memberType: memberType
+                }
+            }).then(res => {
+                const dataWorkloads: WorkloadsProps = {
+                    id: String(res.data?.createOrdinanceMember?.id),
+                    memberId: dataMembers.id,
+                    workload: workload,
+                    memberType: memberType
+                }
+
+                setWorkloads(oldState => [...oldState, dataWorkloads])
+            })
 
         setMembers(oldState => [...oldState, dataMembers])
         setName('')
@@ -428,6 +445,9 @@ export function Register() {
 
         notify("registeredMember")
     }
+
+    console.log(members)
+    console.log(workloads)
 
     const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
         setMembers(oldState => oldState.filter(

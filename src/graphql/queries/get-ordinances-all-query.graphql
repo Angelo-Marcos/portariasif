@@ -1,0 +1,92 @@
+query GetOrdinancesAll($number: String, $matricula: Int, $name: String, $ordinanceType: OrdinanceType, $memberType: MemberType) {
+  ordinance(where: {number: $number}) {
+    id
+    number
+    ordinanceType
+    effectiveStartDate
+    effectiveEndDate
+    subject
+    members {
+      id
+      name
+      matriculaSiape
+      ordinanceMember {
+        id
+        memberType
+        workload
+        memberWorkload {
+          ... on Member {
+            id
+          }
+        }
+      }
+    }
+  }
+  member(where: {matriculaSiape: $matricula}) {
+    id
+    name
+    matriculaSiape
+    ordinances {
+      ... on Ordinance {
+        id
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+        subject
+      }
+    }
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
+      }
+    }
+  }
+  members(where: {name_starts_with: $name}) {
+    name
+    ordinances {
+      ... on Ordinance {
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+      }
+    }
+  }
+  ordinances(
+    where: {ordinanceType: $ordinanceType}, 
+    orderBy: effectiveStartDate_ASC
+    ) {
+        id
+        number
+        ordinanceType
+        effectiveStartDate
+        effectiveEndDate
+        members {
+        name
+        }
+  }
+  ordinanceMembers(where: {memberType: $memberType}) {
+    memberType
+    memberWorkload {
+      ... on Member {
+        id
+        name
+        ordinances {
+          ... on Ordinance {
+            id
+            number
+            ordinanceType
+            effectiveStartDate
+            effectiveEndDate
+          }
+        }
+      }
+    }
+  }
+}
