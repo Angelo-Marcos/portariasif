@@ -2,6 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import Modal from 'react-modal'
+
+Modal.setAppElement('#root') // 👈 configure aqui, antes do ReactDOM.createRoot
 
 import './styles/global.css';
 

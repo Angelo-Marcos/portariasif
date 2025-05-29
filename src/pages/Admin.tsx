@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { OrdinanceAdmin } from "../components/OrdinanceAdmin";
 import { OrdinanceAside } from "../components/OrdinanceAside";
-import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useDeleteMemberMutation, useDeleteOrdinanceMutation, useGetMembersByMatriculaQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
-import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, WarningCircle, XCircle } from "phosphor-react"
+import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useCreateUserAdminMutation, useDeleteMemberMutation, useDeleteOrdinanceMutation, useDeleteUserAdminMutation, useGetMembersByMatriculaQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useGetUserAdminQuery, useGetUserAdminsQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
+import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, UserCircleGear, WarningCircle, X, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
 import { Search } from "./Search";
@@ -100,6 +100,9 @@ export function Admin() {
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
 
+    const [createUser, setCreateUser] = useState('')
+    const [deleteUser, setDeleteUser] = useState('')
+
 
     const [members, setMembers] = useState<MemberProps[]>([]);
     const [membersDisconnect, setMembersDisconnect] = useState<MemberDisconnectProps[]>([]);
@@ -108,6 +111,7 @@ export function Admin() {
 
     const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
     const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
+    const [createUserAdmin, { loading: loadingCreateUserAdmin, data: dataCreateUserAdmin }] = useCreateUserAdminMutation();
     const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
     const [updateMember] = useUpdateMemberMutation();
     const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
@@ -115,34 +119,49 @@ export function Admin() {
     const [updateOrdinanceMemberDisconnect] = useUpdateMemberOrdinanceDisconnectMutation();
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
+    const [deleteUserAdmin, { loading: loadingDeleteUserAdmin }] = useDeleteUserAdminMutation();
 
     const { data: dataOrdinances } = useGetOrdinancesQuery();
 
     const { data: dataOrdinanceByNumber, loading: loadingOrdinanceByNumber } = useGetOrdinanceByNumberQuery({
+        skip: getValuesSearch('search')?.length <= 7,
         variables: {
             number: getValuesSearch('search')
         }
     })
 
     const { data: dataOrdinancesByMemberMatricula, loading: loadingOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
+        skip: getValuesSearch('search')?.length <= 6,
         variables: {
             matriculaSiape: +getValuesSearch('search')
         }
     })
 
     const { data: dataOrdincesByMemberName } = useGetOrdinancesByMemberNameQuery({
+        skip: getValuesSearch('search')?.length <= 3,
         variables: {
             name: getValuesSearch('search')
         }
     })
 
     const { data: dataMemberByMatricula } = useGetMembersByMatriculaQuery({
+        skip: getValuesSearch('search')?.length <= 6,
         variables: {
             matricula: +getValuesSearch('search')
         }
     })
 
+    const { data: dataUserAdmin } = useGetUserAdminQuery({
+        skip: !deleteUser || deleteUser.length < 10,
+        variables: {
+            email: deleteUser
+        }
+    })
+
+    const { data: dataUserAdmins } = useGetUserAdminsQuery()
+
     const { data: dataMembersQuery } = useGetMembersQuery();
+
     const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
 
@@ -153,6 +172,30 @@ export function Admin() {
     const handleCloseModal = () => {
         setIsOpen(false);
         setMembers([]);
+    };
+
+    const [modalIsOpenAdmin, setIsOpenAdmin] = useState(false);
+    const handleOpenModalAdmin = async () => {
+        setIsOpenAdmin(true);
+    };
+    const handleCloseModalAdmin = () => {
+        setIsOpenAdmin(false);
+    };
+
+    const [modalIsOpenUser, setIsOpenUser] = useState(false);
+    const handleOpenModalUser = async () => {
+        setIsOpenUser(true);
+    };
+    const handleCloseModalUser = () => {
+        setIsOpenUser(false);
+    };
+
+    const [modalIsOpenUserDelete, setIsOpenUserDelete] = useState(false);
+    const handleOpenModalUserDelete = async () => {
+        setIsOpenUserDelete(true);
+    };
+    const handleCloseModalUserDelete = () => {
+        setIsOpenUserDelete(false);
     };
 
     const handleClickSearch = (numberSearch: string) => {
@@ -186,7 +229,7 @@ export function Admin() {
 
         } else if (dataOrdinancesByMemberMatricula?.member?.matriculaSiape != null) {
 
-            dataOrdinancesByMemberMatricula.member?.ordinances.filter(numberOrdinance => numberOrdinance.number === numberSearch).map(ordinance => {
+            dataOrdinancesByMemberMatricula.member?.ordinanceMember[0].ordinanceWorkload.filter(numberOrdinance => numberOrdinance?.number === numberSearch).map(ordinance => {
 
                 setNumber(ordinance.number)
                 setEffectiveStartDate(ordinance.effectiveStartDate)
@@ -212,7 +255,7 @@ export function Admin() {
                 name: dataOrdinancesByMemberMatricula.member?.name as string,
                 matriculaSiape: dataOrdinancesByMemberMatricula.member?.matriculaSiape as number,
                 ordinanceMember: {
-                    id: dataOrdinancesByMemberMatricula.member?.ordinanceMember.at(0)?.memberWorkload.at(0)?.id as string,
+                    id: dataOrdinancesByMemberMatricula.member?.id as string,
                     memberId: dataOrdinancesByMemberMatricula.member?.id as string,
                     workload: dataOrdinancesByMemberMatricula.member?.ordinanceMember.at(0)?.workload as number,
                     memberType: dataOrdinancesByMemberMatricula.member?.ordinanceMember.at(0)?.memberType as MemberType
@@ -427,6 +470,28 @@ export function Admin() {
         notify("deletedMember")
     }
 
+    const handleCreateUser = async (email: string) => {
+        await createUserAdmin({
+            variables: {
+                email: email
+            }
+        })
+
+        notify("createUser")
+        setCreateUser('')
+    }
+
+    const handleDeleteUser = async (idUser: string) => {
+        await deleteUserAdmin({
+            variables: {
+                id: idUser
+            }
+        })
+
+        notify("deletedUser")
+        reload()
+    }
+
     const notify = (notify: string) => {
         if (notify === "updated")
             toast.success("Portaria atualizada com sucesso!", {
@@ -468,6 +533,16 @@ export function Admin() {
                 autoClose: false,
                 position: "top-center",
                 closeOnClick: true,
+            }
+            )
+        else if (notify === "deletedUser")
+            toast.success("Usuário excluído com sucesso!", {
+                autoClose: 5000
+            }
+            )
+        else if (notify === "createUser")
+            toast.success("Usuário cadastrado com sucesso!", {
+                autoClose: 5000
             }
             )
     }
@@ -529,11 +604,40 @@ export function Admin() {
         )
     }
 
+    const notifyDeleteUser = (numberDelete: string, email: string) => {
+
+        toast.warn(
+            <div className="flex flex-col justify-between items-center">
+                <span className="flex w-full mb-2 justify-center font-light text-lg text-center text-black">
+                    Tem certeza que deseja excluir o usuário {email}?
+                </span>
+                <div className="flex flex-row justify-center items-center text-base text-white">
+                    <button
+
+                        onClick={() => handleDeleteUser(numberDelete)}
+                        className="flex justify-center items-center w-[100px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                        Confirmar
+                    </button>
+                </div>
+
+            </div>,
+            {
+                autoClose: false,
+                position: "top-center",
+                closeOnClick: true,
+                icon: false
+            }
+        )
+    }
+
     const reload = () => {
         setTimeout(() => {
             window.location.reload();
         }, 3000)
     }
+
+    console.log(dataUserAdmins?.userAdmins)
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -547,7 +651,15 @@ export function Admin() {
             />
 
             <main className="flex flex-col pt-[130px] px-48 mt-10">
-                <div className="flex w-full justify-center items-center mt-4 pb-7 border-b border-green-300">
+                <div className="flex justify-end items-center">
+                    <button
+                        onClick={handleOpenModalAdmin}
+                        className="text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50">
+                        <UserCircleGear size={32} />
+                    </button>
+
+                </div>
+                <div className="flex w-full justify-center items-center mt-1 pb-7 border-b border-green-300">
                     <form
                         onSubmit={handleSubmitSearch(onSubmitSearch)}
                         className="flex w-full justify-center"
@@ -720,7 +832,7 @@ export function Admin() {
                                             <p className="mb-1 text-xs text-black font-medium">Membro(s)</p>
                                             {ordinance.members.map(member => {
                                                 return (
-                                                    <span className="flex flex-col justify-center items-center text-center">{member.name}</span>
+                                                    <span key={member.id} className="flex flex-col justify-center items-center text-center">{member.name}</span>
                                                 )
                                             })}
                                         </span>
@@ -1066,6 +1178,170 @@ export function Admin() {
                                 Confirmar
                             </button>
                         </div>
+
+                    </div>
+
+
+                </Modal>
+
+                <Modal
+                    isOpen={modalIsOpenAdmin}
+                    onRequestClose={handleCloseModalAdmin}
+                    contentLabel="modal admin"
+                    className="flex justify-end h-screen w-full rounded text-white text-base font-light "
+                >
+
+                    <aside className="flex flex-col items-center w-64 h-screen text-white bg-green-700">
+                        <div className="flex text-2xl font-bold mb-6">
+                            <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-[85px]" />
+                        </div>
+                        <nav className="flex w-full flex-col items-center space-y-2">
+                            <button
+                                onClick={handleOpenModalUser}
+                                className="w-full gap-1 p-2 hover:bg-white hover:text-green-700">
+                                Cadastrar Usuário
+                            </button>
+                            <button
+                                onClick={handleOpenModalUserDelete}
+                                className="w-full gap-1 p-2 hover:bg-white hover:text-green-700">
+                                Excluir Usuário
+                            </button>
+                            <button
+                                onClick={handleCloseModalAdmin}
+                                className="w-full gap-1 p-2 hover:bg-white hover:text-green-700">
+                                Fechar
+                            </button>
+                        </nav>
+                    </aside>
+
+
+                </Modal>
+
+                <Modal
+                    isOpen={modalIsOpenUser}
+                    onRequestClose={handleCloseModalUser}
+                    contentLabel="modal user"
+                    className="flex justify-end h-screen w-full rounded text-white text-base font-light "
+                >
+
+                    <div className="flex flex-col w-full items-center p-4 bg-green-700">
+                        <div className="flex w-full justify-end">
+                            <button
+                                onClick={handleCloseModalUser}
+                                className="flex w-8 hover:bg-white hover:text-green-700 rounded-full"
+                            >
+                                <X size={32} />
+                            </button>
+                        </div>
+
+                        <div className="flex text-2xl font-bold mb-9">
+                            <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-[85px]" />
+                        </div>
+                        <div
+                            className="flex w-full justify-center"
+                        >
+                            <input
+                                placeholder="Digite o email do usuário"
+                                className="appearance-none w-[620px] h-[40px] px-4 ml-2 bg-gray-400 text-gray-500 text-lg font-light rounded-3xl outline-none border-none placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                onChange={event => setCreateUser(event.target.value)}
+                                value={createUser}
+                            />
+                            <button
+                                onClick={() => handleCreateUser(createUser)}
+                                className="justify-center items-center w-[140px] h-[40px] ml-3 leading-none bg-gray-400 text-green-700 text-base font-medium rounded-3xl hover:bg-white hover:text-green-700 transition-colors disabled:opacity-50"
+                            >
+                                Cadastrar
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                </Modal>
+
+                <Modal
+                    isOpen={modalIsOpenUserDelete}
+                    onRequestClose={handleCloseModalUserDelete}
+                    contentLabel="modal user delete"
+                    className="flex justify-end h-screen w-full rounded text-white text-base font-light "
+                >
+
+                    <div className="flex flex-col w-full items-center p-4 bg-green-700">
+                        <div className="flex w-full justify-end">
+                            <button
+                                onClick={handleCloseModalUserDelete}
+                                className="flex w-8 hover:bg-white hover:text-green-700 rounded-full"
+                            >
+                                <X size={32} />
+                            </button>
+                        </div>
+
+                        <div className="flex text-2xl font-bold mb-9">
+                            <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-[85px]" />
+                        </div>
+                        <div
+                            className="flex w-full justify-center"
+                        >
+                            <input
+                                placeholder="Digite o email de um usuário"
+                                className="appearance-none w-[620px] h-[40px] px-4 ml-2 bg-gray-400 text-gray-500 text-lg font-light rounded-3xl outline-none border-none placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                onChange={event => setDeleteUser(event.target.value)}
+                            // value={matriculaSiape}
+                            />
+                        </div>
+
+                        {
+                            dataUserAdmin?.userAdmin &&
+                            <div className="flex w-[620px] justify-between items-center p-2 mt-10 bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
+                                <div className="flex w-full justify-center items-center bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
+                                    <span>
+                                        <p className="flex flex-col justify-center items-center text-center font-medium mb-1 text-sm text-black">Usuário</p>
+                                        {dataUserAdmin?.userAdmin?.email}
+                                    </span>
+
+                                </div>
+
+                                <div className="flex justify-center items-center text-center">
+                                    <span
+                                        className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                        onClick={() => notifyDeleteUser(dataUserAdmin?.userAdmin?.id as string, dataUserAdmin?.userAdmin?.email as string)}
+                                    >
+                                        <Trash size={32} />
+                                    </span>
+                                </div>
+                            </div>
+                        }
+
+
+
+
+                        {
+                            !deleteUser &&
+                            dataUserAdmins?.userAdmins.map(user => {
+                                return (
+                                    <div className="flex w-[700px] justify-between items-center p-2 mt-10 bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
+                                        <div className="flex w-full justify-center items-center bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
+                                            <span>
+                                                <p className="flex flex-col justify-center items-center text-center font-medium mb-1 text-sm text-black">Usuário</p>
+                                                {user.email}
+                                            </span>
+
+                                        </div>
+
+                                        <div className="flex justify-center items-center text-center">
+                                            <span
+                                                className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+                                                onClick={() => notifyDeleteUser(user.id as string, user.email as string)}
+                                            >
+                                                <Trash size={32} />
+                                            </span>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
+
+
 
                     </div>
 

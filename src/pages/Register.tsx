@@ -113,14 +113,11 @@ export function Register() {
         }
     };
 
-
     const [name, setName] = useState('');
     const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
     const [matriculaSiape, setMatriculaSiape] = useState('');
     const [workload, setworkload] = useState('')
     const [radio, setRadio] = useState('');
-
-    console.log(memberType)
 
     const [members, setMembers] = useState<MemberProps[]>([])
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
@@ -156,35 +153,28 @@ export function Register() {
             matriculaSiape: member.matriculaSiape,
         }
 
-        // const dataWorkloads: WorkloadsProps = {
-        //     id: "",
-        //     memberId: member.id,
-        //     workload: workload,
-        //     memberType: memberType,
-        // }
-
-        // setWorkloads(oldState => [...oldState, dataWorkloads])
-
         createOrdinanceMember({
-                variables: {
-                    memberId: dataMembers.id,
-                    workload: Number(workload),
-                    memberType: memberType
-                }
-            }).then(res => {
-                const dataWorkloads: WorkloadsProps = {
-                    id: String(res.data?.createOrdinanceMember?.id),
-                    memberId: dataMembers.id,
-                    workload: workload,
-                    memberType: memberType
-                }
+            variables: {
+                memberId: member.id,
+                workload: Number(workload),
+                memberType: memberType
+            }
+        }).then(res => {
+            const dataWorkloads: WorkloadsProps = {
+                id: String(res.data?.createOrdinanceMember?.id),
+                memberId: member.id,
+                workload: workload,
+                memberType: memberType
+            }
 
-                setWorkloads(oldState => [...oldState, dataWorkloads])
-            })
+            setWorkloads(oldState => [...oldState, dataWorkloads])
+        })
 
         setMembers(oldState => [...oldState, dataMembers])
         setName('')
         setworkload('')
+        setMemberType(MemberType.Member)
+        setMatriculaSiape('')
 
         notify("addMember")
     }
@@ -446,9 +436,6 @@ export function Register() {
         notify("registeredMember")
     }
 
-    console.log(members)
-    console.log(workloads)
-
     const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
         setMembers(oldState => oldState.filter(
             member => member.id != idMember
@@ -472,29 +459,6 @@ export function Register() {
                 idOrdinanceMembers: workloads.map(idWorkload => idWorkload.id)
             }
         })
-
-        // const publishMembers = () => {
-        //     members.map((id) => {
-        //         publishMember({
-        //             variables: {
-        //                 id: id.id,
-        //             }
-        //         })
-        //     })
-        // }
-
-        // const publishOrdinanceMembers = () => {
-        //     workloads.map((workload) => {
-        //         publishOrdinanceMember({
-        //             variables: {
-        //                 id: workload.id
-        //             }
-        //         })
-        //     })
-        // }
-
-        // publishMembers();
-        // publishOrdinanceMembers();
 
         handleCloseModal();
         notify("registeredOrdinance")
@@ -613,9 +577,6 @@ export function Register() {
                     picture={user.picture}
                 />
 
-
-
-
                 <div className="flex flex-col items-center justify-center pt-[130px] px-48">
                     <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-300">
                         Preencha os campos abaixo
@@ -630,8 +591,6 @@ export function Register() {
                                     mask="999/9999"
                                     {...registerOrdinance("number")}
                                     className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                // onChange={event => setNumber(event.target.value)}
-                                // value={number}
                                 />
                                 <p className="absolute mt-8 text-red-800 text-sm">
                                     {errorsOrdinance.number?.message}
@@ -645,8 +604,6 @@ export function Register() {
                                     {...registerOrdinance("effectiveStartDate")}
                                     type="date"
                                     className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" placeholder=" "
-                                // onChange={event => setEffectiveStartDate(event.target.value)}
-                                // value={effectiveStartDate}
                                 />
                                 <p className="absolute mt-8 text-red-800 text-sm">
                                     {errorsOrdinance.effectiveStartDate?.message}
@@ -659,8 +616,6 @@ export function Register() {
                                 <select
                                     {...registerOrdinance("ordinanceType")}
                                     className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                // onChange={event => setOrdinanceType(event.target.value as OrdinanceType)}
-                                // value={ordinanceType}
                                 >
                                     <option value="" className="text-gray-500 text-xl font-light"></option>
                                     <option value="progression" className="text-gray-500 text-xl font-light">Progressão</option>
@@ -680,8 +635,6 @@ export function Register() {
                                     {...registerOrdinance("effectiveEndDate")}
                                     type="date"
                                     className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                // onChange={event => setEffectiveEndDate(event.target.value)}
-                                // value={effectiveEndDate}
                                 />
                             </div>
                             <div className="flex">
@@ -691,8 +644,6 @@ export function Register() {
                                 <input
                                     {...registerOrdinance("subject")}
                                     className="appearance-none block w-[300px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                // onChange={event => setSubject(event.target.value)}
-                                // value={subject}
                                 />
                                 <p className="absolute mt-8 text-red-800 text-sm">
                                     {errorsOrdinance.subject?.message}
@@ -707,16 +658,10 @@ export function Register() {
                                 </label>
                                 <div className="flex flex-col">
                                     <input
-                                        // {...registerMember("name")}
                                         className="appearance-none block w-[420px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setName(event.target.value)}
                                         value={name}
                                     />
-                                    {/* {members.length <= 0 &&
-                                    <p className="absolute mt-8 ml-2 text-red-800 text-sm">
-                                        Nenhum membro inserido!
-                                    </p>
-                                } */}
                                     <div className="absolute z-10 w-[320px] max-h-xs ml-2 mt-[34px] mt bg-white rounded-md">
                                         <div className="flex flex-col">
                                             {membersFilters?.length !== 0 && name !== '' &&
@@ -741,7 +686,6 @@ export function Register() {
                                     Matrícula/Siape:
                                 </label>
                                 <InputMask
-                                    // {...registerMember("matriculaSiape")}
                                     mask="999999"
                                     pattern="[0-9]{6,7}"
                                     title="6 to 7 numbers"
@@ -756,12 +700,10 @@ export function Register() {
                                     Tipo:
                                 </label>
                                 <select
-                                    // {...registerMember("memberType")}
                                     className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                     onChange={event => setMemberType(event.target.value as MemberType)}
-                                // value={memberType}
                                 >
-                                    <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
+                                    <option value="member" className="text-gray-500 text-xl font-light"></option>
                                     <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
                                     <option value="vicePresident" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
 
@@ -776,13 +718,7 @@ export function Register() {
                                     pattern="[0-9]{1}"
                                     onChange={event => setworkload(event.target.value)}
                                     className="appearance-none block w-[100px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-
-                                // onChange={event => setSubject(event.target.value)}
-                                // value={subject}
                                 />
-                                {/* <p className="absolute mt-8 text-red-800 text-sm">
-                                {errorsOrdinance.subject?.message}
-                            </p> */}
                                 <span
                                     onClick={handleAddNewMember}
                                     className="h-[30px] items-center text-green-300 ml-2 rounded-full cursor-pointer hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
@@ -794,8 +730,6 @@ export function Register() {
                         <div>
                             <ul>
                                 {members.map((member) => {
-                                    // const workloadFilter = workloads.filter((i) => i.memberId === member.id)
-
                                     return (
                                         <div className="flex flex-row text-sm h-6">
                                             <Member
@@ -850,10 +784,7 @@ export function Register() {
                                     </label>
                                     <input
                                         {...registerOrdinance("numberRevoked")}
-                                        // mask="999/9999"
                                         className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                    // onChange={event => setNumberRevoked(event.target.value)}
-                                    // value={numberRevoked}
                                     />
                                 </div>
                                 : <div></div>
@@ -864,7 +795,6 @@ export function Register() {
                                 type="submit"
                                 disabled={loadingCreate}
                                 className="flex justify-center items-center w-[140px] h-[50px] mt-10 leading-none bg-green-300 rounded font-medium text-xl hover:bg-green-700 transition-colors disabled:opacity-50"
-                            // onClick={handleOpenModal}
                             >
                                 Cadastrar Portaria
                             </button>

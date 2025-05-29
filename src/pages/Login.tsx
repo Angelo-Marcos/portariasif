@@ -3,20 +3,24 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext"
 import { toast, ToastContainer } from 'react-toastify';
+import { useGetUserAdminsQuery } from '../graphql/generated';
 
 export function Login() {
     const navigate = useNavigate()
 
     const { setUser } = useUser();
 
-    const allowedEmails = ["angelopc7@gmail.com"];
+    const { data: dataUserAdmins } = useGetUserAdminsQuery()
+
+    const allowedEmails = dataUserAdmins?.userAdmins.map(user => user.email);
+
 
     const handleSuccess = (response: CredentialResponse) => {
         if (response.credential) {
             const userInfo = jwtDecode(response.credential) as { name: string; given_name: string; email: string; picture: string };
 
 
-            if (allowedEmails.includes(userInfo.email)) {
+            if (allowedEmails?.includes(userInfo.email)) {
                 notify("allowed");
                 setUser(userInfo); // Atualiza o estado global do usuário
                 localStorage.setItem('user', JSON.stringify(userInfo)); // Salva no localStorage

@@ -880,7 +880,8 @@ export enum EntityTypeName {
   /** Scheduled Release system model */
   ScheduledRelease = 'ScheduledRelease',
   /** User system model */
-  User = 'User'
+  User = 'User',
+  UserAdmin = 'UserAdmin'
 }
 
 /** Allows to specify input to query models and components directly */
@@ -1614,6 +1615,8 @@ export type Mutation = {
   createOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Create one scheduledRelease */
   createScheduledRelease?: Maybe<ScheduledRelease>;
+  /** Create one userAdmin */
+  createUserAdmin?: Maybe<UserAdmin>;
   /** Delete one asset from _all_ existing stages. Returns deleted document. */
   deleteAsset?: Maybe<Asset>;
   /**
@@ -1644,6 +1647,13 @@ export type Mutation = {
   deleteManyOrdinances: BatchPayload;
   /** Delete many Ordinance documents, return deleted documents */
   deleteManyOrdinancesConnection: OrdinanceConnection;
+  /**
+   * Delete many UserAdmin documents
+   * @deprecated Please use the new paginated many mutation (deleteManyUserAdminsConnection)
+   */
+  deleteManyUserAdmins: BatchPayload;
+  /** Delete many UserAdmin documents, return deleted documents */
+  deleteManyUserAdminsConnection: UserAdminConnection;
   /** Delete one member from _all_ existing stages. Returns deleted document. */
   deleteMember?: Maybe<Member>;
   /** Delete one ordinance from _all_ existing stages. Returns deleted document. */
@@ -1654,6 +1664,8 @@ export type Mutation = {
   deleteScheduledOperation?: Maybe<ScheduledOperation>;
   /** Delete one scheduledRelease from _all_ existing stages. Returns deleted document. */
   deleteScheduledRelease?: Maybe<ScheduledRelease>;
+  /** Delete one userAdmin from _all_ existing stages. Returns deleted document. */
+  deleteUserAdmin?: Maybe<UserAdmin>;
   /** Publish one asset */
   publishAsset?: Maybe<Asset>;
   /**
@@ -1684,12 +1696,21 @@ export type Mutation = {
   publishManyOrdinances: BatchPayload;
   /** Publish many Ordinance documents */
   publishManyOrdinancesConnection: OrdinanceConnection;
+  /**
+   * Publish many UserAdmin documents
+   * @deprecated Please use the new paginated many mutation (publishManyUserAdminsConnection)
+   */
+  publishManyUserAdmins: BatchPayload;
+  /** Publish many UserAdmin documents */
+  publishManyUserAdminsConnection: UserAdminConnection;
   /** Publish one member */
   publishMember?: Maybe<Member>;
   /** Publish one ordinance */
   publishOrdinance?: Maybe<Ordinance>;
   /** Publish one ordinanceMember */
   publishOrdinanceMember?: Maybe<OrdinanceMember>;
+  /** Publish one userAdmin */
+  publishUserAdmin?: Maybe<UserAdmin>;
   /** Schedule to publish one asset */
   schedulePublishAsset?: Maybe<Asset>;
   /** Schedule to publish one member */
@@ -1698,6 +1719,8 @@ export type Mutation = {
   schedulePublishOrdinance?: Maybe<Ordinance>;
   /** Schedule to publish one ordinanceMember */
   schedulePublishOrdinanceMember?: Maybe<OrdinanceMember>;
+  /** Schedule to publish one userAdmin */
+  schedulePublishUserAdmin?: Maybe<UserAdmin>;
   /** Unpublish one asset from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishAsset?: Maybe<Asset>;
   /** Unpublish one member from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
@@ -1706,6 +1729,8 @@ export type Mutation = {
   scheduleUnpublishOrdinance?: Maybe<Ordinance>;
   /** Unpublish one ordinanceMember from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishOrdinanceMember?: Maybe<OrdinanceMember>;
+  /** Unpublish one userAdmin from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
+  scheduleUnpublishUserAdmin?: Maybe<UserAdmin>;
   /** Unpublish one asset from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishAsset?: Maybe<Asset>;
   /**
@@ -1736,12 +1761,21 @@ export type Mutation = {
   unpublishManyOrdinances: BatchPayload;
   /** Find many Ordinance documents that match criteria in specified stage and unpublish from target stages */
   unpublishManyOrdinancesConnection: OrdinanceConnection;
+  /**
+   * Unpublish many UserAdmin documents
+   * @deprecated Please use the new paginated many mutation (unpublishManyUserAdminsConnection)
+   */
+  unpublishManyUserAdmins: BatchPayload;
+  /** Find many UserAdmin documents that match criteria in specified stage and unpublish from target stages */
+  unpublishManyUserAdminsConnection: UserAdminConnection;
   /** Unpublish one member from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishMember?: Maybe<Member>;
   /** Unpublish one ordinance from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishOrdinance?: Maybe<Ordinance>;
   /** Unpublish one ordinanceMember from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishOrdinanceMember?: Maybe<OrdinanceMember>;
+  /** Unpublish one userAdmin from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
+  unpublishUserAdmin?: Maybe<UserAdmin>;
   /** Update one asset */
   updateAsset?: Maybe<Asset>;
   /**
@@ -1772,6 +1806,13 @@ export type Mutation = {
   updateManyOrdinances: BatchPayload;
   /** Update many Ordinance documents */
   updateManyOrdinancesConnection: OrdinanceConnection;
+  /**
+   * Update many userAdmins
+   * @deprecated Please use the new paginated many mutation (updateManyUserAdminsConnection)
+   */
+  updateManyUserAdmins: BatchPayload;
+  /** Update many UserAdmin documents */
+  updateManyUserAdminsConnection: UserAdminConnection;
   /** Update one member */
   updateMember?: Maybe<Member>;
   /** Update one ordinance */
@@ -1780,6 +1821,8 @@ export type Mutation = {
   updateOrdinanceMember?: Maybe<OrdinanceMember>;
   /** Update one scheduledRelease */
   updateScheduledRelease?: Maybe<ScheduledRelease>;
+  /** Update one userAdmin */
+  updateUserAdmin?: Maybe<UserAdmin>;
   /** Upsert one asset */
   upsertAsset?: Maybe<Asset>;
   /** Upsert one member */
@@ -1788,6 +1831,8 @@ export type Mutation = {
   upsertOrdinance?: Maybe<Ordinance>;
   /** Upsert one ordinanceMember */
   upsertOrdinanceMember?: Maybe<OrdinanceMember>;
+  /** Upsert one userAdmin */
+  upsertUserAdmin?: Maybe<UserAdmin>;
 };
 
 
@@ -1813,6 +1858,11 @@ export type MutationCreateOrdinanceMemberArgs = {
 
 export type MutationCreateScheduledReleaseArgs = {
   data: ScheduledReleaseCreateInput;
+};
+
+
+export type MutationCreateUserAdminArgs = {
+  data: UserAdminCreateInput;
 };
 
 
@@ -1881,6 +1931,21 @@ export type MutationDeleteManyOrdinancesConnectionArgs = {
 };
 
 
+export type MutationDeleteManyUserAdminsArgs = {
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
+export type MutationDeleteManyUserAdminsConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
 export type MutationDeleteMemberArgs = {
   where: MemberWhereUniqueInput;
 };
@@ -1903,6 +1968,11 @@ export type MutationDeleteScheduledOperationArgs = {
 
 export type MutationDeleteScheduledReleaseArgs = {
   where: ScheduledReleaseWhereUniqueInput;
+};
+
+
+export type MutationDeleteUserAdminArgs = {
+  where: UserAdminWhereUniqueInput;
 };
 
 
@@ -1993,6 +2063,24 @@ export type MutationPublishManyOrdinancesConnectionArgs = {
 };
 
 
+export type MutationPublishManyUserAdminsArgs = {
+  to?: Array<Stage>;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
+export type MutationPublishManyUserAdminsConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  first?: InputMaybe<Scalars['Int']>;
+  from?: InputMaybe<Stage>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  to?: Array<Stage>;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
 export type MutationPublishMemberArgs = {
   to?: Array<Stage>;
   where: MemberWhereUniqueInput;
@@ -2008,6 +2096,12 @@ export type MutationPublishOrdinanceArgs = {
 export type MutationPublishOrdinanceMemberArgs = {
   to?: Array<Stage>;
   where: OrdinanceMemberWhereUniqueInput;
+};
+
+
+export type MutationPublishUserAdminArgs = {
+  to?: Array<Stage>;
+  where: UserAdminWhereUniqueInput;
 };
 
 
@@ -2046,6 +2140,14 @@ export type MutationSchedulePublishOrdinanceMemberArgs = {
 };
 
 
+export type MutationSchedulePublishUserAdminArgs = {
+  releaseAt?: InputMaybe<Scalars['DateTime']>;
+  releaseId?: InputMaybe<Scalars['String']>;
+  to?: Array<Stage>;
+  where: UserAdminWhereUniqueInput;
+};
+
+
 export type MutationScheduleUnpublishAssetArgs = {
   from?: Array<Stage>;
   locales?: InputMaybe<Array<Locale>>;
@@ -2077,6 +2179,14 @@ export type MutationScheduleUnpublishOrdinanceMemberArgs = {
   releaseAt?: InputMaybe<Scalars['DateTime']>;
   releaseId?: InputMaybe<Scalars['String']>;
   where: OrdinanceMemberWhereUniqueInput;
+};
+
+
+export type MutationScheduleUnpublishUserAdminArgs = {
+  from?: Array<Stage>;
+  releaseAt?: InputMaybe<Scalars['DateTime']>;
+  releaseId?: InputMaybe<Scalars['String']>;
+  where: UserAdminWhereUniqueInput;
 };
 
 
@@ -2164,6 +2274,24 @@ export type MutationUnpublishManyOrdinancesConnectionArgs = {
 };
 
 
+export type MutationUnpublishManyUserAdminsArgs = {
+  from?: Array<Stage>;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
+export type MutationUnpublishManyUserAdminsConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  first?: InputMaybe<Scalars['Int']>;
+  from?: Array<Stage>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  stage?: InputMaybe<Stage>;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
 export type MutationUnpublishMemberArgs = {
   from?: Array<Stage>;
   where: MemberWhereUniqueInput;
@@ -2179,6 +2307,12 @@ export type MutationUnpublishOrdinanceArgs = {
 export type MutationUnpublishOrdinanceMemberArgs = {
   from?: Array<Stage>;
   where: OrdinanceMemberWhereUniqueInput;
+};
+
+
+export type MutationUnpublishUserAdminArgs = {
+  from?: Array<Stage>;
+  where: UserAdminWhereUniqueInput;
 };
 
 
@@ -2256,6 +2390,23 @@ export type MutationUpdateManyOrdinancesConnectionArgs = {
 };
 
 
+export type MutationUpdateManyUserAdminsArgs = {
+  data: UserAdminUpdateManyInput;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
+export type MutationUpdateManyUserAdminsConnectionArgs = {
+  after?: InputMaybe<Scalars['ID']>;
+  before?: InputMaybe<Scalars['ID']>;
+  data: UserAdminUpdateManyInput;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<UserAdminManyWhereInput>;
+};
+
+
 export type MutationUpdateMemberArgs = {
   data: MemberUpdateInput;
   where: MemberWhereUniqueInput;
@@ -2280,6 +2431,12 @@ export type MutationUpdateScheduledReleaseArgs = {
 };
 
 
+export type MutationUpdateUserAdminArgs = {
+  data: UserAdminUpdateInput;
+  where: UserAdminWhereUniqueInput;
+};
+
+
 export type MutationUpsertAssetArgs = {
   upsert: AssetUpsertInput;
   where: AssetWhereUniqueInput;
@@ -2301,6 +2458,12 @@ export type MutationUpsertOrdinanceArgs = {
 export type MutationUpsertOrdinanceMemberArgs = {
   upsert: OrdinanceMemberUpsertInput;
   where: OrdinanceMemberWhereUniqueInput;
+};
+
+
+export type MutationUpsertUserAdminArgs = {
+  upsert: UserAdminUpsertInput;
+  where: UserAdminWhereUniqueInput;
 };
 
 /** An object with an ID */
@@ -3514,6 +3677,14 @@ export type Query = {
   scheduledReleasesConnection: ScheduledReleaseConnection;
   /** Retrieve a single user */
   user?: Maybe<User>;
+  /** Retrieve a single userAdmin */
+  userAdmin?: Maybe<UserAdmin>;
+  /** Retrieve document version */
+  userAdminVersion?: Maybe<DocumentVersion>;
+  /** Retrieve multiple userAdmins */
+  userAdmins: Array<UserAdmin>;
+  /** Retrieve multiple userAdmins using the Relay connection interface */
+  userAdminsConnection: UserAdminConnection;
   /** Retrieve multiple users */
   users: Array<User>;
   /** Retrieve multiple users using the Relay connection interface */
@@ -3759,6 +3930,44 @@ export type QueryUserArgs = {
 };
 
 
+export type QueryUserAdminArgs = {
+  locales?: Array<Locale>;
+  stage?: Stage;
+  where: UserAdminWhereUniqueInput;
+};
+
+
+export type QueryUserAdminVersionArgs = {
+  where: VersionWhereInput;
+};
+
+
+export type QueryUserAdminsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: Array<Locale>;
+  orderBy?: InputMaybe<UserAdminOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  stage?: Stage;
+  where?: InputMaybe<UserAdminWhereInput>;
+};
+
+
+export type QueryUserAdminsConnectionArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: Array<Locale>;
+  orderBy?: InputMaybe<UserAdminOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  stage?: Stage;
+  where?: InputMaybe<UserAdminWhereInput>;
+};
+
+
 export type QueryUsersArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -3896,7 +4105,7 @@ export type ScheduledOperationUpdatedByArgs = {
   locales?: InputMaybe<Array<Locale>>;
 };
 
-export type ScheduledOperationAffectedDocument = Asset | Member | Ordinance | OrdinanceMember;
+export type ScheduledOperationAffectedDocument = Asset | Member | Ordinance | OrdinanceMember | UserAdmin;
 
 export type ScheduledOperationConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
@@ -4883,6 +5092,438 @@ export type UserDocumentInStagesArgs = {
   stages?: Array<Stage>;
 };
 
+export type UserAdmin = Entity & Node & {
+  __typename?: 'UserAdmin';
+  /** The time the document was created */
+  createdAt: Scalars['DateTime'];
+  /** User that created this document */
+  createdBy?: Maybe<User>;
+  /** Get the document in other stages */
+  documentInStages: Array<UserAdmin>;
+  email: Scalars['String'];
+  /** List of UserAdmin versions */
+  history: Array<Version>;
+  /** The unique identifier */
+  id: Scalars['ID'];
+  /** The time the document was published. Null on documents in draft stage. */
+  publishedAt?: Maybe<Scalars['DateTime']>;
+  /** User that last published this document */
+  publishedBy?: Maybe<User>;
+  scheduledIn: Array<ScheduledOperation>;
+  /** System stage field */
+  stage: Stage;
+  /** The time the document was updated */
+  updatedAt: Scalars['DateTime'];
+  /** User that last updated this document */
+  updatedBy?: Maybe<User>;
+};
+
+
+export type UserAdminCreatedByArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type UserAdminDocumentInStagesArgs = {
+  includeCurrent?: Scalars['Boolean'];
+  inheritLocale?: Scalars['Boolean'];
+  stages?: Array<Stage>;
+};
+
+
+export type UserAdminHistoryArgs = {
+  limit?: Scalars['Int'];
+  skip?: Scalars['Int'];
+  stageOverride?: InputMaybe<Stage>;
+};
+
+
+export type UserAdminPublishedByArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type UserAdminScheduledInArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ScheduledOperationWhereInput>;
+};
+
+
+export type UserAdminUpdatedByArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+export type UserAdminConnectInput = {
+  /** Allow to specify document position in list of connected documents, will default to appending at end of list */
+  position?: InputMaybe<ConnectPositionInput>;
+  /** Document to connect */
+  where: UserAdminWhereUniqueInput;
+};
+
+/** A connection to a list of items. */
+export type UserAdminConnection = {
+  __typename?: 'UserAdminConnection';
+  aggregate: Aggregate;
+  /** A list of edges. */
+  edges: Array<UserAdminEdge>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+};
+
+export type UserAdminCreateInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']>;
+  email: Scalars['String'];
+  updatedAt?: InputMaybe<Scalars['DateTime']>;
+};
+
+export type UserAdminCreateManyInlineInput = {
+  /** Connect multiple existing UserAdmin documents */
+  connect?: InputMaybe<Array<UserAdminWhereUniqueInput>>;
+  /** Create and connect multiple existing UserAdmin documents */
+  create?: InputMaybe<Array<UserAdminCreateInput>>;
+};
+
+export type UserAdminCreateOneInlineInput = {
+  /** Connect one existing UserAdmin document */
+  connect?: InputMaybe<UserAdminWhereUniqueInput>;
+  /** Create and connect one UserAdmin document */
+  create?: InputMaybe<UserAdminCreateInput>;
+};
+
+/** An edge in a connection. */
+export type UserAdminEdge = {
+  __typename?: 'UserAdminEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String'];
+  /** The item at the end of the edge. */
+  node: UserAdmin;
+};
+
+/** Identifies documents */
+export type UserAdminManyWhereInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<UserAdminWhereInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<UserAdminWhereInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<UserAdminWhereInput>>;
+  /** Contains search across all appropriate fields. */
+  _search?: InputMaybe<Scalars['String']>;
+  createdAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  createdAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  createdAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  createdAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  createdAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  createdAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  createdAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<UserAdminWhereStageInput>;
+  documentInStages_none?: InputMaybe<UserAdminWhereStageInput>;
+  documentInStages_some?: InputMaybe<UserAdminWhereStageInput>;
+  email?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  email_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  email_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  email_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  email_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  email_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  email_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  email_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  email_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  email_starts_with?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** All values containing the given string. */
+  id_contains?: InputMaybe<Scalars['ID']>;
+  /** All values ending with the given string. */
+  id_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are contained in given list. */
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  id_not?: InputMaybe<Scalars['ID']>;
+  /** All values not containing the given string. */
+  id_not_contains?: InputMaybe<Scalars['ID']>;
+  /** All values not ending with the given string */
+  id_not_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are not contained in given list. */
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** All values not starting with the given string. */
+  id_not_starts_with?: InputMaybe<Scalars['ID']>;
+  /** All values starting with the given string. */
+  id_starts_with?: InputMaybe<Scalars['ID']>;
+  publishedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  publishedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  publishedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  publishedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  publishedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  publishedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  publishedBy?: InputMaybe<UserWhereInput>;
+  scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  updatedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  updatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  updatedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  updatedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  updatedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  updatedBy?: InputMaybe<UserWhereInput>;
+};
+
+export enum UserAdminOrderByInput {
+  CreatedAtAsc = 'createdAt_ASC',
+  CreatedAtDesc = 'createdAt_DESC',
+  EmailAsc = 'email_ASC',
+  EmailDesc = 'email_DESC',
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC',
+  PublishedAtAsc = 'publishedAt_ASC',
+  PublishedAtDesc = 'publishedAt_DESC',
+  UpdatedAtAsc = 'updatedAt_ASC',
+  UpdatedAtDesc = 'updatedAt_DESC'
+}
+
+export type UserAdminUpdateInput = {
+  email?: InputMaybe<Scalars['String']>;
+};
+
+export type UserAdminUpdateManyInlineInput = {
+  /** Connect multiple existing UserAdmin documents */
+  connect?: InputMaybe<Array<UserAdminConnectInput>>;
+  /** Create and connect multiple UserAdmin documents */
+  create?: InputMaybe<Array<UserAdminCreateInput>>;
+  /** Delete multiple UserAdmin documents */
+  delete?: InputMaybe<Array<UserAdminWhereUniqueInput>>;
+  /** Disconnect multiple UserAdmin documents */
+  disconnect?: InputMaybe<Array<UserAdminWhereUniqueInput>>;
+  /** Override currently-connected documents with multiple existing UserAdmin documents */
+  set?: InputMaybe<Array<UserAdminWhereUniqueInput>>;
+  /** Update multiple UserAdmin documents */
+  update?: InputMaybe<Array<UserAdminUpdateWithNestedWhereUniqueInput>>;
+  /** Upsert multiple UserAdmin documents */
+  upsert?: InputMaybe<Array<UserAdminUpsertWithNestedWhereUniqueInput>>;
+};
+
+export type UserAdminUpdateManyInput = {
+  /** No fields in updateMany data input */
+  _?: InputMaybe<Scalars['String']>;
+};
+
+export type UserAdminUpdateManyWithNestedWhereInput = {
+  /** Update many input */
+  data: UserAdminUpdateManyInput;
+  /** Document search */
+  where: UserAdminWhereInput;
+};
+
+export type UserAdminUpdateOneInlineInput = {
+  /** Connect existing UserAdmin document */
+  connect?: InputMaybe<UserAdminWhereUniqueInput>;
+  /** Create and connect one UserAdmin document */
+  create?: InputMaybe<UserAdminCreateInput>;
+  /** Delete currently connected UserAdmin document */
+  delete?: InputMaybe<Scalars['Boolean']>;
+  /** Disconnect currently connected UserAdmin document */
+  disconnect?: InputMaybe<Scalars['Boolean']>;
+  /** Update single UserAdmin document */
+  update?: InputMaybe<UserAdminUpdateWithNestedWhereUniqueInput>;
+  /** Upsert single UserAdmin document */
+  upsert?: InputMaybe<UserAdminUpsertWithNestedWhereUniqueInput>;
+};
+
+export type UserAdminUpdateWithNestedWhereUniqueInput = {
+  /** Document to update */
+  data: UserAdminUpdateInput;
+  /** Unique document search */
+  where: UserAdminWhereUniqueInput;
+};
+
+export type UserAdminUpsertInput = {
+  /** Create document if it didn't exist */
+  create: UserAdminCreateInput;
+  /** Update document if it exists */
+  update: UserAdminUpdateInput;
+};
+
+export type UserAdminUpsertWithNestedWhereUniqueInput = {
+  /** Upsert data */
+  data: UserAdminUpsertInput;
+  /** Unique document search */
+  where: UserAdminWhereUniqueInput;
+};
+
+/** This contains a set of filters that can be used to compare values internally */
+export type UserAdminWhereComparatorInput = {
+  /** This field can be used to request to check if the entry is outdated by internal comparison */
+  outdated_to?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** Identifies documents */
+export type UserAdminWhereInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<UserAdminWhereInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<UserAdminWhereInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<UserAdminWhereInput>>;
+  /** Contains search across all appropriate fields. */
+  _search?: InputMaybe<Scalars['String']>;
+  createdAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  createdAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  createdAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  createdAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  createdAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  createdAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  createdAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  createdBy?: InputMaybe<UserWhereInput>;
+  documentInStages_every?: InputMaybe<UserAdminWhereStageInput>;
+  documentInStages_none?: InputMaybe<UserAdminWhereStageInput>;
+  documentInStages_some?: InputMaybe<UserAdminWhereStageInput>;
+  email?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  email_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  email_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  email_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  email_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  email_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  email_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  email_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  email_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  email_starts_with?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** All values containing the given string. */
+  id_contains?: InputMaybe<Scalars['ID']>;
+  /** All values ending with the given string. */
+  id_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are contained in given list. */
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  id_not?: InputMaybe<Scalars['ID']>;
+  /** All values not containing the given string. */
+  id_not_contains?: InputMaybe<Scalars['ID']>;
+  /** All values not ending with the given string */
+  id_not_ends_with?: InputMaybe<Scalars['ID']>;
+  /** All values that are not contained in given list. */
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** All values not starting with the given string. */
+  id_not_starts_with?: InputMaybe<Scalars['ID']>;
+  /** All values starting with the given string. */
+  id_starts_with?: InputMaybe<Scalars['ID']>;
+  publishedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  publishedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  publishedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  publishedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  publishedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  publishedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  publishedBy?: InputMaybe<UserWhereInput>;
+  scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
+  scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  updatedAt_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  updatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  updatedAt_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  updatedAt_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  updatedAt_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  updatedBy?: InputMaybe<UserWhereInput>;
+};
+
+/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
+export type UserAdminWhereStageInput = {
+  /** Logical AND on all given filters. */
+  AND?: InputMaybe<Array<UserAdminWhereStageInput>>;
+  /** Logical NOT on all given filters combined by AND. */
+  NOT?: InputMaybe<Array<UserAdminWhereStageInput>>;
+  /** Logical OR on all given filters. */
+  OR?: InputMaybe<Array<UserAdminWhereStageInput>>;
+  /** This field contains fields which can be set as true or false to specify an internal comparison */
+  compareWithParent?: InputMaybe<UserAdminWhereComparatorInput>;
+  /** Specify the stage to compare with */
+  stage?: InputMaybe<Stage>;
+};
+
+/** References UserAdmin record uniquely */
+export type UserAdminWhereUniqueInput = {
+  email?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+};
+
 export type UserConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
   position?: InputMaybe<ConnectPositionInput>;
@@ -5529,6 +6170,13 @@ export type CreateOrdinanceMemberMutationVariables = Exact<{
 
 export type CreateOrdinanceMemberMutation = { __typename?: 'Mutation', createOrdinanceMember?: { __typename?: 'OrdinanceMember', id: string } | null };
 
+export type CreateUserAdminMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type CreateUserAdminMutation = { __typename?: 'Mutation', createUserAdmin?: { __typename?: 'UserAdmin', id: string } | null };
+
 export type DeleteMemberMutationVariables = Exact<{
   id?: InputMaybe<Scalars['ID']>;
 }>;
@@ -5542,6 +6190,13 @@ export type DeleteOrdinanceMutationVariables = Exact<{
 
 
 export type DeleteOrdinanceMutation = { __typename?: 'Mutation', deleteOrdinance?: { __typename?: 'Ordinance', id: string } | null };
+
+export type DeleteUserAdminMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteUserAdminMutation = { __typename?: 'Mutation', deleteUserAdmin?: { __typename?: 'UserAdmin', id: string } | null };
 
 export type PublishMemberMutationVariables = Exact<{
   id?: InputMaybe<Scalars['ID']>;
@@ -5667,7 +6322,7 @@ export type GetOrdinancesByMemberMatriculaQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string }>, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> } | null };
+export type GetOrdinancesByMemberMatriculaQuery = { __typename?: 'Query', member?: { __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, ordinanceWorkload: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, subject: string }> }> } | null };
 
 export type GetOrdinancesByMemberNameQueryVariables = Exact<{
   name: Scalars['String'];
@@ -5694,6 +6349,18 @@ export type GetOrdinancesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetOrdinancesQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, effectiveEndDate?: any | null, effectiveStartDate: any, ordinanceType: OrdinanceType, subject: string, members: Array<{ __typename?: 'Member', id: string, name: string, matriculaSiape: number, ordinanceMember: Array<{ __typename?: 'OrdinanceMember', id: string, memberType?: MemberType | null, workload: number, memberWorkload: Array<{ __typename?: 'Member', id: string }> }> }> }> };
+
+export type GetUserAdminQueryVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type GetUserAdminQuery = { __typename?: 'Query', userAdmin?: { __typename?: 'UserAdmin', id: string, email: string } | null };
+
+export type GetUserAdminsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserAdminsQuery = { __typename?: 'Query', userAdmins: Array<{ __typename?: 'UserAdmin', email: string, id: string }> };
 
 
 export const CreateMemberDocument = gql`
@@ -5807,6 +6474,39 @@ export function useCreateOrdinanceMemberMutation(baseOptions?: Apollo.MutationHo
 export type CreateOrdinanceMemberMutationHookResult = ReturnType<typeof useCreateOrdinanceMemberMutation>;
 export type CreateOrdinanceMemberMutationResult = Apollo.MutationResult<CreateOrdinanceMemberMutation>;
 export type CreateOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMemberMutation, CreateOrdinanceMemberMutationVariables>;
+export const CreateUserAdminDocument = gql`
+    mutation CreateUserAdmin($email: String!) {
+  createUserAdmin(data: {email: $email}) {
+    id
+  }
+}
+    `;
+export type CreateUserAdminMutationFn = Apollo.MutationFunction<CreateUserAdminMutation, CreateUserAdminMutationVariables>;
+
+/**
+ * __useCreateUserAdminMutation__
+ *
+ * To run a mutation, you first call `useCreateUserAdminMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserAdminMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserAdminMutation, { data, loading, error }] = useCreateUserAdminMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useCreateUserAdminMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserAdminMutation, CreateUserAdminMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserAdminMutation, CreateUserAdminMutationVariables>(CreateUserAdminDocument, options);
+      }
+export type CreateUserAdminMutationHookResult = ReturnType<typeof useCreateUserAdminMutation>;
+export type CreateUserAdminMutationResult = Apollo.MutationResult<CreateUserAdminMutation>;
+export type CreateUserAdminMutationOptions = Apollo.BaseMutationOptions<CreateUserAdminMutation, CreateUserAdminMutationVariables>;
 export const DeleteMemberDocument = gql`
     mutation DeleteMember($id: ID) {
   deleteMember(where: {id: $id}) {
@@ -5873,6 +6573,39 @@ export function useDeleteOrdinanceMutation(baseOptions?: Apollo.MutationHookOpti
 export type DeleteOrdinanceMutationHookResult = ReturnType<typeof useDeleteOrdinanceMutation>;
 export type DeleteOrdinanceMutationResult = Apollo.MutationResult<DeleteOrdinanceMutation>;
 export type DeleteOrdinanceMutationOptions = Apollo.BaseMutationOptions<DeleteOrdinanceMutation, DeleteOrdinanceMutationVariables>;
+export const DeleteUserAdminDocument = gql`
+    mutation DeleteUserAdmin($id: ID!) {
+  deleteUserAdmin(where: {id: $id}) {
+    id
+  }
+}
+    `;
+export type DeleteUserAdminMutationFn = Apollo.MutationFunction<DeleteUserAdminMutation, DeleteUserAdminMutationVariables>;
+
+/**
+ * __useDeleteUserAdminMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserAdminMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserAdminMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserAdminMutation, { data, loading, error }] = useDeleteUserAdminMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteUserAdminMutation(baseOptions?: Apollo.MutationHookOptions<DeleteUserAdminMutation, DeleteUserAdminMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteUserAdminMutation, DeleteUserAdminMutationVariables>(DeleteUserAdminDocument, options);
+      }
+export type DeleteUserAdminMutationHookResult = ReturnType<typeof useDeleteUserAdminMutation>;
+export type DeleteUserAdminMutationResult = Apollo.MutationResult<DeleteUserAdminMutation>;
+export type DeleteUserAdminMutationOptions = Apollo.BaseMutationOptions<DeleteUserAdminMutation, DeleteUserAdminMutationVariables>;
 export const PublishMemberDocument = gql`
     mutation PublishMember($id: ID) {
   publishMember(where: {id: $id}) {
@@ -6571,27 +7304,22 @@ export type GetOrdinancesByDateLazyQueryHookResult = ReturnType<typeof useGetOrd
 export type GetOrdinancesByDateQueryResult = Apollo.QueryResult<GetOrdinancesByDateQuery, GetOrdinancesByDateQueryVariables>;
 export const GetOrdinancesByMemberMatriculaDocument = gql`
     query GetOrdinancesByMemberMatricula($matriculaSiape: Int!) {
-  member(where: {matriculaSiape: $matriculaSiape}, stage: DRAFT) {
+  member(where: {matriculaSiape: $matriculaSiape}) {
     id
     name
     matriculaSiape
-    ordinances {
-      ... on Ordinance {
-        id
-        number
-        ordinanceType
-        effectiveStartDate
-        effectiveEndDate
-        subject
-      }
-    }
     ordinanceMember {
       id
       memberType
       workload
-      memberWorkload {
-        ... on Member {
+      ordinanceWorkload {
+        ... on Ordinance {
           id
+          number
+          ordinanceType
+          effectiveStartDate
+          effectiveEndDate
+          subject
         }
       }
     }
@@ -6825,3 +7553,74 @@ export function useGetOrdinancesLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetOrdinancesQueryHookResult = ReturnType<typeof useGetOrdinancesQuery>;
 export type GetOrdinancesLazyQueryHookResult = ReturnType<typeof useGetOrdinancesLazyQuery>;
 export type GetOrdinancesQueryResult = Apollo.QueryResult<GetOrdinancesQuery, GetOrdinancesQueryVariables>;
+export const GetUserAdminDocument = gql`
+    query GetUserAdmin($email: String!) {
+  userAdmin(where: {email: $email}, stage: DRAFT) {
+    id
+    email
+  }
+}
+    `;
+
+/**
+ * __useGetUserAdminQuery__
+ *
+ * To run a query within a React component, call `useGetUserAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserAdminQuery({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useGetUserAdminQuery(baseOptions: Apollo.QueryHookOptions<GetUserAdminQuery, GetUserAdminQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserAdminQuery, GetUserAdminQueryVariables>(GetUserAdminDocument, options);
+      }
+export function useGetUserAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserAdminQuery, GetUserAdminQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserAdminQuery, GetUserAdminQueryVariables>(GetUserAdminDocument, options);
+        }
+export type GetUserAdminQueryHookResult = ReturnType<typeof useGetUserAdminQuery>;
+export type GetUserAdminLazyQueryHookResult = ReturnType<typeof useGetUserAdminLazyQuery>;
+export type GetUserAdminQueryResult = Apollo.QueryResult<GetUserAdminQuery, GetUserAdminQueryVariables>;
+export const GetUserAdminsDocument = gql`
+    query GetUserAdmins {
+  userAdmins(stage: DRAFT) {
+    email
+    id
+  }
+}
+    `;
+
+/**
+ * __useGetUserAdminsQuery__
+ *
+ * To run a query within a React component, call `useGetUserAdminsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserAdminsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserAdminsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUserAdminsQuery(baseOptions?: Apollo.QueryHookOptions<GetUserAdminsQuery, GetUserAdminsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserAdminsQuery, GetUserAdminsQueryVariables>(GetUserAdminsDocument, options);
+      }
+export function useGetUserAdminsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserAdminsQuery, GetUserAdminsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserAdminsQuery, GetUserAdminsQueryVariables>(GetUserAdminsDocument, options);
+        }
+export type GetUserAdminsQueryHookResult = ReturnType<typeof useGetUserAdminsQuery>;
+export type GetUserAdminsLazyQueryHookResult = ReturnType<typeof useGetUserAdminsLazyQuery>;
+export type GetUserAdminsQueryResult = Apollo.QueryResult<GetUserAdminsQuery, GetUserAdminsQueryVariables>;

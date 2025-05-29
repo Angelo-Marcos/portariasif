@@ -16,13 +16,6 @@ interface Member {
 }
 
 export function OrdinanceSearch(props: OrdinanceProps) {
-    // const effectiveEndDateFormated = format(props.effectiveEndDate, "dd/MM/yyyy")
-    // const members = props.members.map((member) => {
-    //     return (
-    //         <span>{member.name}</span>
-    //     )
-    // })
-
     return (
         <tr>
             <td>{props.number}</td>

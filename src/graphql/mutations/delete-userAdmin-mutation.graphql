@@ -1,0 +1,5 @@
+mutation DeleteUserAdmin($id: ID!) {
+  deleteUserAdmin(where: {id: $id}) {
+    id
+  }
+}

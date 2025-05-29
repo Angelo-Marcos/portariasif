@@ -211,7 +211,7 @@ export function Search() {
                         </div>
                         <div className="flex mt-4">
                             <label className="block tracking-wide font-light text-gray-500 text-xl">
-                                Tipo:
+                                Tipo da portaria:
                             </label>
                             <select
                                 {...register("ordinanceType")}
@@ -272,7 +272,7 @@ export function Search() {
                     </div>
                     <div className="flex mt-4">
                         <label className="block tracking-wide font-light text-gray-500 text-xl">
-                            Tipo:
+                            Tipo do Membro:
                         </label>
                         <select
                             {...register("memberType")}
@@ -338,20 +338,25 @@ export function Search() {
                                         }
 
                                         {
-                                            dataOrdinancesByMemberMatricula?.member?.ordinances.map(ordinance => {
+                                            dataOrdinancesByMemberMatricula?.member?.ordinanceMember.map(ordinanceMember => {
                                                 return (
-                                                    <OrdinanceSearch
-                                                        key={ordinance?.id}
-                                                        number={ordinance.number as string}
-                                                        ordinanceType={ordinance.ordinanceType as OrdinanceType}
-                                                        effectiveStartDate={ordinance.effectiveStartDate}
-                                                        effectiveEndDate={ordinance.effectiveEndDate}
-                                                        members={dataOrdinancesByMemberMatricula?.member ? [dataOrdinancesByMemberMatricula.member] : []}
-                                                        workload={6}
+                                                    ordinanceMember.ordinanceWorkload.map(ordinance => {
+                                                        return (
+                                                            <OrdinanceSearch
+                                                                key={ordinance?.id}
+                                                                number={ordinance.number as string}
+                                                                ordinanceType={ordinance.ordinanceType as OrdinanceType}
+                                                                effectiveStartDate={ordinance.effectiveStartDate}
+                                                                effectiveEndDate={ordinance.effectiveEndDate}
+                                                                members={dataOrdinancesByMemberMatricula?.member ? [dataOrdinancesByMemberMatricula.member] : []}
+                                                                workload={ordinanceMember.workload}
 
-                                                    />
+                                                            />
 
+                                                        )
+                                                    })
                                                 )
+
                                             })
 
 
@@ -388,7 +393,7 @@ export function Search() {
                                                         effectiveStartDate={ordinance.effectiveStartDate}
                                                         effectiveEndDate={ordinance.effectiveEndDate}
                                                         members={ordinance?.members ?? []}
-                                                        workload={6}
+                                                        workload={0}
                                                     />
                                                 )
                                             })
@@ -405,7 +410,7 @@ export function Search() {
                                                         effectiveStartDate={ordinance.effectiveStartDate}
                                                         effectiveEndDate={ordinance.effectiveEndDate}
                                                         members={ordinance?.members ?? []}
-                                                        workload={6}
+                                                        workload={0}
                                                     />
                                                 )
                                             })
@@ -426,7 +431,7 @@ export function Search() {
                                                                         effectiveStartDate={ordinance.effectiveStartDate}
                                                                         effectiveEndDate={ordinance.effectiveEndDate}
                                                                         members={memberWorkload ? [memberWorkload] : []}
-                                                                        workload={member.workload}
+                                                                        workload={0}
                                                                     />
                                                                 )
 
