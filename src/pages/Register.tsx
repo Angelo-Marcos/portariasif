@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import InputMask from "react-input-mask"
 import { Header } from "../components/Header";
 import {
@@ -8,7 +8,9 @@ import {
     useCreateOrdinanceMemberMutation,
     useCreateOrdinanceMutation,
     useDeleteMemberMutation,
+    useDeleteOrdinanceMemberMutation,
     useDeleteOrdinanceMutation,
+    useGetMembersByNameLazyQuery,
     useGetMembersQuery,
     useGetOrdinancesByMemberMatriculaQuery,
     usePublishMemberMutation,
@@ -21,15 +23,15 @@ import {
 } from "../graphql/generated";
 import Modal from "react-modal"
 import { Member } from "../components/Member";
-import { ArrowsCounterClockwise, PlusCircle, WarningCircle, XCircle } from "phosphor-react"
-import { SubmitHandler, useForm } from "react-hook-form";
+import { ArrowsCounterClockwise, MagnifyingGlass, PlusCircle, WarningCircle, XCircle } from "phosphor-react"
+import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useLocation, useNavigate, Route, BrowserRouter } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import { useUser } from "../context/UserContext"
+import { format } from "date-fns";
 
 interface MemberProps {
     id: string;
@@ -53,16 +55,6 @@ interface IFormInputOrdinance {
     numberRevoked: string,
 }
 
-interface UserInfo {
-    decoded: {
-        name: string,
-        given_name: string,
-        email: string,
-        picture: string,
-        fnavigate: any
-    }
-}
-
 const validationsForm = yup.object({
     number: yup.string().required("Campo obrigatório!"),
     // effectiveStartDate: yup.date().required("Campo obrigatório!"),
@@ -72,7 +64,26 @@ const validationsForm = yup.object({
 }).required();
 
 export function Register() {
+    const { user } = useUser();
 
+    if (!user) {
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
+    }
 
     const { register: registerOrdinance, handleSubmit: handleSubmitOrdinance, getValues: getValuesOrdinance, formState: { errors: errorsOrdinance }, reset } = useForm<IFormInputOrdinance>({
         resolver: yupResolver(validationsForm)
@@ -122,6 +133,8 @@ export function Register() {
     const [members, setMembers] = useState<MemberProps[]>([])
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
 
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
     // Mutations Graphql
     const [createOrdinance, { loading: loadingCreate, data: dataCreateOrdinance, error: errorCreateOrdinance }] = useCreateOrdinanceMutation();
     const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
@@ -135,8 +148,20 @@ export function Register() {
     const [publishOrdinanceMember, { loading: loadingPublishOrdinceMember }] = usePublishOrdinanceMemberMutation();
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
+    const [deleteOrdinanceMember, { loading: loadingDeleteOrdinanceMember }] = useDeleteOrdinanceMemberMutation();
 
     const { data: dataMembersQuery } = useGetMembersQuery();
+
+    const [loadMembers, { data: dataMembersByName }] = useGetMembersByNameLazyQuery();
+
+    const handleSearch = () => {
+        if (name.trim()) {
+            loadMembers({ variables: { name } });
+            setShowSuggestions(true);
+        } else {
+            setShowSuggestions(false);
+        }
+    };
 
     const { data: dataOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
         variables: {
@@ -147,36 +172,10 @@ export function Register() {
     const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
     const handleClickAutoComplete = (member: MemberProps) => {
-        const dataMembers: MemberProps = {
-            id: member.id,
-            name: member.name,
-            matriculaSiape: member.matriculaSiape,
-        }
 
-        createOrdinanceMember({
-            variables: {
-                memberId: member.id,
-                workload: Number(workload),
-                memberType: memberType
-            }
-        }).then(res => {
-            const dataWorkloads: WorkloadsProps = {
-                id: String(res.data?.createOrdinanceMember?.id),
-                memberId: member.id,
-                workload: workload,
-                memberType: memberType
-            }
-
-            setWorkloads(oldState => [...oldState, dataWorkloads])
-        })
-
-        setMembers(oldState => [...oldState, dataMembers])
-        setName('')
-        setworkload('')
-        setMemberType(MemberType.Member)
-        setMatriculaSiape('')
-
-        notify("addMember")
+        setName(member.name)
+        setMatriculaSiape(String(member.matriculaSiape))
+        setShowSuggestions(false);
     }
 
     // Modal
@@ -184,171 +183,7 @@ export function Register() {
     const handleOpenModal = () => { setIsOpen(true) };
     const handleCloseModal = () => { setIsOpen(false) };
 
-    // const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-    // const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000): Promise<any> => {
-    //     try {
-    //         return await fn();
-    //     } catch (err: any) {
-    //         if (retries > 0) {
-    //             await sleep(delay);
-    //             return retry(fn, retries - 1, delay * 2); // aumenta tempo a cada tentativa
-    //         }
-    //         throw err;
-    //     }
-    // };
-
-    // const handleUpdateMemberOrdinance = async () => {
-    //     const ordinanceId = dataCreateOrdinance?.createOrdinance?.id as string;
-
-    //     if (!ordinanceId) {
-    //         toast.error("ID da portaria não encontrado.");
-    //         return;
-    //     }
-
-    //     const totalOps = members.length * 2 + workloads.length;
-    //     let completed = 0;
-
-    //     toast.info("Iniciando atualização lenta e segura...");
-
-    //     try {
-    //         for (const member of members) {
-    //             await retry(() =>
-    //                 updateMember({ variables: { idMember: member.id, idOrdinance: ordinanceId } })
-    //             );
-    //             completed++;
-    //             toast.info(`(${completed}/${totalOps}) Atualizado membro`);
-
-    //             await sleep(300);
-
-    //             await retry(() =>
-    //                 updateOrdinance({ variables: { idMember: member.id, idOrdinance: ordinanceId } })
-    //             );
-    //             completed++;
-    //             toast.info(`(${completed}/${totalOps}) Atualizada portaria`);
-
-    //             await sleep(300);
-    //         }
-
-    //         for (const workLoad of workloads) {
-    //             await retry(() =>
-    //                 updateOrdinanceMember({
-    //                     variables: { id: workLoad.id, ordinanceId },
-    //                 })
-    //             );
-    //             completed++;
-    //             toast.info(`(${completed}/${totalOps}) Atualizada carga horária`);
-
-    //             await sleep(300);
-    //         }
-
-    //         setMembers([]);
-    //         setWorkloads([]);
-    //         handleCloseModal();
-
-    //         toast.success("Atualização finalizada com sucesso.");
-    //     } catch (err) {
-    //         console.error(err);
-    //         toast.error("Erro durante a atualização. Algumas requisições podem ter falhado.");
-    //     }
-    // };
-
-    // const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-    // const handleUpdateMemberOrdinance = async () => {
-    //     const ordinanceId = dataCreateOrdinance?.createOrdinance?.id as string;
-
-    //     if (!ordinanceId) {
-    //         toast.error("ID da portaria não encontrado.");
-    //         return;
-    //     }
-
-    //     const batchSize = 10;
-    //     let totalOps = members.length * 2 + workloads.length;
-    //     let completed = 0;
-
-    //     const notifyProgress = () => {
-    //         toast.info(`Atualizando... (${completed}/${totalOps})`, { autoClose: 1500 });
-    //     };
-
-    //     toast.info("Iniciando atualização de membros e workloads...");
-
-    //     try {
-    //         for (let i = 0; i < members.length; i += batchSize) {
-    //             const batch = members.slice(i, i + batchSize);
-
-    //             await Promise.all(
-    //                 batch.map(async (member) => {
-    //                     await updateMember({
-    //                         variables: { idMember: member.id, idOrdinance: ordinanceId },
-    //                     });
-    //                     completed++;
-    //                     notifyProgress();
-
-    //                     await updateOrdinance({
-    //                         variables: { idMember: member.id, idOrdinance: ordinanceId },
-    //                     });
-    //                     completed++;
-    //                     notifyProgress();
-    //                 })
-    //             );
-
-    //             await sleep(500); // pausa entre os lotes
-    //         }
-
-    //         for (let i = 0; i < workloads.length; i += batchSize) {
-    //             const batch = workloads.slice(i, i + batchSize);
-
-    //             await Promise.all(
-    //                 batch.map(async (workload) => {
-    //                     await updateOrdinanceMember({
-    //                         variables: { id: workload.id, ordinanceId },
-    //                     });
-    //                     completed++;
-    //                     notifyProgress();
-    //                 })
-    //             );
-
-    //             await sleep(1000);
-    //         }
-
-    //         setMembers([]);
-    //         setWorkloads([]);
-    //         handleCloseModal();
-
-    //         toast.success("Todos os dados foram atualizados com sucesso!");
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Erro ao atualizar dados. Verifique sua conexão ou tente novamente.");
-    //     }
-    // };
-
     const handleUpdateMemberOrdinance = () => {
-        // members.length > 0 &&
-        //     members.map((member) => {
-        //         updateMember({
-        //             variables: {
-        //                 idMember: member.id,
-        //                 idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string
-        //             }
-        //         })
-        //         updateOrdinance({
-        //             variables: {
-        //                 idMember: member.id,
-        //                 idOrdinance: dataCreateOrdinance?.createOrdinance?.id as string
-        //             }
-        //         })
-        //     })
-
-        // workloads.map((workload) => {
-        //     updateOrdinanceMember({
-        //         variables: {
-        //             id: workload.id,
-        //             ordinanceId: dataCreateOrdinance?.createOrdinance?.id as string
-        //         }
-        //     })
-        // })
-
 
         updateOrdinance({
             variables: {
@@ -445,6 +280,7 @@ export function Register() {
             workload => workload.id != idWorkload
         ))
 
+        deleteOrdinanceMember();
         notify("removeMember")
     }
 
@@ -462,6 +298,7 @@ export function Register() {
 
         handleCloseModal();
         notify("registeredOrdinance")
+        reload();
 
         reset({
             effectiveEndDate: new Date,
@@ -528,25 +365,10 @@ export function Register() {
     if (errorCreateOrdinance)
         notify("errorCreateOrdinance")
 
-    const { user } = useUser();
-
-    if (!user) {
-        return (
-            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
-                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
-                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
-                        <WarningCircle size={96} />
-                    </span>
-                    <span className="font-medium justify-center text-center text-xl text-black ">
-                        <p>
-                            Acesso negado! <br />
-                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
-                        </p>
-                    </span>
-                </div>
-            </div>
-
-        )
+    const reload = () => {
+        setTimeout(() => {
+            window.location.reload();
+        }, 3000)
     }
 
     return (
@@ -657,24 +479,34 @@ export function Register() {
                                     Membro:
                                 </label>
                                 <div className="flex flex-col">
-                                    <input
-                                        className="appearance-none block w-[420px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                        onChange={event => setName(event.target.value)}
-                                        value={name}
-                                    />
+                                    <div className="flex">
+                                        <input
+                                            className="appearance-none block w-[420px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                            onChange={event => setName(event.target.value)}
+                                            value={name}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleSearch}
+                                            className="ml-1 text-green-300"
+                                        >
+                                            <MagnifyingGlass size={32} />
+                                        </button>
+                                    </div>
+
+
                                     <div className="absolute z-10 w-[320px] max-h-xs ml-2 mt-[34px] mt bg-white rounded-md">
                                         <div className="flex flex-col">
-                                            {membersFilters?.length !== 0 && name !== '' &&
-                                                membersFilters?.map(member => {
-                                                    return (
-                                                        <a
-                                                            className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
-                                                            onClick={() => handleClickAutoComplete(member)}
-                                                        >
-                                                            {member.name} / {member.matriculaSiape}
-                                                        </a>
-                                                    )
-                                                })}
+                                            {showSuggestions && dataMembersByName?.members.map(member => {
+                                                return (
+                                                    <a
+                                                        className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
+                                                        onClick={() => handleClickAutoComplete(member)}
+                                                    >
+                                                        {member.name} / {member.matriculaSiape}
+                                                    </a>
+                                                )
+                                            })}
                                         </div>
 
                                     </div>
@@ -813,9 +645,13 @@ export function Register() {
 
                         <div className="w-[440px] border border-black rounded-lg py-4 overflow-y-auto">
                             <label className="flex ml-2 text-black"><strong className="mr-2">Número:</strong> {getValuesOrdinance("number")}</label>
-                            <label className="flex ml-2 text-black"><strong className="mr-2">Data de início da vigência:</strong>{String(getValuesOrdinance("effectiveStartDate"))}</label>
+                            <label className="flex ml-2 text-black"><strong className="mr-2">Data de início da vigência:</strong>
+                                {getValuesOrdinance("effectiveStartDate") ? format(new Date(getValuesOrdinance("effectiveStartDate")), "dd/MM/yyyy") : ""}
+                            </label>
                             <label className="flex ml-2 text-black"><strong className="mr-2">Tipo:</strong>{getValuesOrdinance("ordinanceType") === 'progression' ? 'Progressão' : 'Designação'}</label>
-                            <label className="flex ml-2 text-black"><strong className="mr-2">Data de encerramento da vigência:</strong>{String(getValuesOrdinance("effectiveEndDate"))}</label>
+                            <label className="flex ml-2 text-black"><strong className="mr-2">Data de encerramento da vigência:</strong>
+                                {getValuesOrdinance("effectiveEndDate") ? format(new Date(getValuesOrdinance("effectiveEndDate")), "dd/MM/yyyy") : ""}
+                            </label>
                             <label className="flex ml-2 text-black"><strong className="mr-2">Assunto:</strong>{getValuesOrdinance("subject")}</label>
                             <label className="flex flex-col ml-2 text-black"><strong className="mr-2">Membro(s):</strong>{members.map((member) => {
                                 return (

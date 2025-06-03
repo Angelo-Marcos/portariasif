@@ -24,7 +24,7 @@ export function Ordinance(props: OrdinanceProps) {
         <tr className="border-b border-green-300">
             <td>{props.number}</td>
             <td>{effectiveEndDateFormated === "31/12/1969" ? "" : effectiveEndDateFormated}</td>
-            <td className="flex flex-col">{members}</td>
+            <td className="flex-col items-center">{members}</td>
             <td>{props.type === 'progression' ? 'Progressão' : 'Designação'}</td>
             <td>{props.subject}</td>
         </tr>

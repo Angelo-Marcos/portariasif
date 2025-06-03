@@ -1,5 +1,5 @@
 query GetOrdinancesByMemberName($name: String!) {
-  members(where: {name_starts_with: $name}, stage: DRAFT) {
+  members(where: {name_starts_with: $name, ordinances_empty: false}, stage: DRAFT) {
     name
     id
     ordinanceMember {

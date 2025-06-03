@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { Header } from "../components/Header";
-import { OrdinanceAdmin } from "../components/OrdinanceAdmin";
-import { OrdinanceAside } from "../components/OrdinanceAside";
-import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useCreateUserAdminMutation, useDeleteMemberMutation, useDeleteOrdinanceMutation, useDeleteUserAdminMutation, useGetMembersByMatriculaQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useGetUserAdminQuery, useGetUserAdminsQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
-import { ArrowsCounterClockwise, ClockClockwise, PlusCircle, Trash, UserCircleGear, WarningCircle, X, XCircle } from "phosphor-react"
+import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useCreateUserAdminMutation, useDeleteMemberMutation, useDeleteOrdinanceMemberMutation, useDeleteOrdinanceMutation, useDeleteUserAdminMutation, useGetMembersByMatriculaQuery, useGetMembersByNameLazyQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaLazyQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useGetUserAdminLazyQuery, useGetUserAdminQuery, useGetUserAdminsQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
+import { ArrowsCounterClockwise, ClockClockwise, MagnifyingGlass, PlusCircle, Trash, UserCircleGear, WarningCircle, X, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
-import { Search } from "./Search";
 import { useForm } from "react-hook-form";
 import Modal from "react-modal"
 import InputMask from "react-input-mask"
 import { Member } from "../components/Member";
-import { string } from "yup";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from "../context/UserContext"
@@ -105,9 +101,10 @@ export function Admin() {
 
 
     const [members, setMembers] = useState<MemberProps[]>([]);
-    const [membersDisconnect, setMembersDisconnect] = useState<MemberDisconnectProps[]>([]);
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
     const [ordinances, setOrdinances] = useState<OrdinanceProps[]>([]);
+
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     const [createMember, { loading: loadingCreateMember, data: dataCreateMember }] = useCreateMemberMutation();
     const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdianceMember }] = useCreateOrdinanceMemberMutation();
@@ -120,6 +117,7 @@ export function Admin() {
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
     const [deleteUserAdmin, { loading: loadingDeleteUserAdmin }] = useDeleteUserAdminMutation();
+    const [deleteOrdinanceMember, { loading: loadingDeleteOrdinanceMember }] = useDeleteOrdinanceMemberMutation();
 
     const { data: dataOrdinances } = useGetOrdinancesQuery();
 
@@ -130,12 +128,20 @@ export function Admin() {
         }
     })
 
+    const { data: dataMemberByMatricula } = useGetMembersByMatriculaQuery({
+        variables: {
+            matricula: +getValuesSearch('search')
+        }
+    })
+
     const { data: dataOrdinancesByMemberMatricula, loading: loadingOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
-        skip: getValuesSearch('search')?.length <= 6,
+
         variables: {
             matriculaSiape: +getValuesSearch('search')
         }
     })
+
+    const [loadOrdinancesByMemberMatricula, { data: dataOrdinancesByMemberMatriculaLazyQuery }] = useGetOrdinancesByMemberMatriculaLazyQuery();
 
     const { data: dataOrdincesByMemberName } = useGetOrdinancesByMemberNameQuery({
         skip: getValuesSearch('search')?.length <= 3,
@@ -144,26 +150,22 @@ export function Admin() {
         }
     })
 
-    const { data: dataMemberByMatricula } = useGetMembersByMatriculaQuery({
-        skip: getValuesSearch('search')?.length <= 6,
-        variables: {
-            matricula: +getValuesSearch('search')
-        }
-    })
 
-    const { data: dataUserAdmin } = useGetUserAdminQuery({
-        skip: !deleteUser || deleteUser.length < 10,
-        variables: {
-            email: deleteUser
-        }
-    })
+
+    const [loadAdmin, { data: dataUserAdmin }] = useGetUserAdminLazyQuery()
 
     const { data: dataUserAdmins } = useGetUserAdminsQuery()
 
-    const { data: dataMembersQuery } = useGetMembersQuery();
+    const [loadMembers, { data: dataMembersByName }] = useGetMembersByNameLazyQuery();
 
-    const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
-
+    const handleSearch = () => {
+        if (name.trim()) {
+            loadMembers({ variables: { name } });
+            setShowSuggestions(true);
+        } else {
+            setShowSuggestions(false);
+        }
+    };
 
     const [modalIsOpen, setIsOpen] = useState(false);
     const handleOpenModal = async () => {
@@ -307,55 +309,32 @@ export function Admin() {
         }
     }
 
-    const handleClickAutoComplete = (memberId: string) => {
+    const handleClickAutoComplete = (member: MemberAutoCompleteProps) => {
 
-        dataMembersQuery?.members.filter(id => id.id === memberId).map(member => {
-            createOrdinanceMember({
-                variables: {
-                    memberId: member?.id,
-                    workload: Number(workload),
-                    memberType: memberType
-                }
-            }).then(res => {
-                const dataMembers: MemberProps = {
-                    id: member?.id,
-                    name: member?.name,
-                    matriculaSiape: Number(matriculaSiape),
-                    ordinanceMember: {
-                        id: String(res.data?.createOrdinanceMember?.id),
-                        memberId: member?.id,
-                        workload: Number(workload),
-                        memberType: memberType
-                    }
-                }
-
-                setMembers(oldState => [...oldState, dataMembers])
-
-            })
-        })
-
-        setName('')
-        setworkload('')
+        setName(member.name)
+        setMatriculaSiape(String(member.matriculaSiape))
+        loadOrdinancesByMemberMatricula({ variables: { matriculaSiape: member.matriculaSiape } })
+        setShowSuggestions(false);
     }
 
     const handleAddNewMember = async () => {
 
-        if (dataOrdinancesByMemberMatricula?.member?.id.length != null) {
+        if (dataOrdinancesByMemberMatriculaLazyQuery?.member?.id.length != null) {
 
             createOrdinanceMember({
                 variables: {
-                    memberId: dataOrdinancesByMemberMatricula.member?.id as string,
+                    memberId: dataOrdinancesByMemberMatriculaLazyQuery.member?.id as string,
                     workload: Number(workload),
                     memberType: memberType
                 }
             }).then(res => {
                 const dataMembers: MemberProps = {
-                    id: dataOrdinancesByMemberMatricula.member?.id as string,
-                    name: dataOrdinancesByMemberMatricula.member?.name as string,
+                    id: dataOrdinancesByMemberMatriculaLazyQuery?.member?.id as string,
+                    name: dataOrdinancesByMemberMatriculaLazyQuery?.member?.name as string,
                     matriculaSiape: Number(matriculaSiape),
                     ordinanceMember: {
                         id: String(res.data?.createOrdinanceMember?.id),
-                        memberId: dataOrdinancesByMemberMatricula.member?.id as string,
+                        memberId: dataOrdinancesByMemberMatriculaLazyQuery?.member?.id as string,
                         workload: Number(workload),
                         memberType: memberType
                     }
@@ -451,7 +430,9 @@ export function Admin() {
             variables: {
                 number: numberDelete
             }
-        })
+        }).then(
+            deleteOrdinanceMember
+        )
 
         // handleCloseModal();
         reload()
@@ -637,7 +618,7 @@ export function Admin() {
         }, 3000)
     }
 
-    console.log(dataUserAdmins?.userAdmins)
+    console.log(dataOrdinanceByNumber?.ordinance?.members)
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -668,11 +649,8 @@ export function Admin() {
                             placeholder="Digite uma matrícula ou número de portaria"
                             className="appearance-none w-[620px] h-[40px] px-4 ml-2 bg-gray-400 text-gray-500 text-lg font-light rounded-3xl outline-none border-none placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                             {...registerSearch("search")}
-                        // onChange={event => setSearch(event.target.value)}
-                        // value={matriculaSiape}
                         />
                         <button
-                            // onClick={handleClickSearch}
                             type="submit"
                             className="justify-center items-center w-[140px] h-[40px] ml-3 leading-none bg-green-300 text-white text-base font-light rounded-3xl hover:bg-green-700 transition-colors disabled:opacity-50"
                         >
@@ -741,7 +719,7 @@ export function Admin() {
                                 </span>
                                 <span
                                     className="flex justify-center items-center m-0 h-[40px] w-[40px] text-red-700 rounded-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
-                                    onClick={() => notifyDelete(dataOrdinanceByNumber?.ordinance?.id as string)}
+                                    onClick={() => notifyDelete(dataOrdinanceByNumber?.ordinance?.number as string)}
                                 >
                                     <Trash size={32} />
                                 </span>
@@ -772,18 +750,6 @@ export function Admin() {
                                     })}
                                 </span>
                             </div>
-
-
-                            {/* <OrdinanceAdmin
-                                        key={ordinance.id}
-                                        number={ordinance.number}
-                                        effectiveStartDate={ordinance.effectiveStartDate}
-                                        ordinanceType={ordinance.ordinanceType}
-                                        effectiveEndDate={ordinance.effectiveEndDate}
-                                        subject={ordinance.subject}
-                                        member={dataOrdinancesByMemberMatricula?.member?.name as string}
-                                    /> */}
-
 
 
                             <div className="flex justify-center items-center text-center">
@@ -858,14 +824,14 @@ export function Admin() {
                         })
                     }
 
-                    {/* {
+                    {
                         (
                             dataOrdinancesByMemberMatricula?.member === null ||
                             dataOrdinanceByNumber?.ordinance === null
                         ) && (
                             <span className="flex w-full justify-center items-center text-black mt-3">Nenhuma portaria encontrada!!!</span>
                         )
-                    } */}
+                    }
                 </ErrorBoundary>
 
 
@@ -876,7 +842,7 @@ export function Admin() {
                     className="flex justify-center items-center h-screen w-full rounded"
                 >
                     <div className="flex flex-col justify-center items-center w-[800px] bg-white border border-green-700 rounded-lg">
-                        <strong className="flex justify-center my-4 text-red-900">Confirme as informações!</strong>
+                        <strong className="flex justify-center my-4 text-red-900">Atualize as informações!</strong>
 
                         <form className="w-full max-w-7xl px-5">
                             <div className="flex flex-wrap justify-between">
@@ -969,43 +935,44 @@ export function Admin() {
                                     <label className="block tracking-wide font-light text-gray-500 text-base">
                                         Membro:
                                     </label>
-                                    <div className="flex flex-col">
-                                        <input
-                                            // {...registerMember("name")}
-                                            className="appearance-none block w-[320px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                            onChange={event => setName(event.target.value)}
-                                            value={name}
-                                        />
-                                        {/* {members.length <= 0 &&
-                                    <p className="absolute mt-8 ml-2 text-red-800 text-sm">
-                                        Nenhum membro inserido!
-                                    </p>
-                                } */}
+                                    <div className="flex-col">
+                                        <div className="flex">
+                                            <input
+                                                className="appearance-none block w-[320px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                                onChange={event => setName(event.target.value)}
+                                                value={name}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleSearch}
+                                                className="ml-1 text-green-300"
+                                            >
+                                                <MagnifyingGlass size={32} />
+                                            </button>
+                                        </div>
                                         <div className="absolute z-10 w-[320px] max-h-xs ml-2 mt-[34px] mt bg-white rounded-md">
                                             <div className="flex flex-col">
-                                                {membersFilters?.length !== 0 && name !== '' &&
-                                                    membersFilters?.map(member => {
-                                                        return (
-                                                            <a
-                                                                className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
-                                                                onClick={() => handleClickAutoComplete(member.id)}
-                                                            >
-                                                                {member.name} / {member.matriculaSiape}
-                                                            </a>
-                                                        )
-                                                    })}
+                                                {showSuggestions && dataMembersByName?.members?.map(member => {
+                                                    return (
+                                                        <a
+                                                            className="mb-1 px-2 text-gray-500 text-xs font-light cursor-pointer border-b border-green-700 rounded-md hover:bg-green-700 hover:text-white"
+                                                            onClick={() => handleClickAutoComplete(member)}
+                                                        >
+                                                            {member.name} / {member.matriculaSiape}
+                                                        </a>
+                                                    )
+                                                })}
                                             </div>
 
                                         </div>
 
                                     </div>
                                 </div>
-                                <div className="flex ml-4">
+                                <div className="flex ml-2">
                                     <label className="block tracking-wide font-light text-gray-500 text-base">
                                         Matrícula/Siape:
                                     </label>
                                     <InputMask
-                                        // {...registerMember("matriculaSiape")}
                                         mask="999999"
                                         pattern="[0-9]{6,7}"
                                         title="6 to 7 numbers"
@@ -1020,7 +987,6 @@ export function Admin() {
                                         Tipo:
                                     </label>
                                     <select
-                                        // {...registerMember("memberType")}
                                         className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setMemberType(event.target.value as MemberType)}
                                         value={memberType}
@@ -1041,12 +1007,8 @@ export function Admin() {
                                         onChange={event => setworkload(event.target.value)}
                                         className="appearance-none block w-[100px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
 
-                                    // onChange={event => setSubject(event.target.value)}
-                                    // value={subject}
                                     />
-                                    {/* <p className="absolute mt-8 text-red-800 text-sm">
-                                {errorsOrdinance.subject?.message}
-                            </p> */}
+
                                     <span
                                         onClick={handleAddNewMember}
                                         className="items-center text-green-300 ml-2 rounded-full hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
@@ -1058,7 +1020,6 @@ export function Admin() {
                             <div>
                                 <ul>
                                     {members.map((member) => {
-                                        // const workloadFilter = workloads.filter((i) => i.memberId === member.id)
 
                                         return (
 
@@ -1070,26 +1031,6 @@ export function Admin() {
                                                     workload={member.ordinanceMember.workload}
                                                     type={member.ordinanceMember.memberType}
                                                 />
-
-                                                {/* <div className="flex space-x-6 justify-center items-center h-6 mt-3 p-2 bg-gray-400 text-gray-500 text-sm font-light rounded-full outline-none border-none">
-                                                    <span>
-                                                        
-                                                        {member.name}
-                                                    </span>
-                                                    <span className="flex flex-col justify-center items-center text-center h-6 pl-6 border-l border-zinc-500">
-                                                        
-                                                        {member.matriculaSiape}
-                                                    </span>
-                                                    <span className="flex flex-col justify-center items-center text-center h-6 pl-6 border-l border-zinc-500">
-                                                        
-                                                        {member.ordinanceMember.workload}
-                                                    </span>
-                                                    <span className="flex flex-col justify-center items-center text-center h-6 pl-6 border-l border-zinc-500">
-                                                        
-                                                        {member.ordinanceMember.memberType}
-                                                    </span>
-                                                    
-                                                </div> */}
 
                                                 <button
                                                     type="button"
@@ -1288,6 +1229,18 @@ export function Admin() {
                                 onChange={event => setDeleteUser(event.target.value)}
                             // value={matriculaSiape}
                             />
+
+                            <button
+                                type="button"
+                                onClick={() => loadAdmin({
+                                    variables: {
+                                        email: deleteUser
+                                    }
+                                })}
+                                className="justify-center items-center w-[140px] h-[40px] ml-3 leading-none bg-gray-400 text-green-700 text-base font-medium rounded-3xl hover:bg-white hover:text-green-700 transition-colors disabled:opacity-50"
+                            >
+                                Pesquisar
+                            </button>
                         </div>
 
                         {

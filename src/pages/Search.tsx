@@ -1,6 +1,5 @@
 import { Header } from "../components/Header";
 import InputMask from "react-input-mask"
-import { FormEvent, useState } from "react";
 import {
     MemberType,
     OrdinanceType,
@@ -12,12 +11,8 @@ import {
     useGetOrdinancesByMemberTypeQuery,
     useGetOrdinancesByTypeQuery
 } from "../graphql/generated";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { get } from "react-hook-form/dist/utils";
-import { number } from "yup";
+import { useForm } from "react-hook-form";
 import { OrdinanceSearch } from "../components/OrdinanceSearch";
-import { tr } from "date-fns/locale";
-import { format } from "date-fns";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useUser } from "../context/UserContext"
@@ -325,6 +320,7 @@ export function Search() {
                                     <tbody className="text-black text-center border-b dark:bg-white dark:border-gray-700">
 
                                         {
+                                            Boolean(dataOrdinanceByNumber?.ordinance?.members?.length) &&
                                             <OrdinanceSearch
                                                 key={dataOrdinanceByNumber?.ordinance?.id}
                                                 number={dataOrdinanceByNumber?.ordinance?.number as string}

@@ -1,5 +1,5 @@
 query GetOrdinancesByMemberType($memberType: MemberType) {
-  ordinanceMembers(where: {memberType: $memberType}) {
+  ordinanceMembers(where: {memberType: $memberType}, stage: DRAFT) {
     workload
     memberType
     memberWorkload {
