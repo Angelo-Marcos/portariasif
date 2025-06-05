@@ -7038,7 +7038,7 @@ export type GetMembersByMatriculaLazyQueryHookResult = ReturnType<typeof useGetM
 export type GetMembersByMatriculaQueryResult = Apollo.QueryResult<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>;
 export const GetMembersByNameDocument = gql`
     query GetMembersByName($name: String!) {
-  members(stage: DRAFT, where: {name_starts_with: $name}) {
+  members(stage: DRAFT, where: {name_starts_with: $name, ordinances_empty: false}) {
     id
     name
     matriculaSiape

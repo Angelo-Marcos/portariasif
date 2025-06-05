@@ -66,25 +66,6 @@ const validationsForm = yup.object({
 export function Register() {
     const { user } = useUser();
 
-    if (!user) {
-        return (
-            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
-                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
-                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
-                        <WarningCircle size={96} />
-                    </span>
-                    <span className="font-medium justify-center text-center text-xl text-black ">
-                        <p>
-                            Acesso negado! <br />
-                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
-                        </p>
-                    </span>
-                </div>
-            </div>
-
-        )
-    }
-
     const { register: registerOrdinance, handleSubmit: handleSubmitOrdinance, getValues: getValuesOrdinance, formState: { errors: errorsOrdinance }, reset } = useForm<IFormInputOrdinance>({
         resolver: yupResolver(validationsForm)
     });
@@ -120,7 +101,6 @@ export function Register() {
 
             handleOpenModal()
 
-
         }
     };
 
@@ -150,8 +130,6 @@ export function Register() {
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
     const [deleteOrdinanceMember, { loading: loadingDeleteOrdinanceMember }] = useDeleteOrdinanceMemberMutation();
 
-    const { data: dataMembersQuery } = useGetMembersQuery();
-
     const [loadMembers, { data: dataMembersByName }] = useGetMembersByNameLazyQuery();
 
     const handleSearch = () => {
@@ -168,8 +146,6 @@ export function Register() {
             matriculaSiape: Number(matriculaSiape)
         }
     })
-
-    const membersFilters = dataMembersQuery?.members.filter((member) => member.name.toLowerCase().startsWith(name.toLocaleLowerCase()))
 
     const handleClickAutoComplete = (member: MemberProps) => {
 
@@ -370,6 +346,26 @@ export function Register() {
             window.location.reload();
         }, 3000)
     }
+
+    if (!user) {
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
+    }
+
 
     return (
         <ErrorBoundary

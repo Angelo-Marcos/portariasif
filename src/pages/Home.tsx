@@ -15,8 +15,6 @@ export function Home() {
 
     const { user } = useUser();
 
-    const navigate = useNavigate()
-
     if (!user) {
         return (
             <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
@@ -35,8 +33,6 @@ export function Home() {
 
         )
     }
-
-
 
     return (
         <div className="flex flex-col min-h-screen">

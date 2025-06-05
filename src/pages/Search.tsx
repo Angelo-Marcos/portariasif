@@ -3,12 +3,18 @@ import InputMask from "react-input-mask"
 import {
     MemberType,
     OrdinanceType,
+    useGetOrdinanceByNumberLazyQuery,
     useGetOrdinanceByNumberQuery,
     useGetOrdinancesAllQuery,
+    useGetOrdinancesByDateLazyQuery,
     useGetOrdinancesByDateQuery,
+    useGetOrdinancesByMemberMatriculaLazyQuery,
     useGetOrdinancesByMemberMatriculaQuery,
+    useGetOrdinancesByMemberNameLazyQuery,
     useGetOrdinancesByMemberNameQuery,
+    useGetOrdinancesByMemberTypeLazyQuery,
     useGetOrdinancesByMemberTypeQuery,
+    useGetOrdinancesByTypeLazyQuery,
     useGetOrdinancesByTypeQuery
 } from "../graphql/generated";
 import { useForm } from "react-hook-form";
@@ -17,6 +23,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useUser } from "../context/UserContext"
 import { WarningCircle } from "phosphor-react";
+import { useState } from "react";
 
 interface IFormInputSearch {
     number: string,
@@ -66,25 +73,6 @@ export function Search() {
 
     const { user } = useUser();
 
-    if (!user) {
-        return (
-            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
-                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
-                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
-                        <WarningCircle size={96} />
-                    </span>
-                    <span className="font-medium justify-center text-center text-xl text-black ">
-                        <p>
-                            Acesso negado! <br />
-                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
-                        </p>
-                    </span>
-                </div>
-            </div>
-
-        )
-    }
-
     const { register, handleSubmit: handleSubmitSearch, getValues, formState: { errors: errorsOrdinance, } } = useForm<IFormInputSearch>({
         resolver: yupResolver(validationsForm)
     });
@@ -93,39 +81,29 @@ export function Search() {
 
     }
 
-    const { data: dataOrdinancesAll } = useGetOrdinancesAllQuery({
-        variables: {
-            number: getValues('number'),
-            matricula: +getValues('matricula'),
-            name: getValues('member'),
-            ordinanceType: getValues('ordinanceType'),
-            memberType: getValues('memberType')
-        }
-    })
-
     const { data: dataOrdinanceByNumber } = useGetOrdinanceByNumberQuery({
-        skip: getValues('number')?.length != 8,
+        skip: !getValues('number'),
         variables: {
             number: getValues('number')
         }
     })
 
     const { data: dataOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
-        skip: getValues("matricula")?.length <= 3,
+        skip: !getValues("matricula"),
         variables: {
             matriculaSiape: +getValues('matricula')
         }
     })
 
     const { data: dataOrdincesByMemberName } = useGetOrdinancesByMemberNameQuery({
-        skip: getValues('member')?.length <= 3,
+        skip: !getValues('member'),
         variables: {
             name: getValues('member')
         }
     })
 
     const { data: dataOrdinancesByDate } = useGetOrdinancesByDateQuery({
-        skip: getValues("effectiveStartDate") == undefined,
+        skip: !getValues("effectiveStartDate"),
         variables: {
             dateStart: getValues('effectiveStartDate'),
             dateEnd: getValues('effectiveEndDate')
@@ -133,14 +111,14 @@ export function Search() {
     })
 
     const { data: dataOrdinancesByType } = useGetOrdinancesByTypeQuery({
-        skip: getValues("ordinanceType")?.length <= 3,
+        skip: !getValues("ordinanceType"),
         variables: {
             ordinanceType: getValues('ordinanceType')
         }
     })
 
     const { data: dataOrdinancesByMemberType } = useGetOrdinancesByMemberTypeQuery({
-        skip: getValues("memberType")?.length <= 3,
+        skip: !getValues("memberType"),
         variables: {
             memberType: getValues('memberType')
         },
@@ -177,6 +155,25 @@ export function Search() {
         const sumMember = member.ordinanceMember.reduce((sum, workload) => sum + workload.workload, 0)
         return acc + sumMember;
     }, 0);
+
+    if (!user) {
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
+    }
 
     return (
 
