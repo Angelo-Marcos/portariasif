@@ -3,8 +3,21 @@ query GetOrdinances {
         id
         number
         effectiveEndDate
+        effectiveStartDate
         members {
+            id
             name
+            matriculaSiape
+            ordinanceMember {
+                id
+                memberType
+                workload
+                    memberWorkload {
+                    ... on Member {
+                        id
+                    }
+                }
+            }
         }
         ordinanceType
         subject

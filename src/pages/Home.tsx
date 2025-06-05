@@ -2,6 +2,10 @@ import { Header } from "../components/Header";
 import { Ordinance } from "../components/Ordinance";
 import { OrdinanceAside } from "../components/OrdinanceAside";
 import { useGetOrdinancesAsideQuery, useGetOrdinancesQuery } from "../graphql/generated";
+import { useLocation, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useUser } from "../context/UserContext"
+import { WarningCircle } from "phosphor-react";
 
 export function Home() {
 
@@ -9,11 +13,37 @@ export function Home() {
 
     const { data: ordinancesAside } = useGetOrdinancesAsideQuery()
 
+    const { user } = useUser();
+
+    if (!user) {
+        return (
+            <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
+                <div className="flex flex-col justify-center items-center w-96 h-48 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
+                    <span className="font-medium justify-center text-center text-xl text-red-900 ">
+                        <WarningCircle size={96} />
+                    </span>
+                    <span className="font-medium justify-center text-center text-xl text-black ">
+                        <p>
+                            Acesso negado! <br />
+                            Por favor, faça <a href="/login" className="text-blue-600 italic">login</a>.
+                        </p>
+                    </span>
+                </div>
+            </div>
+
+        )
+    }
+
     return (
         <div className="flex flex-col min-h-screen">
-            <Header />
+            <Header
+                name={user.name}
+                given_name={user.given_name}
+                email={user.email}
+                picture={user.picture}
+            />
 
-            <main className="flex flex-1 px-48">
+            <main className="flex flex-1 pt-[70px] px-48">
                 <aside className="flex flex-col w-[276px] max-h-full px-[10px] bg-gray-200 mt-[54px] justify-center overflow-auto">
                     <span className="flex mt-[21px] font-light text-xl text-gray-500 justify-center">
                         Recentes
@@ -25,7 +55,7 @@ export function Home() {
                                     key={ordinance.id}
                                     number={ordinance.number}
                                     type={ordinance.ordinanceType}
-                                    members={ordinance.members}
+                                    subject={ordinance.subject}
                                 />
                             )
                         })}
@@ -37,8 +67,8 @@ export function Home() {
                         Próximas da Data de Encerramento
                     </span>
 
-                    <div className="w-full mt-4 overflow-x-auto relative shadow-md border border-green-300 sm:rounded-lg">
-                        <table className="w-full font-light text-sm bg-green-300 dark:text-gray-400">
+                    <div className="w-full mt-4 overflow-x-auto shadow-md border border-green-300 sm:rounded-lg">
+                        <table className="w-full font-light text-sm bg-gray-200 dark:text-gray-400">
                             <thead className="bg-green-300 font-normal border-b dark:bg-green-300 dark:text-white">
                                 <tr>
                                     <th className="px-3">Número</th>

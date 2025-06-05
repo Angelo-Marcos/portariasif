@@ -1,5 +1,5 @@
-mutation DeleteOrdinance($id: ID) {
-  deleteOrdinance(where: {id: $id}) {
+mutation DeleteOrdinance($number: String) {
+  deleteOrdinance(where: {number: $number}) {
     id
   }
 }

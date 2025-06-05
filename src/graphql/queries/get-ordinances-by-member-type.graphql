@@ -1,0 +1,21 @@
+query GetOrdinancesByMemberType($memberType: MemberType) {
+  ordinanceMembers(where: {memberType: $memberType}, stage: DRAFT) {
+    workload
+    memberType
+    memberWorkload {
+      ... on Member {
+        id
+        name
+        ordinances {
+          ... on Ordinance {
+            id
+            number
+            ordinanceType
+            effectiveStartDate
+            effectiveEndDate
+          }
+        }
+      }
+    }
+  }
+}

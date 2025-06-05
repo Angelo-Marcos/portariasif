@@ -1,0 +1,7 @@
+mutation CreateOrdinanceMember($memberId: ID, $memberType: MemberType, $workload: Int!) {
+  createOrdinanceMember(
+    data: {workload: $workload, memberType: $memberType, memberWorkload: {connect: {Member: {id: $memberId}}}}
+  ) {
+    id
+  }
+}

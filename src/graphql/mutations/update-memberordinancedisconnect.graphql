@@ -1,0 +1,8 @@
+mutation UpdateMemberOrdinanceDisconnect ($number: String, $memberDisconnect: ID, $ordinanceMemberDisconnect: ID) {
+  updateOrdinance(
+    data: {members: {disconnect: {id: $memberDisconnect}}, ordinanceMember: {disconnect: {id: $ordinanceMemberDisconnect}}}
+    where: {number: $number}
+  ) {
+    id
+  }
+}

@@ -2,7 +2,16 @@ query GetMembers {
   members (stage: DRAFT) {
     id
     name
-    memberType
     matriculaSiape
+    ordinanceMember {
+      id
+      memberType
+      workload
+      memberWorkload {
+        ... on Member {
+          id
+        }
+      }
+    }
   }
 }

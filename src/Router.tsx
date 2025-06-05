@@ -3,6 +3,7 @@ import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Search } from "./pages/Search";
+import { Admin } from "./pages/Admin";
 
 export function Router() {
     return (
@@ -11,6 +12,7 @@ export function Router() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/admin" element={<Admin />} />
         </Routes>
     );
 }

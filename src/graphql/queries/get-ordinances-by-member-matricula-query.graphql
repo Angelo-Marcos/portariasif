@@ -1,0 +1,22 @@
+query GetOrdinancesByMemberMatricula($matriculaSiape: Int!) {
+  member(where: {matriculaSiape: $matriculaSiape}) {
+    id
+    name
+    matriculaSiape
+    ordinanceMember {
+      id
+      memberType
+      workload
+      ordinanceWorkload {
+        ... on Ordinance {
+          id
+          number
+          ordinanceType
+          effectiveStartDate
+          effectiveEndDate
+          subject
+        }
+      }
+    }
+  }
+}

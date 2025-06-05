@@ -1,0 +1,16 @@
+query GetOrdinancesByDate($dateStart: Date!, $dateEnd: Date!) {
+  ordinances(
+    where: {effectiveStartDate_gte: $dateStart, effectiveStartDate_lte: $dateEnd}
+    orderBy: effectiveStartDate_ASC
+    stage: DRAFT
+  ) {
+      id
+      number
+      ordinanceType
+      effectiveStartDate
+      effectiveEndDate
+      members {
+        name
+      }
+  }
+}

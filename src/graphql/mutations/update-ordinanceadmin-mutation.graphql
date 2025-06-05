@@ -1,0 +1,8 @@
+mutation UpdateOrdinanceAdmin($number: String, $effectiveStartDate: Date, $ordinanceType: OrdinanceType, $effectiveEndDate: Date, $subject: String) {
+  updateOrdinance(
+    data: {effectiveStartDate: $effectiveStartDate, ordinanceType: $ordinanceType, effectiveEndDate: $effectiveEndDate, subject: $subject}
+    where: {number: $number}
+  ) {
+    id
+  }
+}

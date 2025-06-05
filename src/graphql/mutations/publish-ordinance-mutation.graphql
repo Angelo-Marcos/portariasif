@@ -1,5 +1,19 @@
-mutation PublishOrdinance($id: ID, $number: String) {
+mutation PublishOrdinance($id: ID, $number: String, $idMembers: [ID!], $idOrdinanceMembers: [ID!]) {
   publishOrdinance(where: {id: $id, number: $number}) {
     id
+  }
+  publishManyMembersConnection(where: {id_in: $idMembers}) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+  publishManyOrdinanceMembersConnection(where: {id_in: $idOrdinanceMembers}) {
+    edges {
+      node {
+        id
+      }
+    }
   }
 }

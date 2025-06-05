@@ -1,0 +1,25 @@
+query GetOrdinanceByNumber($number: String!) {
+  ordinance(where: {number: $number}, stage: DRAFT) {
+    id
+    number
+    ordinanceType
+    effectiveStartDate
+    effectiveEndDate
+    subject
+    members {
+      id
+      name
+      matriculaSiape
+      ordinanceMember {
+        id
+        memberType
+        workload
+        memberWorkload {
+          ... on Member {
+            id
+          }
+        }
+      }
+    }
+  }
+}
