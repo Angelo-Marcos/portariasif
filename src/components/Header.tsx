@@ -23,8 +23,8 @@ export function Header(props: UserProps) {
 
 
     return (
-        <div className="block w-full fixed inset-x-0 top-0 border-b border-white">
-            <header className="w-full h-[100px] flex items-center justify-center px-48 bg-green-500">
+        <div className="flex-col w-full fixed z-50 border-b border-white shadow">
+            <header className="flex w-full h-[100px] items-center justify-center px-48 bg-green-500">
                 <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-[85px]" />
                 <div className="w-full h-[100px] flex flex-col justify-center bg-green-500">
                     <strong className="uppercase font-bold text-5xl">Portarias</strong>
