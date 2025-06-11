@@ -50,8 +50,6 @@ export function Header(props: UserProps) {
 
             </div>
 
-
-
             <nav className="flex h-[33px] justify-center items-center px-48 bg-green-300">
                 <ul className="flex justify-center flex-col lg:flex-row list-none lg:ml-auto selection:">
                     <li className="nav-item">

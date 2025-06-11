@@ -15,12 +15,6 @@ interface Member {
 }
 
 export function OrdinanceAdmin(props: OrdinanceProps) {
-    const effectiveEndDateFormated = format(props.effectiveEndDate, "dd/MM/yyyy")
-    // const members = props.members.map((member) => {
-    //     return (
-    //         <span>{member.name}</span>
-    //     )
-    // })
 
     return (
         <div className="flex space-x-6 justify-center items-center p-2">

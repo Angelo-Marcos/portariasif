@@ -70,6 +70,7 @@ export function Admin() {
     const [ordinanceType, setOrdinanceType] = useState<OrdinanceType>(OrdinanceType.Designation);
     const [effectiveEndDate, setEffectiveEndDate] = useState('');
     const [subject, setSubject] = useState('');
+    const [numberRevoked, setNumberRevoked] = useState('');
 
     const [name, setName] = useState('');
     const [memberType, setMemberType] = useState<MemberType>(MemberType.Member);
@@ -147,6 +148,7 @@ export function Admin() {
     };
 
     const [modalIsOpen, setIsOpen] = useState(false);
+
     const handleOpenModal = async () => {
         setIsOpen(true);
     };
@@ -156,6 +158,7 @@ export function Admin() {
     };
 
     const [modalIsOpenAdmin, setIsOpenAdmin] = useState(false);
+
     const handleOpenModalAdmin = async () => {
         setIsOpenAdmin(true);
     };
@@ -164,6 +167,7 @@ export function Admin() {
     };
 
     const [modalIsOpenUser, setIsOpenUser] = useState(false);
+
     const handleOpenModalUser = async () => {
         setIsOpenUser(true);
     };
@@ -172,6 +176,7 @@ export function Admin() {
     };
 
     const [modalIsOpenUserDelete, setIsOpenUserDelete] = useState(false);
+
     const handleOpenModalUserDelete = async () => {
         setIsOpenUserDelete(true);
     };
@@ -847,9 +852,7 @@ export function Admin() {
                                         Número:
                                     </label>
                                     <InputMask
-                                        // value={ordinance.at(0)?.number}
                                         mask="999/9999"
-                                        // {...registerUpdate("number")}
                                         className="appearance-none block w-[120px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50"
                                         onChange={event => setNumber(event.target.value)}
                                         value={number}
@@ -864,8 +867,6 @@ export function Admin() {
                                         Data de início:
                                     </label>
                                     <input
-                                        // value={ordinance.at(0)?.effectiveStartDate as unknown as string}
-                                        // {...registerUpdate("effectiveStartDate")}
                                         type="date"
                                         className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" placeholder=" "
                                         onChange={event => setEffectiveStartDate(event.target.value)}
@@ -880,8 +881,6 @@ export function Admin() {
                                         Tipo:
                                     </label>
                                     <select
-                                        // value={ordinance.at(0)?.ordinanceType}
-                                        // {...registerUpdate("ordinanceType")}
                                         className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-4 border-none bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setOrdinanceType(event.target.value as OrdinanceType)}
                                         value={ordinanceType}
@@ -901,8 +900,6 @@ export function Admin() {
                                         Data de final:
                                     </label>
                                     <input
-                                        // value={ordinance.at(0)?.effectiveEndDate as unknown as string}
-                                        // {...registerUpdate("effectiveEndDate")}
                                         type="date"
                                         className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setEffectiveEndDate(event.target.value)}
@@ -914,8 +911,6 @@ export function Admin() {
                                         Assunto:
                                     </label>
                                     <input
-                                        // value={ordinance.at(0)?.subject}
-                                        // {...registerUpdate("subject")}
                                         className="appearance-none block w-[300px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                                         onChange={event => setSubject(event.target.value)}
                                         value={subject}
@@ -1038,9 +1033,6 @@ export function Admin() {
                                             </div>
                                         )
 
-
-
-
                                     })}
                                 </ul>
                             </div>
@@ -1081,23 +1073,13 @@ export function Admin() {
                                             // {...registerUpdate("numberRevoked")}
                                             // mask="999/9999"
                                             className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-base font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                                        // onChange={event => setNumberRevoked(event.target.value)}
-                                        // value={numberRevoked}
+                                            onChange={event => setNumberRevoked(event.target.value)}
+                                            value={numberRevoked}
                                         />
                                     </div>
                                     : <div></div>
                                 }
                             </div>
-                            {/* <div className="flex justify-center">
-                        <button
-                            type="submit"
-                            // disabled={loadingCreate}
-                            className="flex justify-center items-center w-[140px] h-[50px] mt-10 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
-                        // onClick={handleOpenModal}
-                        >
-                            Cadastrar Portaria
-                        </button>
-                    </div> */}
                         </form>
 
                         <div className="flex justify-between my-8">
@@ -1117,7 +1099,6 @@ export function Admin() {
                         </div>
 
                     </div>
-
 
                 </Modal>
 
@@ -1150,7 +1131,6 @@ export function Admin() {
                             </button>
                         </nav>
                     </aside>
-
 
                 </Modal>
 
@@ -1192,7 +1172,6 @@ export function Admin() {
                         </div>
 
                     </div>
-
 
                 </Modal>
 
@@ -1261,9 +1240,6 @@ export function Admin() {
                             </div>
                         }
 
-
-
-
                         {
                             !deleteUser &&
                             dataUserAdmins?.userAdmins.map(user => {
@@ -1290,10 +1266,7 @@ export function Admin() {
                             })
                         }
 
-
-
                     </div>
-
 
                 </Modal>
 

@@ -19,7 +19,6 @@ export function Login() {
         if (response.credential) {
             const userInfo = jwtDecode(response.credential) as { name: string; given_name: string; email: string; picture: string };
 
-
             if (allowedEmails?.includes(userInfo.email)) {
                 notify("allowed");
                 setUser(userInfo); // Atualiza o estado global do usuário
@@ -31,7 +30,6 @@ export function Login() {
                 notify("noAllowed");
             }
         }
-
     }
 
     const notify = (notify: string) => {
@@ -51,6 +49,7 @@ export function Login() {
     return (
         <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
             <ToastContainer />
+            
             <main className="w-100 h-96 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
                 <div className="w-[445px] h-[5px] m-auto mt-[10px] bg-green-700"></div>
                 <div className="flex flex-col justify-center items-center px-[42px]">
@@ -68,7 +67,6 @@ export function Login() {
                     />
 
                 </div>
-
 
             </main>
         </div>

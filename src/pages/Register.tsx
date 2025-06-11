@@ -447,7 +447,7 @@ export function Register() {
                         <div className="flex flex-wrap justify-between mt-[28px]">
                             <div className="flex ">
                                 <label className="block tracking-wide font-light text-gray-500 text-xl">
-                                    Data de final de vigência:
+                                    Data final de vigência:
                                 </label>
                                 <input
                                     {...registerOrdinance("effectiveEndDate")}
