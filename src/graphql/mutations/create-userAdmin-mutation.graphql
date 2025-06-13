@@ -1,5 +1,5 @@
-mutation CreateUserAdmin($email: String!) {
-  createUserAdmin(data: {email: $email}) {
+mutation CreateUserAdmin($email: String!, $userType: UserAdminType!) {
+  createUserAdmin(data: {email: $email, userAdminType: $userType}) {
     id
   }
 }

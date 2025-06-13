@@ -5116,6 +5116,7 @@ export type UserAdmin = Entity & Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
+  userAdminType: UserAdminType;
 };
 
 
@@ -5183,6 +5184,7 @@ export type UserAdminCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   email: Scalars['String'];
   updatedAt?: InputMaybe<Scalars['DateTime']>;
+  userAdminType: UserAdminType;
 };
 
 export type UserAdminCreateManyInlineInput = {
@@ -5310,6 +5312,13 @@ export type UserAdminManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  userAdminType?: InputMaybe<UserAdminType>;
+  /** All values that are contained in given list. */
+  userAdminType_in?: InputMaybe<Array<InputMaybe<UserAdminType>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  userAdminType_not?: InputMaybe<UserAdminType>;
+  /** All values that are not contained in given list. */
+  userAdminType_not_in?: InputMaybe<Array<InputMaybe<UserAdminType>>>;
 };
 
 export enum UserAdminOrderByInput {
@@ -5322,11 +5331,19 @@ export enum UserAdminOrderByInput {
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
-  UpdatedAtDesc = 'updatedAt_DESC'
+  UpdatedAtDesc = 'updatedAt_DESC',
+  UserAdminTypeAsc = 'userAdminType_ASC',
+  UserAdminTypeDesc = 'userAdminType_DESC'
+}
+
+export enum UserAdminType {
+  Administrator = 'administrator',
+  Collaborator = 'collaborator'
 }
 
 export type UserAdminUpdateInput = {
   email?: InputMaybe<Scalars['String']>;
+  userAdminType?: InputMaybe<UserAdminType>;
 };
 
 export type UserAdminUpdateManyInlineInput = {
@@ -5347,8 +5364,7 @@ export type UserAdminUpdateManyInlineInput = {
 };
 
 export type UserAdminUpdateManyInput = {
-  /** No fields in updateMany data input */
-  _?: InputMaybe<Scalars['String']>;
+  userAdminType?: InputMaybe<UserAdminType>;
 };
 
 export type UserAdminUpdateManyWithNestedWhereInput = {
@@ -5502,6 +5518,13 @@ export type UserAdminWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  userAdminType?: InputMaybe<UserAdminType>;
+  /** All values that are contained in given list. */
+  userAdminType_in?: InputMaybe<Array<InputMaybe<UserAdminType>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  userAdminType_not?: InputMaybe<UserAdminType>;
+  /** All values that are not contained in given list. */
+  userAdminType_not_in?: InputMaybe<Array<InputMaybe<UserAdminType>>>;
 };
 
 /** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
@@ -6172,6 +6195,7 @@ export type CreateOrdinanceMemberMutation = { __typename?: 'Mutation', createOrd
 
 export type CreateUserAdminMutationVariables = Exact<{
   email: Scalars['String'];
+  userType: UserAdminType;
 }>;
 
 
@@ -6372,7 +6396,7 @@ export type GetUserAdminQuery = { __typename?: 'Query', userAdmin?: { __typename
 export type GetUserAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserAdminsQuery = { __typename?: 'Query', userAdmins: Array<{ __typename?: 'UserAdmin', email: string, id: string }> };
+export type GetUserAdminsQuery = { __typename?: 'Query', userAdmins: Array<{ __typename?: 'UserAdmin', id: string, email: string, userAdminType: UserAdminType }> };
 
 
 export const CreateMemberDocument = gql`
@@ -6487,8 +6511,8 @@ export type CreateOrdinanceMemberMutationHookResult = ReturnType<typeof useCreat
 export type CreateOrdinanceMemberMutationResult = Apollo.MutationResult<CreateOrdinanceMemberMutation>;
 export type CreateOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<CreateOrdinanceMemberMutation, CreateOrdinanceMemberMutationVariables>;
 export const CreateUserAdminDocument = gql`
-    mutation CreateUserAdmin($email: String!) {
-  createUserAdmin(data: {email: $email}) {
+    mutation CreateUserAdmin($email: String!, $userType: UserAdminType!) {
+  createUserAdmin(data: {email: $email, userAdminType: $userType}) {
     id
   }
 }
@@ -6509,6 +6533,7 @@ export type CreateUserAdminMutationFn = Apollo.MutationFunction<CreateUserAdminM
  * const [createUserAdminMutation, { data, loading, error }] = useCreateUserAdminMutation({
  *   variables: {
  *      email: // value for 'email'
+ *      userType: // value for 'userType'
  *   },
  * });
  */
@@ -7677,8 +7702,9 @@ export type GetUserAdminQueryResult = Apollo.QueryResult<GetUserAdminQuery, GetU
 export const GetUserAdminsDocument = gql`
     query GetUserAdmins {
   userAdmins(stage: DRAFT) {
-    email
     id
+    email
+    userAdminType
   }
 }
     `;
