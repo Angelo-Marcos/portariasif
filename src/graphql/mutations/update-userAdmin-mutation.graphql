@@ -1,0 +1,8 @@
+mutation UpdateUserAdmin($email: String!, $emailUpdate: String!, $userType: UserAdminType!) {
+  updateUserAdmin(
+    data: {email: $emailUpdate, userAdminType: $userType}
+    where: {email: $email}
+  ) {
+    id
+  }
+}

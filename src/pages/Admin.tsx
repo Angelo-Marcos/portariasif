@@ -82,6 +82,7 @@ export function Admin() {
     const [deleteUser, setDeleteUser] = useState('')
 
 
+
     const [members, setMembers] = useState<MemberProps[]>([]);
     const [workloads, setWorkloads] = useState<WorkloadsProps[]>([]);
     const [ordinances, setOrdinances] = useState<OrdinanceProps[]>([]);
@@ -436,14 +437,15 @@ export function Admin() {
     }
 
     const handleCreateUser = async (email: string) => {
-        await createUserAdmin({
-            variables: {
-                email: email
-            }
-        })
+        // await createUserAdmin({
+        //     variables: {
+        //         email: email,
+        //         userAdminType: 
+        //     }
+        // })
 
-        notify("createUser")
-        setCreateUser('')
+        // notify("createUser")
+        // setCreateUser('')
     }
 
     const handleDeleteUser = async (idUser: string) => {
@@ -456,6 +458,8 @@ export function Admin() {
         notify("deletedUser")
         reload()
     }
+
+    
 
     const notify = (notify: string) => {
         if (notify === "updated")

@@ -17,5 +17,14 @@ body {
             -moz-appearance:textfield;
         }
     }
+
+
 }
 
+.Toastify__toast-container {
+  z-index: 999999 !important;
+}
+
+.ReactModal__Overlay {
+  z-index: 40 !important;
+}

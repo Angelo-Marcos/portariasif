@@ -6303,6 +6303,15 @@ export type UpdateOrdinanceMemberMutationVariables = Exact<{
 
 export type UpdateOrdinanceMemberMutation = { __typename?: 'Mutation', updateOrdinanceMember?: { __typename?: 'OrdinanceMember', id: string } | null };
 
+export type UpdateUserAdminMutationVariables = Exact<{
+  email: Scalars['String'];
+  emailUpdate: Scalars['String'];
+  userType: UserAdminType;
+}>;
+
+
+export type UpdateUserAdminMutation = { __typename?: 'Mutation', updateUserAdmin?: { __typename?: 'UserAdmin', id: string } | null };
+
 export type GetMembersByMatriculaQueryVariables = Exact<{
   matricula: Scalars['Int'];
 }>;
@@ -6391,7 +6400,7 @@ export type GetUserAdminQueryVariables = Exact<{
 }>;
 
 
-export type GetUserAdminQuery = { __typename?: 'Query', userAdmin?: { __typename?: 'UserAdmin', id: string, email: string } | null };
+export type GetUserAdminQuery = { __typename?: 'Query', userAdmin?: { __typename?: 'UserAdmin', id: string, email: string, userAdminType: UserAdminType } | null };
 
 export type GetUserAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7018,6 +7027,44 @@ export function useUpdateOrdinanceMemberMutation(baseOptions?: Apollo.MutationHo
 export type UpdateOrdinanceMemberMutationHookResult = ReturnType<typeof useUpdateOrdinanceMemberMutation>;
 export type UpdateOrdinanceMemberMutationResult = Apollo.MutationResult<UpdateOrdinanceMemberMutation>;
 export type UpdateOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<UpdateOrdinanceMemberMutation, UpdateOrdinanceMemberMutationVariables>;
+export const UpdateUserAdminDocument = gql`
+    mutation UpdateUserAdmin($email: String!, $emailUpdate: String!, $userType: UserAdminType!) {
+  updateUserAdmin(
+    data: {email: $emailUpdate, userAdminType: $userType}
+    where: {email: $email}
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateUserAdminMutationFn = Apollo.MutationFunction<UpdateUserAdminMutation, UpdateUserAdminMutationVariables>;
+
+/**
+ * __useUpdateUserAdminMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserAdminMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserAdminMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserAdminMutation, { data, loading, error }] = useUpdateUserAdminMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      emailUpdate: // value for 'emailUpdate'
+ *      userType: // value for 'userType'
+ *   },
+ * });
+ */
+export function useUpdateUserAdminMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserAdminMutation, UpdateUserAdminMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserAdminMutation, UpdateUserAdminMutationVariables>(UpdateUserAdminDocument, options);
+      }
+export type UpdateUserAdminMutationHookResult = ReturnType<typeof useUpdateUserAdminMutation>;
+export type UpdateUserAdminMutationResult = Apollo.MutationResult<UpdateUserAdminMutation>;
+export type UpdateUserAdminMutationOptions = Apollo.BaseMutationOptions<UpdateUserAdminMutation, UpdateUserAdminMutationVariables>;
 export const GetMembersByMatriculaDocument = gql`
     query GetMembersByMatricula($matricula: Int!) {
   member(where: {matriculaSiape: $matricula}, stage: DRAFT) {
@@ -7668,6 +7715,7 @@ export const GetUserAdminDocument = gql`
   userAdmin(where: {email: $email}, stage: DRAFT) {
     id
     email
+    userAdminType
   }
 }
     `;

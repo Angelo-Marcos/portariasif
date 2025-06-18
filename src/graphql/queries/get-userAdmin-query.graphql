@@ -2,5 +2,6 @@ query GetUserAdmin($email: String!) {
   userAdmin(where: {email: $email}, stage: DRAFT) {
     id
     email
+    userAdminType
   }
 }
