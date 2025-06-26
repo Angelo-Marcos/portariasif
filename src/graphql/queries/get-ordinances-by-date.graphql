@@ -10,6 +10,7 @@ query GetOrdinancesByDate($dateStart: Date!, $dateEnd: Date!) {
       effectiveStartDate
       effectiveEndDate
       members {
+        id
         name
       }
   }

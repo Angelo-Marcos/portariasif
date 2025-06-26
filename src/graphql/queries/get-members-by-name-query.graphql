@@ -1,5 +1,5 @@
 query GetMembersByName ($name: String!) {
-  members(stage: DRAFT, where: {name_starts_with: $name, ordinances_empty: false}) {
+  members(stage: DRAFT, where: {name_starts_with: $name}) {
     id
     name
     matriculaSiape

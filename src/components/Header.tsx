@@ -1,10 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
-import { googleLogout } from '@react-oauth/google';
 import { useUser } from "../context/UserContext"
-import { ArrowCounterClockwise, FilePlus, HouseLine, List, MagnifyingGlassPlus, SignOut, Trash, UserCircleGear, UserCirclePlus, X } from "phosphor-react";
+import { ArrowCounterClockwise, FilePlus, HouseLine, List, MagnifyingGlassPlus, SignOut, Trash, UserCircleGear, X } from "phosphor-react";
 import { useState } from "react";
 import Modal from "react-modal"
-import { useCreateUserAdminMutation, useDeleteUserAdminMutation, useGetUserAdminLazyQuery, useGetUserAdminsQuery, UserAdminType, useUpdateUserAdminMutation } from "../graphql/generated";
+import {
+    useCreateUserAdminMutation,
+    useDeleteUserAdminMutation,
+    useGetUserAdminLazyQuery,
+    useGetUserAdminsQuery,
+    UserAdminType,
+    useUpdateUserAdminMutation
+} from "../graphql/generated";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,7 +41,7 @@ export function Header(props: UserProps) {
 
     const handleLogout = () => {
         logout();
-        navigate('/login'); // Redireciona para a página inicial
+        navigate('/login');
     };
 
     const { register: registerUser, handleSubmit: handleSubmitUser, getValues: getValuesUser, formState: { errors: errorsUser }, reset } = useForm<IFormInputUser>({
@@ -138,7 +144,6 @@ export function Header(props: UserProps) {
 
             </div>,
             {
-                bodyStyle: { zIndex: 999999 },
                 autoClose: false,
                 position: "top-center",
                 closeOnClick: true,
@@ -213,19 +218,22 @@ export function Header(props: UserProps) {
     const reload = () => {
         setTimeout(() => {
             window.location.reload();
-        }, 3000)
+        }, 5000)
     }
 
     return (
         <div className="flex-col w-full fixed border-b border-white shadow">
             <ToastContainer />
-            <header className="flex w-0.5/3 h-24 py-2 items-center justify-center px-10 space-x-20 bg-green-700">
-                <span
-                    className="flex h-[32px] w-[32px] justify-center items-center mr-4 text-white cursor-pointer hover:bg-white hover:text-green-700 transition-colors disabled:opacity-50"
-                    onClick={handleOpenModalSidebar}
-                >
-                    <List size={32} className="h-[32px] w-[32px]" />
-                </span>
+            <header className="flex  h-24 py-2 items-center justify-center px-10 space-x-20 bg-green-700">
+                <div className="w-0.5/3">
+                    <span
+                        className="flex h-[32px] w-[32px] justify-center items-center mr-4 text-white cursor-pointer hover:bg-white hover:text-green-700 transition-colors disabled:opacity-50"
+                        onClick={handleOpenModalSidebar}
+                    >
+                        <List size={32} className="h-[32px] w-[32px]" />
+                    </span>
+                </div>
+
                 <div className="flex w-2/3 justify-center items-center">
                     <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-20" />
                     <div className="flex flex-col h-full justify-center bg-green-700">
@@ -238,8 +246,9 @@ export function Header(props: UserProps) {
                     <div className=" ">
                         <img src={props.picture} className="w-10 h-10 bg-white rounded-full" />
                     </div>
-                    <span className="text-sm m-0">
-                        Bem vindo(a) {props.given_name}!
+                    <span className="flex flex-col items-center text-sm m-0">
+                        Bem vindo(a)
+                        <p>{props.given_name}!</p>
                     </span>
                 </div>
 
@@ -392,7 +401,7 @@ export function Header(props: UserProps) {
                                         {...registerUser("userType")}
                                         className="appearance-none w-full h-[40px] px-4 mb-6 bg-white text-gray-500 text-lg font-light rounded-3xl outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500"
                                     >
-                                        <option value="" disabled selected className="text-zinc-500 text-lg font-light">Escolha o tipo do usuário</option>
+                                        <option value="" disabled className="text-zinc-500 text-lg font-light">Escolha o tipo do usuário</option>
                                         <option value="collaborator" className="text-gray-500 text-lg font-light">Colaborador</option>
                                         <option value="administrator" className="text-gray-500 text-lg font-light">Administrador</option>
                                     </select>
@@ -562,7 +571,7 @@ export function Header(props: UserProps) {
                                     !deleteUser &&
                                     dataUserAdmins?.userAdmins.map(user => {
                                         return (
-                                            <div className="flex w-[700px] justify-between items-center p-2 mt-10 bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
+                                            <div key={user.id} className="flex w-[700px] justify-between items-center p-2 mt-10 bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
                                                 <div className="flex w-full  space-x-6 justify-center items-center bg-gray-400 text-gray-500 sm:text-sm lg:text-base font-light rounded-full outline-none border-none">
                                                     <span className="flex flex-col justify-center items-center text-center pl-6">
                                                         <p className="text-center font-medium text-sm text-black">Usuário</p>

@@ -1,0 +1,9 @@
+mutation DeleteOrdinanceMemberMemberEmpty {
+  deleteManyOrdinanceMembersConnection(where: {memberWorkload_empty: true}) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}

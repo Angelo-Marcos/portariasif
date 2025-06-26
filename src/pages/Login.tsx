@@ -25,7 +25,6 @@ export function Login() {
                 localStorage.setItem('user', JSON.stringify(userInfo)); // Salva no localStorage
 
                 navigate('/')
-                // Enviar para backend se necessário
             } else {
                 notify("noAllowed");
             }
@@ -49,7 +48,7 @@ export function Login() {
     return (
         <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-700 via-white to-green-700">
             <ToastContainer />
-            
+
             <main className="w-100 h-96 shadow-lg shadow-gray-500 bg-gray-100 rounded-lg">
                 <div className="w-[445px] h-[5px] m-auto mt-[10px] bg-green-700"></div>
                 <div className="flex flex-col justify-center items-center px-[42px]">

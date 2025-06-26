@@ -6215,10 +6215,15 @@ export type DeleteOrdinanceMutationVariables = Exact<{
 
 export type DeleteOrdinanceMutation = { __typename?: 'Mutation', deleteOrdinance?: { __typename?: 'Ordinance', id: string } | null };
 
-export type DeleteOrdinanceMemberMutationVariables = Exact<{ [key: string]: never; }>;
+export type DeleteOrdinanceMemberMemberEmptyMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DeleteOrdinanceMemberMutation = { __typename?: 'Mutation', deleteManyOrdinanceMembersConnection: { __typename?: 'OrdinanceMemberConnection', edges: Array<{ __typename?: 'OrdinanceMemberEdge', node: { __typename?: 'OrdinanceMember', id: string } }> } };
+export type DeleteOrdinanceMemberMemberEmptyMutation = { __typename?: 'Mutation', deleteManyOrdinanceMembersConnection: { __typename?: 'OrdinanceMemberConnection', edges: Array<{ __typename?: 'OrdinanceMemberEdge', node: { __typename?: 'OrdinanceMember', id: string } }> } };
+
+export type DeleteOrdinanceMemberOrdinanceEmptyMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DeleteOrdinanceMemberOrdinanceEmptyMutation = { __typename?: 'Mutation', deleteManyOrdinanceMembersConnection: { __typename?: 'OrdinanceMemberConnection', edges: Array<{ __typename?: 'OrdinanceMemberEdge', node: { __typename?: 'OrdinanceMember', id: string } }> } };
 
 export type DeleteUserAdminMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -6360,7 +6365,7 @@ export type GetOrdinancesByDateQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByDateQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', name: string }> }> };
+export type GetOrdinancesByDateQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', id: string, name: string }> }> };
 
 export type GetOrdinancesByMemberMatriculaQueryVariables = Exact<{
   matriculaSiape: Scalars['Int'];
@@ -6388,7 +6393,7 @@ export type GetOrdinancesByTypeQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdinancesByTypeQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', name: string }> }> };
+export type GetOrdinancesByTypeQuery = { __typename?: 'Query', ordinances: Array<{ __typename?: 'Ordinance', id: string, number: string, ordinanceType: OrdinanceType, effectiveStartDate: any, effectiveEndDate?: any | null, members: Array<{ __typename?: 'Member', id: string, name: string }> }> };
 
 export type GetOrdinancesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6619,8 +6624,44 @@ export function useDeleteOrdinanceMutation(baseOptions?: Apollo.MutationHookOpti
 export type DeleteOrdinanceMutationHookResult = ReturnType<typeof useDeleteOrdinanceMutation>;
 export type DeleteOrdinanceMutationResult = Apollo.MutationResult<DeleteOrdinanceMutation>;
 export type DeleteOrdinanceMutationOptions = Apollo.BaseMutationOptions<DeleteOrdinanceMutation, DeleteOrdinanceMutationVariables>;
-export const DeleteOrdinanceMemberDocument = gql`
-    mutation DeleteOrdinanceMember {
+export const DeleteOrdinanceMemberMemberEmptyDocument = gql`
+    mutation DeleteOrdinanceMemberMemberEmpty {
+  deleteManyOrdinanceMembersConnection(where: {memberWorkload_empty: true}) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
+    `;
+export type DeleteOrdinanceMemberMemberEmptyMutationFn = Apollo.MutationFunction<DeleteOrdinanceMemberMemberEmptyMutation, DeleteOrdinanceMemberMemberEmptyMutationVariables>;
+
+/**
+ * __useDeleteOrdinanceMemberMemberEmptyMutation__
+ *
+ * To run a mutation, you first call `useDeleteOrdinanceMemberMemberEmptyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteOrdinanceMemberMemberEmptyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteOrdinanceMemberMemberEmptyMutation, { data, loading, error }] = useDeleteOrdinanceMemberMemberEmptyMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeleteOrdinanceMemberMemberEmptyMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOrdinanceMemberMemberEmptyMutation, DeleteOrdinanceMemberMemberEmptyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteOrdinanceMemberMemberEmptyMutation, DeleteOrdinanceMemberMemberEmptyMutationVariables>(DeleteOrdinanceMemberMemberEmptyDocument, options);
+      }
+export type DeleteOrdinanceMemberMemberEmptyMutationHookResult = ReturnType<typeof useDeleteOrdinanceMemberMemberEmptyMutation>;
+export type DeleteOrdinanceMemberMemberEmptyMutationResult = Apollo.MutationResult<DeleteOrdinanceMemberMemberEmptyMutation>;
+export type DeleteOrdinanceMemberMemberEmptyMutationOptions = Apollo.BaseMutationOptions<DeleteOrdinanceMemberMemberEmptyMutation, DeleteOrdinanceMemberMemberEmptyMutationVariables>;
+export const DeleteOrdinanceMemberOrdinanceEmptyDocument = gql`
+    mutation DeleteOrdinanceMemberOrdinanceEmpty {
   deleteManyOrdinanceMembersConnection(where: {ordinanceWorkload_empty: true}) {
     edges {
       node {
@@ -6630,31 +6671,31 @@ export const DeleteOrdinanceMemberDocument = gql`
   }
 }
     `;
-export type DeleteOrdinanceMemberMutationFn = Apollo.MutationFunction<DeleteOrdinanceMemberMutation, DeleteOrdinanceMemberMutationVariables>;
+export type DeleteOrdinanceMemberOrdinanceEmptyMutationFn = Apollo.MutationFunction<DeleteOrdinanceMemberOrdinanceEmptyMutation, DeleteOrdinanceMemberOrdinanceEmptyMutationVariables>;
 
 /**
- * __useDeleteOrdinanceMemberMutation__
+ * __useDeleteOrdinanceMemberOrdinanceEmptyMutation__
  *
- * To run a mutation, you first call `useDeleteOrdinanceMemberMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteOrdinanceMemberMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteOrdinanceMemberOrdinanceEmptyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteOrdinanceMemberOrdinanceEmptyMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteOrdinanceMemberMutation, { data, loading, error }] = useDeleteOrdinanceMemberMutation({
+ * const [deleteOrdinanceMemberOrdinanceEmptyMutation, { data, loading, error }] = useDeleteOrdinanceMemberOrdinanceEmptyMutation({
  *   variables: {
  *   },
  * });
  */
-export function useDeleteOrdinanceMemberMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOrdinanceMemberMutation, DeleteOrdinanceMemberMutationVariables>) {
+export function useDeleteOrdinanceMemberOrdinanceEmptyMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOrdinanceMemberOrdinanceEmptyMutation, DeleteOrdinanceMemberOrdinanceEmptyMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteOrdinanceMemberMutation, DeleteOrdinanceMemberMutationVariables>(DeleteOrdinanceMemberDocument, options);
+        return Apollo.useMutation<DeleteOrdinanceMemberOrdinanceEmptyMutation, DeleteOrdinanceMemberOrdinanceEmptyMutationVariables>(DeleteOrdinanceMemberOrdinanceEmptyDocument, options);
       }
-export type DeleteOrdinanceMemberMutationHookResult = ReturnType<typeof useDeleteOrdinanceMemberMutation>;
-export type DeleteOrdinanceMemberMutationResult = Apollo.MutationResult<DeleteOrdinanceMemberMutation>;
-export type DeleteOrdinanceMemberMutationOptions = Apollo.BaseMutationOptions<DeleteOrdinanceMemberMutation, DeleteOrdinanceMemberMutationVariables>;
+export type DeleteOrdinanceMemberOrdinanceEmptyMutationHookResult = ReturnType<typeof useDeleteOrdinanceMemberOrdinanceEmptyMutation>;
+export type DeleteOrdinanceMemberOrdinanceEmptyMutationResult = Apollo.MutationResult<DeleteOrdinanceMemberOrdinanceEmptyMutation>;
+export type DeleteOrdinanceMemberOrdinanceEmptyMutationOptions = Apollo.BaseMutationOptions<DeleteOrdinanceMemberOrdinanceEmptyMutation, DeleteOrdinanceMemberOrdinanceEmptyMutationVariables>;
 export const DeleteUserAdminDocument = gql`
     mutation DeleteUserAdmin($id: ID!) {
   deleteUserAdmin(where: {id: $id}) {
@@ -7110,7 +7151,7 @@ export type GetMembersByMatriculaLazyQueryHookResult = ReturnType<typeof useGetM
 export type GetMembersByMatriculaQueryResult = Apollo.QueryResult<GetMembersByMatriculaQuery, GetMembersByMatriculaQueryVariables>;
 export const GetMembersByNameDocument = gql`
     query GetMembersByName($name: String!) {
-  members(stage: DRAFT, where: {name_starts_with: $name, ordinances_empty: false}) {
+  members(stage: DRAFT, where: {name_starts_with: $name}) {
     id
     name
     matriculaSiape
@@ -7425,6 +7466,7 @@ export const GetOrdinancesByDateDocument = gql`
     effectiveStartDate
     effectiveEndDate
     members {
+      id
       name
     }
   }
@@ -7623,6 +7665,7 @@ export const GetOrdinancesByTypeDocument = gql`
     effectiveStartDate
     effectiveEndDate
     members {
+      id
       name
     }
   }

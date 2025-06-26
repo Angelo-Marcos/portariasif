@@ -1,9 +1,7 @@
-import { XCircle } from "phosphor-react"
-
 interface MemberProps extends MouseEventInit {
     name: string,
     matriculaSiape: number,
-    workload: number,
+    workload?: number,
     type: 'vicePresident' | 'president' | 'member';
 }
 
@@ -14,14 +12,14 @@ export function Member(props: MemberProps) {
             <div className="flex">
                 <input
                     className="appearance-none block w-[300px] h-5 px-2 bg-gray-400 text-gray-500 font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50"
-                    value={props.name}
+                    value={props.name ?? ''}
                     disabled={true}
                 />
             </div>
             <div className="flex ml-4">
                 <input
                     className="appearance-none block w-[100px] h-5 px-2 ml-2 bg-gray-400 text-gray-500 font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50"
-                    value={props.matriculaSiape}
+                    value={props.matriculaSiape ?? ''}
                     disabled={true}
                 />
             </div>
@@ -36,7 +34,7 @@ export function Member(props: MemberProps) {
             <div className="flex ml-4">
                 <input
                     className="appearance-none block w-[40px] h-5 px-2 ml-2 bg-gray-400 text-gray-500 font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50"
-                    value={props.workload}
+                    value={props.workload ?? ''}
                     disabled={true}
                 />
             </div>

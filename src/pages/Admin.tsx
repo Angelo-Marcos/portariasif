@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Header } from "../components/Header";
-import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useCreateUserAdminMutation, useDeleteMemberMutation, useDeleteOrdinanceMemberMutation, useDeleteOrdinanceMutation, useDeleteUserAdminMutation, useGetMembersByMatriculaQuery, useGetMembersByNameLazyQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaLazyQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useGetUserAdminLazyQuery, useGetUserAdminQuery, useGetUserAdminsQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
+import { MemberType, OrdinanceType, useCreateMemberMutation, useCreateOrdinanceMemberMutation, useCreateUserAdminMutation, useDeleteMemberMutation, useDeleteOrdinanceMutation, useDeleteUserAdminMutation, useGetMembersByMatriculaQuery, useGetMembersByNameLazyQuery, useGetMembersQuery, useGetOrdinanceByNumberQuery, useGetOrdinancesAsideQuery, useGetOrdinancesByMemberMatriculaLazyQuery, useGetOrdinancesByMemberMatriculaQuery, useGetOrdinancesByMemberNameQuery, useGetOrdinancesQuery, useGetUserAdminLazyQuery, useGetUserAdminQuery, useGetUserAdminsQuery, useUpdateMemberMutation, useUpdateMemberOrdinanceDisconnectMutation, useUpdateOrdinanceAdminMutation, useUpdateOrdinanceMemberMutation, useUpdateOrdinanceMutation } from "../graphql/generated";
 import { ArrowsCounterClockwise, ClockClockwise, MagnifyingGlass, PlusCircle, Trash, UserCircleGear, WarningCircle, X, XCircle } from "phosphor-react"
 import { format } from "date-fns";
 import { ErrorBoundary } from "react-error-boundary";
@@ -100,7 +100,6 @@ export function Admin() {
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
     const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
     const [deleteUserAdmin, { loading: loadingDeleteUserAdmin }] = useDeleteUserAdminMutation();
-    const [deleteOrdinanceMember, { loading: loadingDeleteOrdinanceMember }] = useDeleteOrdinanceMemberMutation();
 
     const { data: dataOrdinances } = useGetOrdinancesQuery();
 
@@ -416,7 +415,7 @@ export function Admin() {
                 number: numberDelete
             }
         }).then(
-            deleteOrdinanceMember
+
         )
 
         // handleCloseModal();
@@ -459,7 +458,7 @@ export function Admin() {
         reload()
     }
 
-    
+
 
     const notify = (notify: string) => {
         if (notify === "updated")
