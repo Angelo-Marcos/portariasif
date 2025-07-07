@@ -11,7 +11,7 @@ Modal.setAppElement('#root')
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
   <React.StrictMode>
-    <GoogleOAuthProvider clientId="308422575392-i6qtk6oa5k4u90a2jhf4ae5j9oabsuqb.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_API_CLIENT_ID}>
       <App />
     </GoogleOAuthProvider>
   </React.StrictMode>
