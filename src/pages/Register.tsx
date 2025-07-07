@@ -7,17 +7,11 @@ import {
     useCreateMemberMutation,
     useCreateOrdinanceMemberMutation,
     useCreateOrdinanceMutation,
-    useDeleteMemberMutation,
-    useDeleteOrdinanceMemberMutation,
+    useDeleteOrdinanceMemberOrdinanceEmptyMutation,
     useDeleteOrdinanceMutation,
+    useGetMembersByMatriculaLazyQuery,
     useGetMembersByNameLazyQuery,
-    useGetMembersQuery,
-    useGetOrdinancesByMemberMatriculaQuery,
-    usePublishMemberMutation,
-    usePublishOrdinanceMemberMutation,
     usePublishOrdinanceMutation,
-    useUpdateMemberMutation,
-    useUpdateOrdinanceMemberMutation,
     useUpdateOrdinanceMutation,
     useUpdateOrdinanceSituationMutation
 } from "../graphql/generated";
@@ -121,14 +115,9 @@ export function Register() {
     const [createOrdinanceMember, { loading: loadingCreateOrdinanceMember, data: dataCreateOrdinanceMember }] = useCreateOrdinanceMemberMutation();
     const [updateOrdinance, { loading: loadingOrdinanceUpdate }] = useUpdateOrdinanceMutation();
     const [updateOrdinanceSituation] = useUpdateOrdinanceSituationMutation();
-    const [updateMember, { loading: loadingMemberUpdate }] = useUpdateMemberMutation();
-    const [updateOrdinanceMember, { loading: loadingOrdinanceMemberUpdate }] = useUpdateOrdinanceMemberMutation();
     const [publishOrdinance, { loading: loadingPublishOrdinance }] = usePublishOrdinanceMutation();
-    const [publishMember, { loading: loadingPublishMember }] = usePublishMemberMutation();
-    const [publishOrdinanceMember, { loading: loadingPublishOrdinceMember }] = usePublishOrdinanceMemberMutation();
     const [deleteOrdinance, { loading: loadingDeleteOrdinance }] = useDeleteOrdinanceMutation();
-    const [deleteMember, { loading: loadingDeleteMember }] = useDeleteMemberMutation();
-    const [deleteOrdinanceMember, { loading: loadingDeleteOrdinanceMember }] = useDeleteOrdinanceMemberMutation();
+    const [deleteOrdinanceMemberOrdinanceEmpty, { loading: loadingDeleteOrdinanceMember }] = useDeleteOrdinanceMemberOrdinanceEmptyMutation();
 
     const [loadMembers, { data: dataMembersByName }] = useGetMembersByNameLazyQuery();
 
@@ -141,11 +130,7 @@ export function Register() {
         }
     };
 
-    const { data: dataOrdinancesByMemberMatricula } = useGetOrdinancesByMemberMatriculaQuery({
-        variables: {
-            matriculaSiape: Number(matriculaSiape)
-        }
-    })
+    const [loadMemberByMatricula, { data: dataMemberByMatricula }] = useGetMembersByMatriculaLazyQuery();
 
     const handleClickAutoComplete = (member: MemberProps) => {
 
@@ -177,11 +162,17 @@ export function Register() {
 
     const handleAddNewMember = async () => {
 
-        if (dataOrdinancesByMemberMatricula?.member?.id.length != null) {
+        const { data } = await loadMemberByMatricula({
+            variables: {
+                matricula: Number(matriculaSiape)
+            }
+        })
+
+        if (data?.member) {
             const dataMembers: MemberProps = {
-                id: dataOrdinancesByMemberMatricula.member?.id as string,
-                name: dataOrdinancesByMemberMatricula.member?.name as string,
-                matriculaSiape: Number(matriculaSiape),
+                id: data?.member?.id as string,
+                name: data?.member?.name as string,
+                matriculaSiape: data?.member?.matriculaSiape as number,
             }
 
             createOrdinanceMember({
@@ -202,6 +193,8 @@ export function Register() {
             })
 
             setMembers(oldState => [...oldState, dataMembers])
+
+            notify("addMember")
 
         } else if (name === '' || name.length < 4) {
             return notify("nameInvalid")
@@ -237,14 +230,14 @@ export function Register() {
 
                 setMembers(oldState => [...oldState, dataMembers])
             })
+
+            notify("registeredMember")
         }
 
         setName('');
         setMatriculaSiape('')
         setMemberType(MemberType.Member)
         setworkload('')
-
-        notify("registeredMember")
     }
 
     const handleRemoveMemberWorkload = (idMember: string, idWorkload: string) => {
@@ -256,7 +249,7 @@ export function Register() {
             workload => workload.id != idWorkload
         ))
 
-        deleteOrdinanceMember();
+        deleteOrdinanceMemberOrdinanceEmpty();
         notify("removeMember")
     }
 
@@ -344,7 +337,7 @@ export function Register() {
     const reload = () => {
         setTimeout(() => {
             window.location.reload();
-        }, 3000)
+        }, 5000)
     }
 
     if (!user) {
@@ -362,7 +355,6 @@ export function Register() {
                     </span>
                 </div>
             </div>
-
         )
     }
 
@@ -395,8 +387,8 @@ export function Register() {
                     picture={user.picture}
                 />
 
-                <div className="flex flex-col items-center justify-center pt-[130px] px-48">
-                    <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-300">
+                <div className="flex flex-col items-center justify-center pt-[90px] px-48">
+                    <span className="flex w-full mt-6 mb-7 font-medium justify-center text-xl text-red-900 border-b border-green-700">
                         Preencha os campos abaixo
                     </span>
                     <form onSubmit={handleSubmitOrdinance(onSubmitOrdinance)} className="w-full max-w-7xl">
@@ -408,7 +400,7 @@ export function Register() {
                                 <InputMask
                                     mask="999/9999"
                                     {...registerOrdinance("number")}
-                                    className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                 />
                                 <p className="absolute mt-8 text-red-800 text-sm">
                                     {errorsOrdinance.number?.message}
@@ -421,7 +413,7 @@ export function Register() {
                                 <input
                                     {...registerOrdinance("effectiveStartDate")}
                                     type="date"
-                                    className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500" placeholder=" "
+                                    className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700" placeholder=" "
                                 />
                                 <p className="absolute mt-8 text-red-800 text-sm">
                                     {errorsOrdinance.effectiveStartDate?.message}
@@ -433,7 +425,7 @@ export function Register() {
                                 </label>
                                 <select
                                     {...registerOrdinance("ordinanceType")}
-                                    className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[194px] h-[30px] p-0 px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                 >
                                     <option value="" className="text-gray-500 text-xl font-light"></option>
                                     <option value="progression" className="text-gray-500 text-xl font-light">Progressão</option>
@@ -447,12 +439,12 @@ export function Register() {
                         <div className="flex flex-wrap justify-between mt-[28px]">
                             <div className="flex ">
                                 <label className="block tracking-wide font-light text-gray-500 text-xl">
-                                    Data de final de vigência:
+                                    Data final de vigência:
                                 </label>
                                 <input
                                     {...registerOrdinance("effectiveEndDate")}
                                     type="date"
-                                    className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[170px] h-[30px] px-2 ml-4 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                 />
                             </div>
                             <div className="flex">
@@ -461,7 +453,7 @@ export function Register() {
                                 </label>
                                 <input
                                     {...registerOrdinance("subject")}
-                                    className="appearance-none block w-[300px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[300px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                 />
                                 <p className="absolute mt-8 text-red-800 text-sm">
                                     {errorsOrdinance.subject?.message}
@@ -477,14 +469,14 @@ export function Register() {
                                 <div className="flex flex-col">
                                     <div className="flex">
                                         <input
-                                            className="appearance-none block w-[420px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                            className="appearance-none block w-[420px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                             onChange={event => setName(event.target.value)}
                                             value={name}
                                         />
                                         <button
                                             type="button"
                                             onClick={handleSearch}
-                                            className="ml-1 text-green-300"
+                                            className="ml-1 text-green-700"
                                         >
                                             <MagnifyingGlass size={32} />
                                         </button>
@@ -514,10 +506,10 @@ export function Register() {
                                     Matrícula/Siape:
                                 </label>
                                 <InputMask
-                                    mask="999999"
+                                    mask="9999999"
                                     pattern="[0-9]{6,7}"
                                     title="6 to 7 numbers"
-                                    className="appearance-none block w-[180px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[180px] h-[30px] px-2 ml-2 bg-gray-400 text-gray-500 text-xl font-light rounded-md outline-none border-none focus:outline-none focus:ring-1 focus:ring-green-700"
                                     onChange={event => setMatriculaSiape(event.target.value)}
                                     value={matriculaSiape}
                                 />
@@ -528,10 +520,10 @@ export function Register() {
                                     Tipo:
                                 </label>
                                 <select
-                                    className="appearance-none block w-[180px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[190px] h-[30px] p-0 px-2 ml-2 border-none bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                     onChange={event => setMemberType(event.target.value as MemberType)}
                                 >
-                                    <option value="member" className="text-gray-500 text-xl font-light"></option>
+                                    <option value="member" className="text-gray-500 text-xl font-light">Membro</option>
                                     <option value="president" className="text-gray-500 text-xl font-light">Presidente</option>
                                     <option value="vicePresident" className="text-gray-500 text-xl font-light">Vice-Presidente</option>
 
@@ -545,11 +537,11 @@ export function Register() {
                                     mask="9"
                                     pattern="[0-9]{1}"
                                     onChange={event => setworkload(event.target.value)}
-                                    className="appearance-none block w-[100px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="appearance-none block w-[100px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                 />
                                 <span
                                     onClick={handleAddNewMember}
-                                    className="h-[30px] items-center text-green-300 ml-2 rounded-full cursor-pointer hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
+                                    className="h-[30px] items-center text-green-700 ml-2 rounded-full cursor-pointer hover:bg-green-700 hover:text-white transition-colors disabled:opacity-50">
                                     <PlusCircle size={28} />
                                 </span>
                             </div>
@@ -559,12 +551,11 @@ export function Register() {
                             <ul>
                                 {members.map((member) => {
                                     return (
-                                        <div className="flex flex-row text-sm h-6">
+                                        <div key={member.id} className="flex flex-row text-sm h-6">
                                             <Member
-                                                key={member.id}
                                                 name={member.name}
                                                 matriculaSiape={member.matriculaSiape}
-                                                workload={Number(workloads.filter((i) => i.memberId === member.id).at(0)?.workload)}
+                                                workload={Number(workloads.find(i => i.memberId === member.id)?.workload ?? 0)}
                                                 type={workloads.filter((i) => i.memberId === member.id).at(0)?.memberType as MemberType}
                                             />
                                             <button
@@ -589,7 +580,7 @@ export function Register() {
                                         name="gender"
                                         value="yes"
                                         onChange={event => setRadio(event.target.value)}
-                                        className="w-4 h-4 mr-1 text-green-300 border-gray-500 focus:ring-1 focus:ring-green-300 cursor-pointer"
+                                        className="w-4 h-4 mr-1 text-green-700 border-gray-500 focus:ring-1 focus:ring-green-700 cursor-pointer"
                                     />
                                     Sim
                                 </label>
@@ -600,7 +591,7 @@ export function Register() {
                                         name="gender"
                                         value="no"
                                         onChange={event => setRadio(event.target.value)}
-                                        className="w-4 h-4 mr-1 text-green-300 border-gray-500 focus:ring-1 focus:ring-green-300 cursor-pointer"
+                                        className="w-4 h-4 mr-1 text-green-700 border-gray-500 focus:ring-1 focus:ring-green-700 cursor-pointer"
                                     />
                                     Não
                                 </label>
@@ -612,7 +603,7 @@ export function Register() {
                                     </label>
                                     <input
                                         {...registerOrdinance("numberRevoked")}
-                                        className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                                        className="appearance-none block w-[120px] h-[30px] px-2 ml-4 bg-gray-400 text-gray-500 text-xl font-light rounded-md focus:outline-none focus:ring-1 focus:ring-green-700"
                                     />
                                 </div>
                                 : <div></div>
@@ -622,7 +613,7 @@ export function Register() {
                             <button
                                 type="submit"
                                 disabled={loadingCreate}
-                                className="flex justify-center items-center w-[140px] h-[50px] mt-10 leading-none bg-green-300 rounded font-medium text-xl hover:bg-green-700 transition-colors disabled:opacity-50"
+                                className="flex justify-center items-center w-[140px] h-[50px] mt-10 leading-none bg-green-700 rounded-lg font-medium text-xl hover:bg-white hover:text-green-700 hover:border hover:border-green-700 transition-colors disabled:opacity-50"
                             >
                                 Cadastrar Portaria
                             </button>
@@ -662,13 +653,13 @@ export function Register() {
                         <div className="flex justify-between my-8">
                             <button
                                 onClick={handleDeleteOrdinance}
-                                className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-red-700 rounded font-medium text-base hover:bg-red-800 transition-colors disabled:opacity-50"
+                                className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-red-700 rounded-lg font-medium text-base hover:bg-white hover:text-red-700 hover:border hover:border-red-700 transition-colors disabled:opacity-50"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handlePublishOrdinance}
-                                className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
+                                className="flex justify-center items-center w-[130px] h-[35px] mx-3 leading-none bg-green-700 rounded-lg font-medium text-base hover:bg-white hover:text-green-700 hover:border hover:border-green-700 transition-colors disabled:opacity-50"
                             >
                                 Confirmar
                             </button>

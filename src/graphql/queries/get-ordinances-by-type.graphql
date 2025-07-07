@@ -10,7 +10,8 @@ query GetOrdinancesByType($ordinanceType: OrdinanceType!) {
         effectiveStartDate
         effectiveEndDate
         members {
-        name
+          id
+          name
         }
   }
 }

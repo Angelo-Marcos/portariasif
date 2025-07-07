@@ -1,6 +1,7 @@
 query GetUserAdmins {
   userAdmins(stage: DRAFT) {
-    email
     id
+    email
+    userAdminType
   }
 }
