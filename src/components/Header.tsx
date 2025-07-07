@@ -273,7 +273,7 @@ export function Header(props: UserProps) {
                         >
                             <X size={32} className="h-8 w-8 m-4 text-white cursor-pointer hover:bg-white hover:text-green-700 transition-colors disabled:opacity-50" />
                         </span>
-                        <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-20 w-full" />
+                        <img src={Logo} alt="Logo PortariasIF" className="h-20 w-full" />
                     </div>
                     <nav className="flex w-full flex-col items-center justify-end space-y-2">
                         <button
