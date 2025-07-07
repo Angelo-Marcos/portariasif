@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import Logo from '../assets/logo.svg'
 
 
 interface UserProps {
@@ -235,7 +236,7 @@ export function Header(props: UserProps) {
                 </div>
 
                 <div className="flex w-2/3 justify-center items-center">
-                    <img src="/src/assets/logo.svg" alt="Logo PortariasIF" className="h-20" />
+                    <img src={Logo} alt="Logo PortariasIF" className="h-20" />
                     <div className="flex flex-col h-full justify-center bg-green-700">
                         <strong className="uppercase font-bold text-3xl">PortariasIF</strong>
                         <strong className="font-light text-xl mt-[-4px]">Instituto Federal do Norte de Minas</strong>

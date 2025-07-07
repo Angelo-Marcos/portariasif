@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext"
 import { toast, ToastContainer } from 'react-toastify';
 import { useGetUserAdminsQuery } from '../graphql/generated';
+import Logo1 from '../assets/logo1.svg';
+import LogoIfnmg from '../assets/logo_ifnmg_salinas.png'
 
 export function Login() {
     const navigate = useNavigate()
@@ -53,8 +55,8 @@ export function Login() {
                 <div className="w-[445px] h-[5px] m-auto mt-[10px] bg-green-700"></div>
                 <div className="flex flex-col justify-center items-center px-[42px]">
                     <header className="flex justify-between mb-11 pt-[14px]">
-                        <img src="/src/assets/logo_ifnmg_salinas.png" alt="Logo IFNMG" className="w-[170px] h-[176px]" />
-                        <img src="/src/assets/logo1.svg" alt="Logo PortariasIF" className="w-[170px] h-[176px]" />
+                        <img src={Logo1} alt="Logo IFNMG" className="w-[170px] h-[176px]" />
+                        <img src={LogoIfnmg} alt="Logo PortariasIF" className="w-[170px] h-[176px]" />
                     </header>
 
                     <GoogleLogin
