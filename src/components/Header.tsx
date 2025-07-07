@@ -136,7 +136,7 @@ export function Header(props: UserProps) {
                     <button
 
                         onClick={() => handleDeleteUser(numberDelete)}
-                        className="flex justify-center items-center w-[100px] h-[35px] mx-3 leading-none bg-green-300 rounded font-medium text-base hover:bg-green-700 transition-colors disabled:opacity-50"
+                        className="flex justify-center items-center w-[100px] h-[35px] mx-3 leading-none bg-green-700 rounded font-medium text-base hover:text-green-700 hover:bg-white hover:border hover:border-green-700 transition-colors disabled:opacity-50"
                     >
                         Confirmar
                     </button>
@@ -362,7 +362,7 @@ export function Header(props: UserProps) {
                             onClick={() => (setActiveTab("update"))}
                             className="flex justify-center items-center w-28 h-[40px] ml-3 leading-none bg-white text-blue-700 text-base font-medium rounded-3xl hover:bg-blue-700 hover:text-white hover:border hover:border-white transition-colors disabled:opacity-50">
                             <ArrowCounterClockwise size={24} className="mr-1" />
-                            Alterar
+                            Atualizar
                         </button>
 
                         <button
